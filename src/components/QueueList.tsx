@@ -88,16 +88,16 @@ export const QueueList = ({ entries, onUpdateStatus }: QueueListProps) => {
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4" />
             <Select 
-              value={filters.department || ''} 
-              onValueChange={(value: Department | '') => 
-                setFilters(prev => ({ ...prev, department: value || undefined }))
+              value={filters.department || 'all'} 
+              onValueChange={(value: string) => 
+                setFilters(prev => ({ ...prev, department: value === 'all' ? undefined : value as Department }))
               }
             >
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="All Departments" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Departments</SelectItem>
+                <SelectItem value="all">All Departments</SelectItem>
                 <SelectItem value="Consultation">Consultation</SelectItem>
                 <SelectItem value="Lab">Laboratory</SelectItem>
                 <SelectItem value="Pharmacy">Pharmacy</SelectItem>
@@ -108,16 +108,16 @@ export const QueueList = ({ entries, onUpdateStatus }: QueueListProps) => {
 
           <div>
             <Select 
-              value={filters.status || ''} 
-              onValueChange={(value: Status | '') => 
-                setFilters(prev => ({ ...prev, status: value || undefined }))
+              value={filters.status || 'all'} 
+              onValueChange={(value: string) => 
+                setFilters(prev => ({ ...prev, status: value === 'all' ? undefined : value as Status }))
               }
             >
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="Waiting">Waiting</SelectItem>
                 <SelectItem value="In Progress">In Progress</SelectItem>
                 <SelectItem value="Completed">Completed</SelectItem>
