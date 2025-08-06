@@ -14,41 +14,142 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          created_at: string
+          department: string
+          email: string
+          full_name: string
+          id: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department: string
+          email: string
+          full_name: string
+          id: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          email?: string
+          full_name?: string
+          id?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       queue_entries: {
         Row: {
+          called_at: string | null
+          completed_at: string | null
           created_at: string
           department: string
           full_name: string
           id: string
           phone_number: string | null
           priority: string
+          served_at: string | null
+          served_by: string | null
+          skipped_at: string | null
           status: string
           token: string
+          transferred_from: string | null
           updated_at: string
         }
         Insert: {
+          called_at?: string | null
+          completed_at?: string | null
           created_at?: string
           department: string
           full_name: string
           id?: string
           phone_number?: string | null
           priority: string
+          served_at?: string | null
+          served_by?: string | null
+          skipped_at?: string | null
           status?: string
           token: string
+          transferred_from?: string | null
           updated_at?: string
         }
         Update: {
+          called_at?: string | null
+          completed_at?: string | null
           created_at?: string
           department?: string
           full_name?: string
           id?: string
           phone_number?: string | null
           priority?: string
+          served_at?: string | null
+          served_by?: string | null
+          skipped_at?: string | null
           status?: string
           token?: string
+          transferred_from?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "queue_entries_served_by_fkey"
+            columns: ["served_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      queue_transfers: {
+        Row: {
+          from_department: string
+          id: string
+          queue_entry_id: string
+          reason: string | null
+          to_department: string
+          transferred_at: string
+          transferred_by: string
+        }
+        Insert: {
+          from_department: string
+          id?: string
+          queue_entry_id: string
+          reason?: string | null
+          to_department: string
+          transferred_at?: string
+          transferred_by: string
+        }
+        Update: {
+          from_department?: string
+          id?: string
+          queue_entry_id?: string
+          reason?: string | null
+          to_department?: string
+          transferred_at?: string
+          transferred_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_transfers_queue_entry_id_fkey"
+            columns: ["queue_entry_id"]
+            isOneToOne: false
+            referencedRelation: "queue_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_transfers_transferred_by_fkey"
+            columns: ["transferred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

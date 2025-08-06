@@ -1,9 +1,11 @@
+import { Link } from 'react-router-dom';
 import { TokenGenerator } from '@/components/TokenGenerator';
 import { QueueList } from '@/components/QueueList';
 import { QueueEntry, Status } from '@/types/queue';
 import { useQueueEntries } from '@/hooks/useQueueEntries';
-import { Activity, Users, Clock, TrendingUp } from 'lucide-react';
+import { Activity, Users, Clock, TrendingUp, Shield } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 const Index = () => {
@@ -49,12 +51,20 @@ const Index = () => {
       {/* Header */}
       <div className="border-b bg-card">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <Activity className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Queue Management System</h1>
-              <p className="text-muted-foreground">Hospital Queue Token Generator & Monitor</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Activity className="h-8 w-8 text-primary" />
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">Queue Management System</h1>
+                <p className="text-muted-foreground">Hospital Queue Token Generator & Monitor</p>
+              </div>
             </div>
+            <Link to="/auth">
+              <Button variant="outline">
+                <Shield className="h-4 w-4 mr-2" />
+                Staff Login
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

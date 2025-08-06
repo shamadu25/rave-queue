@@ -43,12 +43,16 @@
     --success-foreground: 0 0% 100%;
     --warning: 43 96% 56%;
     --warning-foreground: 0 0% 100%;
-    --waiting: 208 100% 47%;
-    --waiting-foreground: 0 0% 100%;
-    --in-progress: 43 96% 56%;
-    --in-progress-foreground: 0 0% 100%;
-    --completed: 142 76% 36%;
-    --completed-foreground: 0 0% 100%;
+    --waiting: 220 14% 96%;
+    --waiting-foreground: 220 9% 46%;
+    --called: 213 94% 95%;
+    --called-foreground: 213 94% 27%;
+    --served: 149 80% 90%;
+    --served-foreground: 149 83% 20%;
+    --in-progress: 47 93% 94%;
+    --in-progress-foreground: 38 92% 50%;
+    --completed: 215 28% 17%;
+    --completed-foreground: 210 20% 98%;
 
     --border: 210 40% 90%;
     --input: 210 40% 96%;

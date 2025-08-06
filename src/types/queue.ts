@@ -1,6 +1,6 @@
 export type Department = 'Consultation' | 'Lab' | 'Pharmacy' | 'Billing';
 export type Priority = 'Normal' | 'Emergency';
-export type Status = 'Waiting' | 'In Progress' | 'Completed';
+export type Status = 'Waiting' | 'Called' | 'Served' | 'In Progress' | 'Completed' | 'Skipped';
 
 export interface QueueEntry {
   id: string;

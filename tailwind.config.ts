@@ -70,6 +70,14 @@ export default {
 					DEFAULT: 'hsl(var(--waiting))',
 					foreground: 'hsl(var(--waiting-foreground))'
 				},
+				called: {
+					DEFAULT: 'hsl(var(--called))',
+					foreground: 'hsl(var(--called-foreground))'
+				},
+				served: {
+					DEFAULT: 'hsl(var(--served))',
+					foreground: 'hsl(var(--served-foreground))'
+				},
 				'in-progress': {
 					DEFAULT: 'hsl(var(--in-progress))',
 					foreground: 'hsl(var(--in-progress-foreground))'
