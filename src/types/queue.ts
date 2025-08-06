@@ -1,4 +1,4 @@
-export type Department = 'Consultation' | 'Lab' | 'Pharmacy' | 'Billing';
+export type Department = 'Consultation' | 'Lab' | 'Pharmacy' | 'Billing' | 'X-ray' | 'Scan';
 export type Priority = 'Normal' | 'Emergency';
 export type Status = 'Waiting' | 'Called' | 'Served' | 'In Progress' | 'Completed' | 'Skipped';
 
