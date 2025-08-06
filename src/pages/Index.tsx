@@ -9,14 +9,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { usePrintTicket } from '@/hooks/usePrintTicket';
 
 const Index = () => {
   const { entries: queueEntries, loading, addEntry, updateStatus } = useQueueEntries();
   const { profile } = useAuth();
+  const { printTicket } = usePrintTicket();
 
   const handleTokenGenerated = async (newEntryData: Omit<QueueEntry, 'id' | 'timestamp'>) => {
     try {
-      await addEntry(newEntryData);
+      const newEntry = await addEntry(newEntryData);
+      // Auto-trigger print after successful token creation
+      if (newEntry) {
+        printTicket(newEntry);
+      }
     } catch (error) {
       toast.error('Failed to generate token. Please try again.');
       throw error;
