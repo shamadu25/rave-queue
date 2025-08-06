@@ -182,9 +182,11 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <Settings className="h-4 w-4" />
-                    {!collapsed && <span>Settings</span>}
+                  <SidebarMenuButton asChild>
+                    <NavLink to="/settings" className="flex items-center gap-3">
+                      <Settings className="h-4 w-4" />
+                      {!collapsed && <span>Settings</span>}
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>

@@ -106,23 +106,68 @@ export const GeneralSettings = () => {
     }
   };
 
-  const updateSetting = async (key: string, value: any, category: string) => {
+  const updateSetting = async (key: string, value: any, category: string, showToast: boolean = true) => {
     try {
       const { error } = await supabase
         .from('system_settings')
         .upsert({
           setting_key: key,
           setting_value: value,
-          category: category
+          category: category,
+          description: getSettingDescription(key)
         });
       
       if (error) throw error;
       
       setSettings(prev => ({ ...prev, [key]: value }));
-      toast.success('Setting updated successfully');
+      if (showToast) {
+        toast.success('Setting updated successfully');
+      }
     } catch (error) {
       console.error('Error updating setting:', error);
       toast.error('Failed to update setting');
+      throw error;
+    }
+  };
+
+  const getSettingDescription = (key: string): string => {
+    const descriptions: Record<string, string> = {
+      'clinic_name': 'Name of the clinic/hospital displayed on tickets and interface',
+      'footer_note': 'Footer text displayed on printed tickets',
+      'print_mode': 'How tokens should be printed (Direct or Popup)',
+      'theme_mode': 'Application color theme (Light or Dark)',
+      'enable_voice_announcements': 'Enable voice announcements for queue calls',
+      'auto_reset_midnight': 'Automatically reset queue counters every day',
+      'display_estimated_wait': 'Show estimated wait times to patients',
+      'enable_display_screen': 'Show the public queue display screen',
+      'enable_sound_alerts': 'Play sounds when queue status changes',
+      'enable_sms_notifications': 'Send SMS updates to patients',
+      'refresh_interval': 'Auto-refresh interval for display screens',
+      'default_priority': 'Default priority level for new tokens',
+      'max_emergency_tokens': 'Maximum emergency tokens allowed per day',
+      'working_days': 'Days when the queue system is active'
+    };
+    return descriptions[key] || 'System setting';
+  };
+
+  const saveAllSettings = async () => {
+    try {
+      setSaving(true);
+      
+      // Validate required fields
+      if (!settings.clinic_name || settings.clinic_name.toString().trim() === '') {
+        toast.error('Hospital/Clinic name is required');
+        return;
+      }
+
+      // Force refresh data after save to ensure UI reflects database state
+      await loadData();
+      toast.success('All settings saved successfully');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error('Failed to save settings');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -287,8 +332,12 @@ export const GeneralSettings = () => {
         </Button>
       </div>
 
-      <Tabs defaultValue="departments" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="general" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="general">
+            <Settings className="h-4 w-4 mr-2" />
+            General
+          </TabsTrigger>
           <TabsTrigger value="departments">
             <Building2 className="h-4 w-4 mr-2" />
             Departments
@@ -302,10 +351,123 @@ export const GeneralSettings = () => {
             Display & Alerts
           </TabsTrigger>
           <TabsTrigger value="defaults">
-            <Settings className="h-4 w-4 mr-2" />
-            System Defaults
+            <Palette className="h-4 w-4 mr-2" />
+            Defaults
           </TabsTrigger>
         </TabsList>
+
+        {/* General Settings Tab */}
+        <TabsContent value="general" className="space-y-4">
+          <div className="grid gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Hospital Information</CardTitle>
+                <CardDescription>Configure basic hospital/clinic information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="clinic_name">Hospital/Clinic Name *</Label>
+                  <Input
+                    id="clinic_name"
+                    value={settings.clinic_name?.toString().replace(/"/g, '') || ""}
+                    onChange={(e) => updateSetting('clinic_name', `"${e.target.value}"`, 'general', false)}
+                    placeholder="Enter hospital/clinic name"
+                    className="max-w-md"
+                  />
+                  <p className="text-sm text-muted-foreground">This name appears on tokens and welcome screens</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="footer_note">Footer Note</Label>
+                  <Input
+                    id="footer_note"
+                    value={settings.footer_note?.toString().replace(/"/g, '') || ""}
+                    onChange={(e) => updateSetting('footer_note', `"${e.target.value}"`, 'general', false)}
+                    placeholder="e.g., Powered by RAVESOFT"
+                    className="max-w-md"
+                  />
+                  <p className="text-sm text-muted-foreground">Text displayed at the bottom of printed tickets</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>System Preferences</CardTitle>
+                <CardDescription>Configure system behavior and appearance</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Print Mode</Label>
+                  <Select
+                    value={settings.print_mode?.toString().replace(/"/g, '') || "popup"}
+                    onValueChange={(value) => updateSetting('print_mode', `"${value}"`, 'general', false)}
+                  >
+                    <SelectTrigger className="max-w-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="direct">Direct Print</SelectItem>
+                      <SelectItem value="popup">Print Popup</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">How tokens should be printed after generation</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Theme Mode</Label>
+                  <Select
+                    value={settings.theme_mode?.toString().replace(/"/g, '') || "light"}
+                    onValueChange={(value) => updateSetting('theme_mode', `"${value}"`, 'general', false)}
+                  >
+                    <SelectTrigger className="max-w-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light">Light Mode</SelectItem>
+                      <SelectItem value="dark">Dark Mode</SelectItem>
+                      <SelectItem value="auto">Auto (System)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">Application color theme preference</p>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Voice Announcements</Label>
+                    <p className="text-sm text-muted-foreground">Enable voice announcements when calling tokens</p>
+                  </div>
+                  <Switch
+                    checked={settings.enable_voice_announcements || false}
+                    onCheckedChange={(checked) => updateSetting('enable_voice_announcements', checked, 'general', false)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Save Changes</CardTitle>
+                <CardDescription>Apply all changes to the system settings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <Button onClick={saveAllSettings} disabled={saving} className="bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90">
+                    <Save className="h-4 w-4 mr-2" />
+                    {saving ? 'Saving...' : 'Save All Settings'}
+                  </Button>
+                  <Button onClick={loadData} variant="outline" disabled={saving}>
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reload Settings
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Changes are saved automatically but you can refresh to see current database values
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
         {/* Department Management */}
         <TabsContent value="departments" className="space-y-4">
@@ -527,7 +689,7 @@ export const GeneralSettings = () => {
                   </div>
                   <Switch
                     checked={settings.auto_reset_midnight || false}
-                    onCheckedChange={(checked) => updateSetting('auto_reset_midnight', checked, 'queue')}
+                    onCheckedChange={(checked) => updateSetting('auto_reset_midnight', checked, 'queue', false)}
                   />
                 </div>
                 
@@ -538,7 +700,7 @@ export const GeneralSettings = () => {
                   </div>
                   <Switch
                     checked={settings.display_estimated_wait || false}
-                    onCheckedChange={(checked) => updateSetting('display_estimated_wait', checked, 'queue')}
+                    onCheckedChange={(checked) => updateSetting('display_estimated_wait', checked, 'queue', false)}
                   />
                 </div>
               </CardContent>
@@ -564,7 +726,7 @@ export const GeneralSettings = () => {
                           const newDays = isActive 
                             ? workingDays.filter((d: string) => d !== day)
                             : [...workingDays, day];
-                          updateSetting('working_days', newDays, 'queue');
+                          updateSetting('working_days', newDays, 'queue', false);
                         }}
                       >
                         {day.slice(0, 3)}
@@ -593,7 +755,7 @@ export const GeneralSettings = () => {
                   </div>
                   <Switch
                     checked={settings.enable_display_screen || false}
-                    onCheckedChange={(checked) => updateSetting('enable_display_screen', checked, 'display')}
+                    onCheckedChange={(checked) => updateSetting('enable_display_screen', checked, 'display', false)}
                   />
                 </div>
                 
@@ -601,7 +763,7 @@ export const GeneralSettings = () => {
                   <Label>Auto-refresh Interval</Label>
                   <Select
                     value={settings.refresh_interval?.toString() || "10"}
-                    onValueChange={(value) => updateSetting('refresh_interval', value, 'display')}
+                    onValueChange={(value) => updateSetting('refresh_interval', value, 'display', false)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -633,7 +795,7 @@ export const GeneralSettings = () => {
                   </div>
                   <Switch
                     checked={settings.enable_sound_alerts || false}
-                    onCheckedChange={(checked) => updateSetting('enable_sound_alerts', checked, 'display')}
+                    onCheckedChange={(checked) => updateSetting('enable_sound_alerts', checked, 'display', false)}
                   />
                 </div>
                 
@@ -647,7 +809,7 @@ export const GeneralSettings = () => {
                   </div>
                   <Switch
                     checked={settings.enable_sms_notifications || false}
-                    onCheckedChange={(checked) => updateSetting('enable_sms_notifications', checked, 'display')}
+                    onCheckedChange={(checked) => updateSetting('enable_sms_notifications', checked, 'display', false)}
                   />
                 </div>
               </CardContent>
@@ -668,7 +830,7 @@ export const GeneralSettings = () => {
                   <Label>Default Priority Level</Label>
                   <Select
                     value={settings.default_priority?.toString() || "Normal"}
-                    onValueChange={(value) => updateSetting('default_priority', value, 'defaults')}
+                    onValueChange={(value) => updateSetting('default_priority', value, 'defaults', false)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -685,19 +847,22 @@ export const GeneralSettings = () => {
                   <Input
                     type="number"
                     value={parseInt(settings.max_emergency_tokens?.toString() || "10")}
-                    onChange={(e) => updateSetting('max_emergency_tokens', e.target.value, 'defaults')}
+                    onChange={(e) => updateSetting('max_emergency_tokens', e.target.value, 'defaults', false)}
                     min="1"
                     max="50"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>System Name</Label>
+                  <Label>Legacy System Name</Label>
                   <Input
-                    value={settings.system_name?.toString() || "Hospital Queue Management System"}
-                    onChange={(e) => updateSetting('system_name', e.target.value, 'defaults')}
+                    value={settings.system_name?.toString().replace(/"/g, '') || "Hospital Queue Management System"}
+                    onChange={(e) => updateSetting('system_name', `"${e.target.value}"`, 'defaults', false)}
                     placeholder="System display name"
                   />
+                  <p className="text-sm text-muted-foreground">
+                    Legacy field - Use "Hospital/Clinic Name" in General tab instead
+                  </p>
                 </div>
               </CardContent>
             </Card>

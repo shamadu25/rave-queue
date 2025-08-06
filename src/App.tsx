@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import QueueMonitor from "./pages/QueueMonitor";
 import QueueDisplay from "./pages/QueueDisplay";
 import TokenGeneration from "./pages/TokenGeneration";
+import Settings from "./pages/Settings";
 import PrintTicketPage from "./pages/PrintTicket";
 import NotFound from "./pages/NotFound";
 
@@ -50,6 +51,10 @@ const AppContent = () => {
           <Route path="/display" element={<QueueDisplay />} />
           <Route path="/print/:tokenId" element={<PrintTicketPage />} />
           <Route 
+            path="/settings" 
+            element={user ? <Settings /> : <Navigate to="/auth" replace />} 
+          />
+          <Route 
             path="/monitor" 
             element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
           />
@@ -73,6 +78,10 @@ const AppContent = () => {
               <Route path="/auth" element={<Auth />} />
               <Route path="/display" element={<QueueDisplay />} />
               <Route path="/print/:tokenId" element={<PrintTicketPage />} />
+              <Route 
+                path="/settings" 
+                element={user ? <Settings /> : <Navigate to="/auth" replace />} 
+              />
               <Route 
                 path="/monitor" 
                 element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
