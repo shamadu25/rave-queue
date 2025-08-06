@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
@@ -25,7 +26,11 @@ import {
   Edit, 
   Trash2, 
   AlertTriangle,
-  Palette
+  Palette,
+  MapPin,
+  Phone,
+  Mail,
+  Globe
 } from 'lucide-react';
 
 interface Department {
@@ -133,16 +138,27 @@ export const GeneralSettings = () => {
   const getSettingDescription = (key: string): string => {
     const descriptions: Record<string, string> = {
       'clinic_name': 'Name of the clinic/hospital displayed on tickets and interface',
+      'clinic_address': 'Physical address of the clinic/hospital',
+      'clinic_phone': 'Primary phone number for the clinic',
+      'clinic_email': 'Contact email address for the clinic',
+      'operating_hours': 'Business operating hours displayed to patients',
+      'website_url': 'Official website URL',
+      'emergency_contact': 'Emergency contact number',
+      'clinic_logo_url': 'URL or path to clinic logo image',
       'footer_note': 'Footer text displayed on printed tickets',
       'print_mode': 'How tokens should be printed (Direct or Popup)',
       'theme_mode': 'Application color theme (Light or Dark)',
       'enable_voice_announcements': 'Enable voice announcements for queue calls',
+      'enable_online_booking': 'Allow patients to book appointments online',
+      'enable_patient_feedback': 'Allow patients to provide feedback',
       'auto_reset_midnight': 'Automatically reset queue counters every day',
       'display_estimated_wait': 'Show estimated wait times to patients',
       'enable_display_screen': 'Show the public queue display screen',
       'enable_sound_alerts': 'Play sounds when queue status changes',
       'enable_sms_notifications': 'Send SMS updates to patients',
       'refresh_interval': 'Auto-refresh interval for display screens',
+      'max_queue_display_count': 'Maximum number of queue entries to show on display screen',
+      'show_department_colors': 'Display department colors on queue screens',
       'default_priority': 'Default priority level for new tokens',
       'max_emergency_tokens': 'Maximum emergency tokens allowed per day',
       'working_days': 'Days when the queue system is active'
@@ -155,17 +171,31 @@ export const GeneralSettings = () => {
       setSaving(true);
       
       // Validate required fields
-      if (!settings.clinic_name || settings.clinic_name.toString().trim() === '') {
+      if (!settings.clinic_name || settings.clinic_name.toString().replace(/"/g, '').trim() === '') {
         toast.error('Hospital/Clinic name is required');
+        return;
+      }
+
+      // Validate email format if provided
+      const emailValue = settings.clinic_email?.toString().replace(/"/g, '').trim();
+      if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+        toast.error('Please enter a valid email address');
+        return;
+      }
+
+      // Validate website URL format if provided
+      const websiteValue = settings.website_url?.toString().replace(/"/g, '').trim();
+      if (websiteValue && !websiteValue.startsWith('http://') && !websiteValue.startsWith('https://')) {
+        toast.error('Website URL must start with http:// or https://');
         return;
       }
 
       // Force refresh data after save to ensure UI reflects database state
       await loadData();
-      toast.success('All settings saved successfully');
+      toast.success('✅ All settings saved successfully! Changes will be reflected across all modules.');
     } catch (error) {
       console.error('Error saving settings:', error);
-      toast.error('Failed to save settings');
+      toast.error('❌ Failed to save settings. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -361,98 +391,223 @@ export const GeneralSettings = () => {
           <div className="grid gap-4">
             <Card>
               <CardHeader>
-                <CardTitle>Hospital Information</CardTitle>
-                <CardDescription>Configure basic hospital/clinic information</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5" />
+                  Hospital/Clinic Information
+                </CardTitle>
+                <CardDescription>Configure basic hospital/clinic information displayed throughout the system</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="clinic_name">Hospital/Clinic Name *</Label>
-                  <Input
-                    id="clinic_name"
-                    value={settings.clinic_name?.toString().replace(/"/g, '') || ""}
-                    onChange={(e) => updateSetting('clinic_name', `"${e.target.value}"`, 'general', false)}
-                    placeholder="Enter hospital/clinic name"
-                    className="max-w-md"
-                  />
-                  <p className="text-sm text-muted-foreground">This name appears on tokens and welcome screens</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="footer_note">Footer Note</Label>
-                  <Input
-                    id="footer_note"
-                    value={settings.footer_note?.toString().replace(/"/g, '') || ""}
-                    onChange={(e) => updateSetting('footer_note', `"${e.target.value}"`, 'general', false)}
-                    placeholder="e.g., Powered by RAVESOFT"
-                    className="max-w-md"
-                  />
-                  <p className="text-sm text-muted-foreground">Text displayed at the bottom of printed tickets</p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="clinic_name">Hospital/Clinic Name *</Label>
+                    <Input
+                      id="clinic_name"
+                      value={settings.clinic_name?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('clinic_name', `"${e.target.value}"`, 'general', false)}
+                      placeholder="Enter hospital/clinic name"
+                    />
+                    <p className="text-sm text-muted-foreground">This name appears on tokens and welcome screens</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="clinic_email" className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Email Address
+                    </Label>
+                    <Input
+                      id="clinic_email"
+                      type="email"
+                      value={settings.clinic_email?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('clinic_email', `"${e.target.value}"`, 'general', false)}
+                      placeholder="info@sgclinic.com"
+                    />
+                    <p className="text-sm text-muted-foreground">Primary contact email for the clinic</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="clinic_phone" className="flex items-center gap-2">
+                      <Phone className="h-4 w-4" />
+                      Phone Number
+                    </Label>
+                    <Input
+                      id="clinic_phone"
+                      type="tel"
+                      value={settings.clinic_phone?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('clinic_phone', `"${e.target.value}"`, 'general', false)}
+                      placeholder="+1 (555) 123-4567"
+                    />
+                    <p className="text-sm text-muted-foreground">Primary phone number for contact</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="emergency_contact" className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      Emergency Contact
+                    </Label>
+                    <Input
+                      id="emergency_contact"
+                      type="tel"
+                      value={settings.emergency_contact?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('emergency_contact', `"${e.target.value}"`, 'general', false)}
+                      placeholder="+1 (555) 911-HELP"
+                    />
+                    <p className="text-sm text-muted-foreground">Emergency contact number</p>
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="clinic_address" className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Address
+                    </Label>
+                    <Textarea
+                      id="clinic_address"
+                      value={settings.clinic_address?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('clinic_address', `"${e.target.value}"`, 'general', false)}
+                      placeholder="123 Medical Center Drive, Healthcare City, HC 12345"
+                      rows={2}
+                    />
+                    <p className="text-sm text-muted-foreground">Physical address of the clinic/hospital</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="website_url" className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Website URL
+                    </Label>
+                    <Input
+                      id="website_url"
+                      type="url"
+                      value={settings.website_url?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('website_url', `"${e.target.value}"`, 'general', false)}
+                      placeholder="https://www.sgclinic.com"
+                    />
+                    <p className="text-sm text-muted-foreground">Official website URL</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="operating_hours">Operating Hours</Label>
+                    <Input
+                      id="operating_hours"
+                      value={settings.operating_hours?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('operating_hours', `"${e.target.value}"`, 'general', false)}
+                      placeholder="Monday - Friday: 8:00 AM - 6:00 PM"
+                    />
+                    <p className="text-sm text-muted-foreground">Business hours displayed to patients</p>
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="footer_note">Footer Note</Label>
+                    <Input
+                      id="footer_note"
+                      value={settings.footer_note?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => updateSetting('footer_note', `"${e.target.value}"`, 'general', false)}
+                      placeholder="e.g., Powered by RAVESOFT"
+                    />
+                    <p className="text-sm text-muted-foreground">Text displayed at the bottom of printed tickets</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>System Preferences</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  System Preferences
+                </CardTitle>
                 <CardDescription>Configure system behavior and appearance</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Print Mode</Label>
-                  <Select
-                    value={settings.print_mode?.toString().replace(/"/g, '') || "popup"}
-                    onValueChange={(value) => updateSetting('print_mode', `"${value}"`, 'general', false)}
-                  >
-                    <SelectTrigger className="max-w-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="direct">Direct Print</SelectItem>
-                      <SelectItem value="popup">Print Popup</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground">How tokens should be printed after generation</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Theme Mode</Label>
-                  <Select
-                    value={settings.theme_mode?.toString().replace(/"/g, '') || "light"}
-                    onValueChange={(value) => updateSetting('theme_mode', `"${value}"`, 'general', false)}
-                  >
-                    <SelectTrigger className="max-w-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Light Mode</SelectItem>
-                      <SelectItem value="dark">Dark Mode</SelectItem>
-                      <SelectItem value="auto">Auto (System)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground">Application color theme preference</p>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label>Voice Announcements</Label>
-                    <p className="text-sm text-muted-foreground">Enable voice announcements when calling tokens</p>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Print Mode</Label>
+                    <Select
+                      value={settings.print_mode?.toString().replace(/"/g, '') || "popup"}
+                      onValueChange={(value) => updateSetting('print_mode', `"${value}"`, 'general', false)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="direct">Direct Print</SelectItem>
+                        <SelectItem value="popup">Print Popup</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-sm text-muted-foreground">How tokens should be printed after generation</p>
                   </div>
-                  <Switch
-                    checked={settings.enable_voice_announcements || false}
-                    onCheckedChange={(checked) => updateSetting('enable_voice_announcements', checked, 'general', false)}
-                  />
+
+                  <div className="space-y-2">
+                    <Label>Theme Mode</Label>
+                    <Select
+                      value={settings.theme_mode?.toString().replace(/"/g, '') || "light"}
+                      onValueChange={(value) => updateSetting('theme_mode', `"${value}"`, 'general', false)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Light Mode</SelectItem>
+                        <SelectItem value="dark">Dark Mode</SelectItem>
+                        <SelectItem value="auto">Auto (System)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-sm text-muted-foreground">Application color theme preference</p>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 pt-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Voice Announcements</Label>
+                      <p className="text-sm text-muted-foreground">Enable voice announcements when calling tokens</p>
+                    </div>
+                    <Switch
+                      checked={settings.enable_voice_announcements || false}
+                      onCheckedChange={(checked) => updateSetting('enable_voice_announcements', checked, 'general', false)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Online Booking</Label>
+                      <p className="text-sm text-muted-foreground">Allow patients to book appointments online</p>
+                    </div>
+                    <Switch
+                      checked={settings.enable_online_booking || false}
+                      onCheckedChange={(checked) => updateSetting('enable_online_booking', checked, 'general', false)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Patient Feedback</Label>
+                      <p className="text-sm text-muted-foreground">Allow patients to provide feedback</p>
+                    </div>
+                    <Switch
+                      checked={settings.enable_patient_feedback || false}
+                      onCheckedChange={(checked) => updateSetting('enable_patient_feedback', checked, 'general', false)}
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Save Changes</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Save className="h-5 w-5" />
+                  Save Changes
+                </CardTitle>
                 <CardDescription>Apply all changes to the system settings</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
-                  <Button onClick={saveAllSettings} disabled={saving} className="bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90">
+                  <Button 
+                    onClick={saveAllSettings} 
+                    disabled={saving} 
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                  >
                     <Save className="h-4 w-4 mr-2" />
                     {saving ? 'Saving...' : 'Save All Settings'}
                   </Button>
@@ -462,7 +617,7 @@ export const GeneralSettings = () => {
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Changes are saved automatically but you can refresh to see current database values
+                  Changes are saved automatically when you edit them, but you can refresh to see current database values
                 </p>
               </CardContent>
             </Card>
@@ -759,22 +914,48 @@ export const GeneralSettings = () => {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label>Auto-refresh Interval</Label>
-                  <Select
-                    value={settings.refresh_interval?.toString() || "10"}
-                    onValueChange={(value) => updateSetting('refresh_interval', value, 'display', false)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5">5 seconds</SelectItem>
-                      <SelectItem value="10">10 seconds</SelectItem>
-                      <SelectItem value="15">15 seconds</SelectItem>
-                      <SelectItem value="30">30 seconds</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Auto-refresh Interval</Label>
+                    <Select
+                      value={settings.refresh_interval?.toString() || "10"}
+                      onValueChange={(value) => updateSetting('refresh_interval', value, 'display', false)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">5 seconds</SelectItem>
+                        <SelectItem value="10">10 seconds</SelectItem>
+                        <SelectItem value="15">15 seconds</SelectItem>
+                        <SelectItem value="30">30 seconds</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-sm text-muted-foreground">How often to refresh the display screen</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Max Queue Display Count</Label>
+                    <Input
+                      type="number"
+                      value={parseInt(settings.max_queue_display_count?.toString() || "20")}
+                      onChange={(e) => updateSetting('max_queue_display_count', e.target.value, 'display', false)}
+                      min="5"
+                      max="100"
+                    />
+                    <p className="text-sm text-muted-foreground">Maximum number of queue entries to show</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Show Department Colors</Label>
+                    <p className="text-sm text-muted-foreground">Display department colors on queue screens</p>
+                  </div>
+                  <Switch
+                    checked={settings.show_department_colors || false}
+                    onCheckedChange={(checked) => updateSetting('show_department_colors', checked, 'display', false)}
+                  />
                 </div>
               </CardContent>
             </Card>

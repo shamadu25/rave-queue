@@ -1,9 +1,33 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SystemSettings {
   clinic_name?: string;
+  clinic_address?: string;
+  clinic_phone?: string;
+  clinic_email?: string;
+  operating_hours?: string;
+  website_url?: string;
+  emergency_contact?: string;
+  clinic_logo_url?: string;
   footer_note?: string;
+  print_mode?: string;
+  theme_mode?: string;
+  enable_voice_announcements?: boolean;
+  enable_online_booking?: boolean;
+  enable_patient_feedback?: boolean;
+  auto_reset_midnight?: boolean;
+  display_estimated_wait?: boolean;
+  enable_display_screen?: boolean;
+  enable_sound_alerts?: boolean;
+  enable_sms_notifications?: boolean;
+  refresh_interval?: string;
+  max_queue_display_count?: string;
+  show_department_colors?: boolean;
+  default_priority?: string;
+  max_emergency_tokens?: string;
+  working_days?: string[];
   [key: string]: any;
 }
 
@@ -11,30 +35,122 @@ export const useSystemSettings = () => {
   const [settings, setSettings] = useState<SystemSettings>({});
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const { data: settingsData, error } = await supabase
-          .from('system_settings')
-          .select('*');
+  const loadSettings = async () => {
+    try {
+      setLoading(true);
+      const { data: settingsData, error } = await supabase
+        .from('system_settings')
+        .select('*');
 
-        if (error) throw error;
+      if (error) throw error;
 
-        const settingsMap = (settingsData || []).reduce((acc, setting) => {
-          acc[setting.setting_key] = setting.setting_value;
-          return acc;
-        }, {} as SystemSettings);
+      const settingsMap = (settingsData || []).reduce((acc, setting) => {
+        acc[setting.setting_key] = setting.setting_value;
+        return acc;
+      }, {} as SystemSettings);
 
-        setSettings(settingsMap);
-      } catch (error) {
-        console.error('Failed to load system settings:', error);
-      } finally {
-        setLoading(false);
-      }
+      setSettings(settingsMap);
+    } catch (error) {
+      console.error('Failed to load system settings:', error);
+      toast.error('Failed to load system settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateSetting = async (key: string, value: any, category: string = 'general') => {
+    try {
+      const { error } = await supabase
+        .from('system_settings')
+        .upsert({
+          setting_key: key,
+          setting_value: value,
+          category: category,
+          description: getSettingDescription(key)
+        });
+
+      if (error) throw error;
+
+      setSettings(prev => ({ ...prev, [key]: value }));
+      toast.success('Setting updated successfully');
+      return true;
+    } catch (error) {
+      console.error('Failed to update setting:', error);
+      toast.error('Failed to update setting');
+      return false;
+    }
+  };
+
+  const updateMultipleSettings = async (updates: Array<{ key: string; value: any; category: string }>) => {
+    try {
+      const settingsToUpsert = updates.map(update => ({
+        setting_key: update.key,
+        setting_value: update.value,
+        category: update.category,
+        description: getSettingDescription(update.key)
+      }));
+
+      const { error } = await supabase
+        .from('system_settings')
+        .upsert(settingsToUpsert);
+
+      if (error) throw error;
+
+      const newSettings = { ...settings };
+      updates.forEach(update => {
+        newSettings[update.key] = update.value;
+      });
+      setSettings(newSettings);
+
+      toast.success('Settings saved successfully');
+      return true;
+    } catch (error) {
+      console.error('Failed to update settings:', error);
+      toast.error('Failed to save settings');
+      return false;
+    }
+  };
+
+  const getSettingDescription = (key: string): string => {
+    const descriptions: Record<string, string> = {
+      'clinic_name': 'Name of the clinic/hospital displayed on tickets and interface',
+      'clinic_address': 'Physical address of the clinic/hospital',
+      'clinic_phone': 'Primary phone number for the clinic',
+      'clinic_email': 'Contact email address for the clinic',
+      'operating_hours': 'Business operating hours displayed to patients',
+      'website_url': 'Official website URL',
+      'emergency_contact': 'Emergency contact number',
+      'clinic_logo_url': 'URL or path to clinic logo image',
+      'footer_note': 'Footer text displayed on printed tickets',
+      'print_mode': 'How tokens should be printed (Direct or Popup)',
+      'theme_mode': 'Application color theme (Light or Dark)',
+      'enable_voice_announcements': 'Enable voice announcements for queue calls',
+      'enable_online_booking': 'Allow patients to book appointments online',
+      'enable_patient_feedback': 'Allow patients to provide feedback',
+      'auto_reset_midnight': 'Automatically reset queue counters every day',
+      'display_estimated_wait': 'Show estimated wait times to patients',
+      'enable_display_screen': 'Show the public queue display screen',
+      'enable_sound_alerts': 'Play sounds when queue status changes',
+      'enable_sms_notifications': 'Send SMS updates to patients',
+      'refresh_interval': 'Auto-refresh interval for display screens',
+      'max_queue_display_count': 'Maximum number of queue entries to show on display screen',
+      'show_department_colors': 'Display department colors on queue screens',
+      'default_priority': 'Default priority level for new tokens',
+      'max_emergency_tokens': 'Maximum emergency tokens allowed per day',
+      'working_days': 'Days when the queue system is active'
     };
+    return descriptions[key] || 'System setting';
+  };
 
+  useEffect(() => {
     loadSettings();
   }, []);
 
-  return { settings, loading };
+  return { 
+    settings, 
+    loading, 
+    loadSettings, 
+    updateSetting, 
+    updateMultipleSettings 
+  };
 };
