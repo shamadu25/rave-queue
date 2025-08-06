@@ -126,7 +126,7 @@ const PrintTicketPage: React.FC = () => {
   return (
     <PrintTicket
       entry={entry}
-      clinicName={systemSettings.system_name || "Hospital Clinic"}
+      clinicName={systemSettings.clinic_name || "Hospital Clinic"}
       footerNote={systemSettings.footer_note || "Thank you for visiting"}
     />
   );
