@@ -161,7 +161,11 @@ export const GeneralSettings = () => {
       'show_department_colors': 'Display department colors on queue screens',
       'default_priority': 'Default priority level for new tokens',
       'max_emergency_tokens': 'Maximum emergency tokens allowed per day',
-      'working_days': 'Days when the queue system is active'
+      'working_days': 'Days when the queue system is active',
+      'use_native_voice': 'Use browser native voice synthesis instead of MP3 audio files',
+      'voice_rate': 'Speech rate for voice announcements (0.5 to 2.0)',
+      'voice_pitch': 'Speech pitch for voice announcements (0.0 to 2.0)',
+      'voice_volume': 'Speech volume for voice announcements (0.0 to 1.0)'
     };
     return descriptions[key] || 'System setting';
   };
@@ -957,6 +961,97 @@ export const GeneralSettings = () => {
                     onCheckedChange={(checked) => updateSetting('show_department_colors', checked, 'display', false)}
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Voice Announcements</CardTitle>
+                <CardDescription>Configure voice announcement settings for queue calls</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4" />
+                    <div>
+                      <Label>Enable Voice Announcements</Label>
+                      <p className="text-sm text-muted-foreground">Announce token calls with voice</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={settings.enable_voice_announcements || false}
+                    onCheckedChange={(checked) => updateSetting('enable_voice_announcements', checked, 'display', false)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Use Native Voice</Label>
+                    <p className="text-sm text-muted-foreground">Use browser's built-in speech synthesis (recommended)</p>
+                  </div>
+                  <Switch
+                    checked={settings.use_native_voice !== false}
+                    onCheckedChange={(checked) => updateSetting('use_native_voice', checked, 'display', false)}
+                  />
+                </div>
+
+                {settings.use_native_voice !== false && (
+                  <div className="grid md:grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
+                    <div className="space-y-2">
+                      <Label>Speech Rate</Label>
+                      <Select
+                        value={settings.voice_rate?.toString() || "0.8"}
+                        onValueChange={(value) => updateSetting('voice_rate', parseFloat(value), 'display', false)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0.5">Very Slow (0.5x)</SelectItem>
+                          <SelectItem value="0.7">Slow (0.7x)</SelectItem>
+                          <SelectItem value="0.8">Recommended (0.8x)</SelectItem>
+                          <SelectItem value="1.0">Normal (1.0x)</SelectItem>
+                          <SelectItem value="1.2">Fast (1.2x)</SelectItem>
+                          <SelectItem value="1.5">Very Fast (1.5x)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Speech Pitch</Label>
+                      <Select
+                        value={settings.voice_pitch?.toString() || "1.0"}
+                        onValueChange={(value) => updateSetting('voice_pitch', parseFloat(value), 'display', false)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0.8">Lower Pitch</SelectItem>
+                          <SelectItem value="1.0">Normal Pitch</SelectItem>
+                          <SelectItem value="1.2">Higher Pitch</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Speech Volume</Label>
+                      <Select
+                        value={settings.voice_volume?.toString() || "1.0"}
+                        onValueChange={(value) => updateSetting('voice_volume', parseFloat(value), 'display', false)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0.5">Quiet (50%)</SelectItem>
+                          <SelectItem value="0.7">Medium (70%)</SelectItem>
+                          <SelectItem value="1.0">Full Volume (100%)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

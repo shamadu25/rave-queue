@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TextToSpeechService } from '@/components/TextToSpeechService';
 import { useQueueMonitor } from '@/hooks/useQueueMonitor';
+import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { 
   Volume2, 
   VolumeX, 
@@ -26,20 +27,44 @@ export function QueueDisplayScreen({
   enableAudio = true 
 }: QueueDisplayScreenProps) {
   const { entries, loading } = useQueueMonitor();
+  const { settings } = useSystemSettings();
   const [currentlyServing, setCurrentlyServing] = useState<any>(null);
   const [upcomingTokens, setUpcomingTokens] = useState<any[]>([]);
   const [audioEnabled, setAudioEnabled] = useState(enableAudio);
   const [lastAnnouncedToken, setLastAnnouncedToken] = useState<string>('');
+  const [userInteracted, setUserInteracted] = useState(false);
   
   const ttsService = useRef<TextToSpeechService | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Initialize TTS service
+  // Initialize TTS service and enable user interaction
   useEffect(() => {
-    if (audioEnabled && !ttsService.current) {
-      ttsService.current = new TextToSpeechService();
+    // Check if voice announcements are enabled in settings
+    const voiceEnabled = settings.enable_voice_announcements !== false;
+    
+    if (audioEnabled && voiceEnabled && !ttsService.current) {
+      ttsService.current = TextToSpeechService.enableAudioOnUserInteraction();
     }
-  }, [audioEnabled]);
+
+    // Set up user interaction detection
+    const handleUserInteraction = () => {
+      setUserInteracted(true);
+      if (ttsService.current) {
+        ttsService.current.setUserInteracted();
+      }
+    };
+
+    // Add event listeners for first user interaction
+    document.addEventListener('click', handleUserInteraction, { once: true });
+    document.addEventListener('keydown', handleUserInteraction, { once: true });
+    document.addEventListener('touchstart', handleUserInteraction, { once: true });
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+  }, [audioEnabled, settings.enable_voice_announcements]);
 
   // Update current time every minute
   useEffect(() => {
@@ -80,16 +105,40 @@ export function QueueDisplayScreen({
       
       // Trigger audio announcement for new tokens
       if (audioEnabled && 
+          settings.enable_voice_announcements !== false &&
           ttsService.current && 
           currentServing.token !== lastAnnouncedToken &&
-          currentServing.status === 'Called') {
+          currentServing.status === 'Called' &&
+          userInteracted) {
         
         const counter = getCounterForDepartment(currentServing.department);
-        ttsService.current.chimeAndAnnounce(
-          currentServing.token, 
-          counter, 
-          currentServing.department
-        );
+        
+        // Use system settings for voice parameters
+        const useNativeVoice = settings.use_native_voice !== false;
+        if (useNativeVoice) {
+          // Configure TTS with system settings
+          const voiceRate = parseFloat(settings.voice_rate?.toString() || '0.8');
+          const voicePitch = parseFloat(settings.voice_pitch?.toString() || '1.0');
+          const voiceVolume = parseFloat(settings.voice_volume?.toString() || '1.0');
+          
+          ttsService.current.speak(
+            `Now serving token ${currentServing.token}. Please proceed to ${counter} in ${currentServing.department}.`,
+            {
+              rate: voiceRate,
+              pitch: voicePitch,
+              volume: voiceVolume,
+              repeatCount: 2
+            }
+          );
+        } else {
+          // Use chime and announce for MP3-based fallback
+          ttsService.current.chimeAndAnnounce(
+            currentServing.token, 
+            counter, 
+            currentServing.department
+          );
+        }
+        
         setLastAnnouncedToken(currentServing.token);
       }
     } else {
@@ -136,9 +185,11 @@ export function QueueDisplayScreen({
             <Activity className="h-8 w-8 text-primary" />
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                {department ? `${department} Department` : 'Hospital Queue Display'}
+                {department ? `${department} Department` : settings.clinic_name?.toString().replace(/"/g, '') || 'SG CLINIC'}
               </h1>
-              <p className="text-muted-foreground">Live Queue Status</p>
+              <p className="text-muted-foreground">
+                {department ? 'Department Queue Display' : 'Live Queue Status'}
+              </p>
             </div>
           </div>
           
@@ -279,7 +330,14 @@ export function QueueDisplayScreen({
       {/* Footer */}
       <div className="bg-white border-t p-4">
         <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Hospital Queue Management System • Live Updates • {audioEnabled ? '🔊 Audio Enabled' : '🔇 Audio Disabled'}</p>
+          <p>
+            {settings.clinic_name?.toString().replace(/"/g, '') || 'SG CLINIC'} Queue Management System • Live Updates • 
+            {audioEnabled && settings.enable_voice_announcements !== false ? 
+              (userInteracted ? ' 🔊 Audio Ready' : ' 🔊 Click to Enable Audio') : 
+              ' 🔇 Audio Disabled'
+            }
+            {settings.use_native_voice !== false ? ' • Native Voice' : ' • Enhanced Audio'}
+          </p>
         </div>
       </div>
     </div>
