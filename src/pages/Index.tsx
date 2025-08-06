@@ -1,24 +1,30 @@
-import { useState } from 'react';
 import { TokenGenerator } from '@/components/TokenGenerator';
 import { QueueList } from '@/components/QueueList';
 import { QueueEntry, Status } from '@/types/queue';
-import { mockQueueEntries } from '@/data/mockData';
+import { useQueueEntries } from '@/hooks/useQueueEntries';
 import { Activity, Users, Clock, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 const Index = () => {
-  const [queueEntries, setQueueEntries] = useState<QueueEntry[]>(mockQueueEntries);
+  const { entries: queueEntries, loading, addEntry, updateStatus } = useQueueEntries();
 
-  const handleTokenGenerated = (newEntry: QueueEntry) => {
-    setQueueEntries(prev => [newEntry, ...prev]);
+  const handleTokenGenerated = async (newEntryData: Omit<QueueEntry, 'id' | 'timestamp'>) => {
+    try {
+      await addEntry(newEntryData);
+    } catch (error) {
+      toast.error('Failed to generate token. Please try again.');
+      throw error;
+    }
   };
 
-  const handleStatusUpdate = (id: string, status: Status) => {
-    setQueueEntries(prev => 
-      prev.map(entry => 
-        entry.id === id ? { ...entry, status } : entry
-      )
-    );
+  const handleStatusUpdate = async (id: string, status: Status) => {
+    try {
+      await updateStatus(id, status);
+      toast.success(`Status updated to ${status}`);
+    } catch (error) {
+      toast.error('Failed to update status. Please try again.');
+    }
   };
 
   // Calculate stats
@@ -26,6 +32,17 @@ const Index = () => {
   const waitingCount = queueEntries.filter(e => e.status === 'Waiting').length;
   const inProgressCount = queueEntries.filter(e => e.status === 'In Progress').length;
   const completedCount = queueEntries.filter(e => e.status === 'Completed').length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading queue data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

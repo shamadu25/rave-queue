@@ -9,7 +9,7 @@ import { QueueEntry, Department, Priority } from '@/types/queue';
 import { UserPlus, Phone, Building2, AlertTriangle } from 'lucide-react';
 
 interface TokenGeneratorProps {
-  onTokenGenerated: (entry: QueueEntry) => void;
+  onTokenGenerated: (entry: Omit<QueueEntry, 'id' | 'timestamp'>) => Promise<void>;
 }
 
 const departmentPrefixes = {
@@ -47,34 +47,39 @@ export const TokenGenerator = ({ onTokenGenerated }: TokenGeneratorProps) => {
 
     setIsGenerating(true);
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      const token = generateToken(department);
+      const entryData = {
+        token,
+        fullName: fullName.trim(),
+        phoneNumber: phoneNumber.trim() || undefined,
+        department,
+        priority,
+        status: 'Waiting' as const
+      };
 
-    const newEntry: QueueEntry = {
-      id: crypto.randomUUID(),
-      token: generateToken(department),
-      fullName: fullName.trim(),
-      phoneNumber: phoneNumber.trim() || undefined,
-      department,
-      priority,
-      status: 'Waiting',
-      timestamp: new Date()
-    };
+      await onTokenGenerated(entryData);
 
-    onTokenGenerated(newEntry);
+      toast({
+        title: "Token Generated Successfully!",
+        description: `Your queue token is ${token}`,
+        variant: "default"
+      });
 
-    toast({
-      title: "Token Generated Successfully!",
-      description: `Your queue token is ${newEntry.token}`,
-      variant: "default"
-    });
-
-    // Reset form
-    setFullName('');
-    setPhoneNumber('');
-    setDepartment('');
-    setPriority('Normal');
-    setIsGenerating(false);
+      // Reset form
+      setFullName('');
+      setPhoneNumber('');
+      setDepartment('');
+      setPriority('Normal');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate token. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
