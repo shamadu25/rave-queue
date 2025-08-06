@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      departments: {
+        Row: {
+          color_code: string | null
+          created_at: string
+          end_time: string
+          icon_name: string | null
+          id: string
+          is_active: boolean
+          max_tokens_per_day: number
+          name: string
+          prefix: string
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          color_code?: string | null
+          created_at?: string
+          end_time?: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean
+          max_tokens_per_day?: number
+          name: string
+          prefix: string
+          start_time?: string
+          updated_at?: string
+        }
+        Update: {
+          color_code?: string | null
+          created_at?: string
+          end_time?: string
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean
+          max_tokens_per_day?: number
+          name?: string
+          prefix?: string
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -150,6 +192,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_settings: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

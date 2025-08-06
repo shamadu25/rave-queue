@@ -7,6 +7,7 @@ import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { TransferModal } from '@/components/TransferModal';
 import { QueueDisplay } from '@/components/QueueDisplay';
 import { ReportsAnalytics } from '@/components/ReportsAnalytics';
+import { GeneralSettings } from '@/components/GeneralSettings';
 import { Department, Status } from '@/types/queue';
 import { toast } from 'sonner';
 import { Activity, LogOut } from 'lucide-react';
@@ -211,9 +212,10 @@ export default function QueueMonitor() {
       <div className="container mx-auto px-4 py-6">
         {profile?.role === 'admin' ? (
           <Tabs defaultValue="queue" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="queue">Queue Management</TabsTrigger>
               <TabsTrigger value="reports">Reports & Analytics</TabsTrigger>
+              <TabsTrigger value="settings">General Settings</TabsTrigger>
             </TabsList>
             
             <TabsContent value="queue" className="mt-6">
@@ -233,6 +235,10 @@ export default function QueueMonitor() {
             
             <TabsContent value="reports" className="mt-6">
               <ReportsAnalytics entries={entries} />
+            </TabsContent>
+            
+            <TabsContent value="settings" className="mt-6">
+              <GeneralSettings />
             </TabsContent>
           </Tabs>
         ) : (
