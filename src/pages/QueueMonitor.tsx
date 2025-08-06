@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { TransferModal } from '@/components/TransferModal';
 import { QueueDisplay } from '@/components/QueueDisplay';
+import { ReportsAnalytics } from '@/components/ReportsAnalytics';
 import { Department, Status } from '@/types/queue';
 import { toast } from 'sonner';
 import { Activity, LogOut } from 'lucide-react';
@@ -207,18 +209,46 @@ export default function QueueMonitor() {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <QueueDisplay
-          entries={entries}
-          title={queueConfig.title}
-          description={queueConfig.description}
-          canFilter={queueConfig.canFilter}
-          canPerformActions={queueConfig.canPerformActions}
-          userRole={profile?.role}
-          userDepartment={profile?.department}
-          onStatusUpdate={handleStatusUpdate}
-          onTransfer={handleOpenTransferModal}
-          loading={loading}
-        />
+        {profile?.role === 'admin' ? (
+          <Tabs defaultValue="queue" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="queue">Queue Management</TabsTrigger>
+              <TabsTrigger value="reports">Reports & Analytics</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="queue" className="mt-6">
+              <QueueDisplay
+                entries={entries}
+                title={queueConfig.title}
+                description={queueConfig.description}
+                canFilter={queueConfig.canFilter}
+                canPerformActions={queueConfig.canPerformActions}
+                userRole={profile?.role}
+                userDepartment={profile?.department}
+                onStatusUpdate={handleStatusUpdate}
+                onTransfer={handleOpenTransferModal}
+                loading={loading}
+              />
+            </TabsContent>
+            
+            <TabsContent value="reports" className="mt-6">
+              <ReportsAnalytics entries={entries} />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <QueueDisplay
+            entries={entries}
+            title={queueConfig.title}
+            description={queueConfig.description}
+            canFilter={queueConfig.canFilter}
+            canPerformActions={queueConfig.canPerformActions}
+            userRole={profile?.role}
+            userDepartment={profile?.department}
+            onStatusUpdate={handleStatusUpdate}
+            onTransfer={handleOpenTransferModal}
+            loading={loading}
+          />
+        )}
       </div>
 
       <TransferModal
