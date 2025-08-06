@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { TransferModal } from '@/components/TransferModal';
-import { QueueDisplay } from '@/components/QueueDisplay';
+import { ModernQueueList } from '@/components/ModernQueueList';
 import { ReportsAnalytics } from '@/components/ReportsAnalytics';
 import { GeneralSettings } from '@/components/GeneralSettings';
 import { Department, Status } from '@/types/queue';
 import { toast } from 'sonner';
-import { Activity, LogOut } from 'lucide-react';
 
 // Helper function to determine what department filter to apply based on role
 const getUserDepartmentFilter = (role?: string, department?: string): string | undefined => {
@@ -177,85 +175,62 @@ export default function QueueMonitor() {
 
   const queueConfig = getQueueConfig();
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success('Signed out successfully');
-    } catch (error) {
-      toast.error('Failed to sign out');
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Activity className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Queue Monitor</h1>
-                <p className="text-sm text-muted-foreground">
-                  Welcome, {profile?.full_name} ({profile?.role}) - {profile?.department}
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
+    <div className="p-6 space-y-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">{queueConfig.title}</h1>
+          <p className="text-muted-foreground">{queueConfig.description}</p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
-        {profile?.role === 'admin' ? (
-          <Tabs defaultValue="queue" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="queue">Queue Management</TabsTrigger>
-              <TabsTrigger value="reports">Reports & Analytics</TabsTrigger>
-              <TabsTrigger value="settings">General Settings</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="queue" className="mt-6">
-              <QueueDisplay
-                entries={entries}
-                title={queueConfig.title}
-                description={queueConfig.description}
-                canFilter={queueConfig.canFilter}
-                canPerformActions={queueConfig.canPerformActions}
-                userRole={profile?.role}
-                userDepartment={profile?.department}
-                onStatusUpdate={handleStatusUpdate}
-                onTransfer={handleOpenTransferModal}
-                loading={loading}
-              />
-            </TabsContent>
-            
-            <TabsContent value="reports" className="mt-6">
-              <ReportsAnalytics entries={entries} />
-            </TabsContent>
-            
-            <TabsContent value="settings" className="mt-6">
-              <GeneralSettings />
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <QueueDisplay
-            entries={entries}
-            title={queueConfig.title}
-            description={queueConfig.description}
-            canFilter={queueConfig.canFilter}
-            canPerformActions={queueConfig.canPerformActions}
-            userRole={profile?.role}
-            userDepartment={profile?.department}
-            onStatusUpdate={handleStatusUpdate}
-            onTransfer={handleOpenTransferModal}
-            loading={loading}
-          />
-        )}
-      </div>
+      {/* Main Content */}
+      {profile?.role === 'admin' ? (
+        <Tabs defaultValue="queue" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="queue">Queue Management</TabsTrigger>
+            <TabsTrigger value="reports">Reports & Analytics</TabsTrigger>
+            <TabsTrigger value="settings">General Settings</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="queue" className="mt-6">
+            <ModernQueueList
+              entries={entries}
+              title={queueConfig.title}
+              description={queueConfig.description}
+              canFilter={queueConfig.canFilter}
+              canPerformActions={queueConfig.canPerformActions}
+              userRole={profile?.role}
+              userDepartment={profile?.department}
+              onUpdateStatus={handleStatusUpdate}
+              onTransfer={handleOpenTransferModal}
+              loading={loading}
+            />
+          </TabsContent>
+          
+          <TabsContent value="reports" className="mt-6">
+            <ReportsAnalytics entries={entries} />
+          </TabsContent>
+          
+          <TabsContent value="settings" className="mt-6">
+            <GeneralSettings />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <ModernQueueList
+          entries={entries}
+          title={queueConfig.title}
+          description={queueConfig.description}
+          canFilter={queueConfig.canFilter}
+          canPerformActions={queueConfig.canPerformActions}
+          userRole={profile?.role}
+          userDepartment={profile?.department}
+          onUpdateStatus={handleStatusUpdate}
+          onTransfer={handleOpenTransferModal}
+          loading={loading}
+        />
+      )}
 
       <TransferModal
         isOpen={transferModal.isOpen}

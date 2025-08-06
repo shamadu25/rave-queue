@@ -1,62 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Hospital Queue Management System Design System */
+/* Modern Hospital Queue Management System Design System */
 
 @layer base {
   :root {
-    /* Hospital-themed color palette */
-    --background: 210 20% 98%;
-    --foreground: 210 40% 8%;
+    /* Modern medical theme color palette */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 40% 8%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 40% 8%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Medical blue primary */
-    --primary: 208 100% 47%;
+    /* Primary blue theme */
+    --primary: 214 100% 59%;  /* #3B82F6 */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 208 100% 85%;
-    --primary-dark: 208 100% 35%;
+    --primary-light: 214 100% 85%;
+    --primary-dark: 214 100% 45%;
 
-    /* Clean medical greys */
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 40% 15%;
+    /* Clean neutral grays */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 15%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 210 20% 50%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 208 100% 95%;
-    --accent-foreground: 208 100% 47%;
+    --accent: 214 100% 96%;
+    --accent-foreground: 214 100% 59%;
 
-    /* Emergency red */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --emergency: 0 84% 60%;
-    --emergency-foreground: 0 0% 100%;
-
-    /* Status colors */
-    --success: 142 76% 36%;
+    /* Status colors - modern medical palette */
+    --success: 142 71% 45%;     /* #10B981 - green for completed */
     --success-foreground: 0 0% 100%;
-    --warning: 43 96% 56%;
+    
+    --warning: 38 92% 50%;      /* #F59E0B - orange for serving */
     --warning-foreground: 0 0% 100%;
-    --waiting: 220 14% 96%;
-    --waiting-foreground: 220 9% 46%;
-    --called: 213 94% 95%;
-    --called-foreground: 213 94% 27%;
-    --served: 149 80% 90%;
-    --served-foreground: 149 83% 20%;
-    --in-progress: 47 93% 94%;
-    --in-progress-foreground: 38 92% 50%;
-    --completed: 215 28% 17%;
-    --completed-foreground: 210 20% 98%;
+    
+    --destructive: 0 84% 60%;   /* #EF4444 - red for error */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 210 40% 90%;
-    --input: 210 40% 96%;
-    --ring: 208 100% 47%;
+    /* Modern status colors with better contrast */
+    --status-waiting: 214 100% 96%;
+    --status-waiting-foreground: 214 100% 45%;
+    
+    --status-serving: 38 100% 95%;
+    --status-serving-foreground: 38 92% 40%;
+    
+    --status-completed: 142 80% 92%;
+    --status-completed-foreground: 142 71% 35%;
+
+    --border: 0 0% 91%;
+    --input: 0 0% 96%;
+    --ring: 214 100% 59%;
 
     --radius: 0.5rem;
 
@@ -78,41 +78,57 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 214 100% 65%;
+    --primary-foreground: 0 0% 5%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 85%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 85%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 95%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 95%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --status-waiting: 0 0% 12%;
+    --status-waiting-foreground: 214 100% 65%;
+    
+    --status-serving: 0 0% 12%;
+    --status-serving-foreground: 38 92% 60%;
+    
+    --status-completed: 0 0% 12%;
+    --status-completed-foreground: 142 71% 55%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
+    --ring: 214 100% 65%;
+    
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 214 100% 65%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 85%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 214 100% 65%;
   }
 }
 
@@ -122,6 +138,41 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter;
+  }
+
+  /* Custom status pill styles */
+  .status-pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-waiting {
+    @apply bg-status-waiting text-status-waiting-foreground;
+  }
+
+  .status-serving {
+    @apply bg-status-serving text-status-serving-foreground;
+  }
+
+  .status-completed {
+    @apply bg-status-completed text-status-completed-foreground;
+  }
+
+  /* Enhanced card styles */
+  .medical-card {
+    @apply bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  /* Professional typography */
+  .heading-primary {
+    @apply text-2xl font-semibold text-foreground;
+  }
+
+  .heading-secondary {
+    @apply text-lg font-medium text-foreground;
+  }
+
+  .text-subtle {
+    @apply text-sm text-muted-foreground;
   }
 }

@@ -18,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'inter': ['Inter', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -85,6 +88,18 @@ export default {
 				completed: {
 					DEFAULT: 'hsl(var(--completed))',
 					foreground: 'hsl(var(--completed-foreground))'
+				},
+				'status-waiting': {
+					DEFAULT: 'hsl(var(--status-waiting))',
+					foreground: 'hsl(var(--status-waiting-foreground))'
+				},
+				'status-serving': {
+					DEFAULT: 'hsl(var(--status-serving))',
+					foreground: 'hsl(var(--status-serving-foreground))'
+				},
+				'status-completed': {
+					DEFAULT: 'hsl(var(--status-completed))',
+					foreground: 'hsl(var(--status-completed-foreground))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
