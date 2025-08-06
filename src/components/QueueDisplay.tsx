@@ -261,7 +261,7 @@ export const QueueDisplay: React.FC<QueueDisplayProps> = ({
                 </div>
 
                 {/* Action Buttons */}
-                {canPerformActionOnEntry(entry.department) && entry.status !== 'Completed' && entry.status !== 'Skipped' && (
+                {canPerformActionOnEntry(entry.department) && (
                   <div className="flex gap-2 flex-wrap">
                     {entry.status === 'Waiting' && (
                       <Button
@@ -296,23 +296,41 @@ export const QueueDisplay: React.FC<QueueDisplayProps> = ({
                       </Button>
                     )}
                     
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onStatusUpdate?.(entry.id, 'Skipped')}
-                    >
-                      <XCircle className="h-3 w-3 mr-1" />
-                      Skip
-                    </Button>
+                    {/* Allow skipping if not completed */}
+                    {entry.status !== 'Completed' && entry.status !== 'Skipped' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onStatusUpdate?.(entry.id, 'Skipped')}
+                      >
+                        <XCircle className="h-3 w-3 mr-1" />
+                        Skip
+                      </Button>
+                    )}
                     
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onTransfer?.(entry.id, entry.department, entry.fullName, entry.token)}
-                    >
-                      <ArrowRightLeft className="h-3 w-3 mr-1" />
-                      Transfer
-                    </Button>
+                    {/* Allow transfer for any status except Skipped */}
+                    {entry.status !== 'Skipped' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onTransfer?.(entry.id, entry.department, entry.fullName, entry.token)}
+                      >
+                        <ArrowRightLeft className="h-3 w-3 mr-1" />
+                        Transfer
+                      </Button>
+                    )}
+
+                    {/* Special button for completed tokens to enable easy transfer */}
+                    {entry.status === 'Completed' && (
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() => onTransfer?.(entry.id, entry.department, entry.fullName, entry.token)}
+                      >
+                        <ArrowRightLeft className="h-3 w-3 mr-1" />
+                        Transfer to Next Dept
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>

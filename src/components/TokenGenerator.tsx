@@ -16,6 +16,8 @@ const departmentPrefixes = {
   Consultation: 'C',
   Lab: 'L',
   Pharmacy: 'P',
+  'X-ray': 'X',
+  Scan: 'S',
   Billing: 'B'
 };
 
@@ -133,6 +135,8 @@ export const TokenGenerator = ({ onTokenGenerated }: TokenGeneratorProps) => {
                 <SelectItem value="Consultation">Consultation</SelectItem>
                 <SelectItem value="Lab">Laboratory</SelectItem>
                 <SelectItem value="Pharmacy">Pharmacy</SelectItem>
+                <SelectItem value="X-ray">X-ray</SelectItem>
+                <SelectItem value="Scan">Scan</SelectItem>
                 <SelectItem value="Billing">Billing</SelectItem>
               </SelectContent>
             </Select>

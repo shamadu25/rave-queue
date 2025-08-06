@@ -20,6 +20,8 @@ const departments = [
   { value: 'Consultation', label: 'Consultation' },
   { value: 'Lab', label: 'Laboratory' },
   { value: 'Pharmacy', label: 'Pharmacy' },
+  { value: 'X-ray', label: 'X-ray' },
+  { value: 'Scan', label: 'Scan' },
   { value: 'Billing', label: 'Billing' }
 ];
 
