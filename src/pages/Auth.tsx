@@ -148,6 +148,10 @@ export default function Auth() {
                   <p>Doctor: doctor@queue.com / 123456</p>
                   <p>Lab: lab@queue.com / 123456</p>
                   <p>Pharmacy: pharmacy@queue.com / 123456</p>
+                  <p>X-ray: xray@queue.com / 123456</p>
+                  <p>Scan: scan@queue.com / 123456</p>
+                  <p>Reception: reception@queue.com / 123456</p>
+                  <p>Admin: admin@queue.com / 123456</p>
                 </div>
               </CardContent>
             </Card>
@@ -206,9 +210,12 @@ export default function Auth() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="doctor">Doctor</SelectItem>
-                        <SelectItem value="lab">Lab Technician</SelectItem>
-                        <SelectItem value="pharmacy">Pharmacist</SelectItem>
-                        <SelectItem value="billing">Billing Staff</SelectItem>
+                        <SelectItem value="lab_technician">Lab Technician</SelectItem>
+                        <SelectItem value="pharmacist">Pharmacist</SelectItem>
+                        <SelectItem value="xray_technician">X-ray Technician</SelectItem>
+                        <SelectItem value="imaging_technician">Imaging Technician</SelectItem>
+                        <SelectItem value="billing_staff">Billing Staff</SelectItem>
+                        <SelectItem value="receptionist">Receptionist</SelectItem>
                         <SelectItem value="admin">Administrator</SelectItem>
                       </SelectContent>
                     </Select>
@@ -223,7 +230,10 @@ export default function Auth() {
                         <SelectItem value="Consultation">Consultation</SelectItem>
                         <SelectItem value="Lab">Laboratory</SelectItem>
                         <SelectItem value="Pharmacy">Pharmacy</SelectItem>
+                        <SelectItem value="X-ray">X-ray</SelectItem>
+                        <SelectItem value="Scan">Scan</SelectItem>
                         <SelectItem value="Billing">Billing</SelectItem>
+                        <SelectItem value="Reception">Reception</SelectItem>
                         <SelectItem value="Admin">Administration</SelectItem>
                       </SelectContent>
                     </Select>

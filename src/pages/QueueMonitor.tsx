@@ -1,32 +1,41 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { TransferModal } from '@/components/TransferModal';
+import { QueueDisplay } from '@/components/QueueDisplay';
 import { Department, Status } from '@/types/queue';
 import { toast } from 'sonner';
-import { 
-  Activity, 
-  LogOut, 
-  Phone, 
-  Play, 
-  CheckCircle, 
-  XCircle, 
-  ArrowRightLeft,
-  Clock,
-  User,
-  Building2,
-  AlertTriangle
-} from 'lucide-react';
+import { Activity, LogOut } from 'lucide-react';
+
+// Helper function to determine what department filter to apply based on role
+const getUserDepartmentFilter = (role?: string, department?: string): string | undefined => {
+  if (!role || !department) return undefined;
+  
+  switch (role) {
+    case 'admin':
+    case 'receptionist':
+      return undefined; // See all departments
+    case 'doctor':
+      return 'Consultation';
+    case 'lab_technician':
+      return 'Lab';
+    case 'pharmacist':
+      return 'Pharmacy';
+    case 'xray_technician':
+      return 'X-ray';
+    case 'imaging_technician':
+      return 'Scan';
+    case 'billing_staff':
+      return 'Billing';
+    default:
+      return department; // Fallback to user's department
+  }
+};
 
 export default function QueueMonitor() {
   const { user, profile, signOut, loading: authLoading } = useAuth();
-  const [selectedDepartment, setSelectedDepartment] = useState<Department | 'all'>('all');
-  const [selectedStatus, setSelectedStatus] = useState<Status | 'all'>('all');
   const [transferModal, setTransferModal] = useState<{
     isOpen: boolean;
     entryId: string;
@@ -41,7 +50,10 @@ export default function QueueMonitor() {
     token: ''
   });
 
-  const { entries, loading, updateStatus, transferEntry } = useQueueMonitor();
+  // Get filtered entries based on user role and department
+  const { entries, loading, updateStatus, transferEntry } = useQueueMonitor(
+    getUserDepartmentFilter(profile?.role, profile?.department)
+  );
 
   if (authLoading) {
     return (
@@ -58,36 +70,6 @@ export default function QueueMonitor() {
     return <Navigate to="/auth" replace />;
   }
 
-  const filteredEntries = entries.filter(entry => {
-    if (selectedDepartment !== 'all' && entry.department !== selectedDepartment) {
-      return false;
-    }
-    if (selectedStatus !== 'all' && entry.status !== selectedStatus) {
-      return false;
-    }
-    return true;
-  });
-
-  const getStatusColor = (status: Status, priority: string) => {
-    if (priority === 'Emergency') {
-      return 'bg-red-500 text-white border-red-600';
-    }
-    
-    switch (status) {
-      case 'Waiting':
-        return 'bg-gray-100 text-gray-800 border-gray-300';
-      case 'Called':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'Served':
-        return 'bg-green-100 text-green-800 border-green-300';
-      case 'Completed':
-        return 'bg-slate-100 text-slate-800 border-slate-300';
-      case 'Skipped':
-        return 'bg-red-100 text-red-800 border-red-300';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
-    }
-  };
 
   const handleStatusUpdate = async (entryId: string, newStatus: Status) => {
     try {
@@ -102,22 +84,95 @@ export default function QueueMonitor() {
     try {
       await transferEntry(transferModal.entryId, toDepartment, profile?.id || '', reason);
       toast.success(`Patient transferred to ${toDepartment}`);
+      setTransferModal(prev => ({ ...prev, isOpen: false }));
     } catch (error) {
       toast.error('Failed to transfer patient');
     }
   };
 
-  const canPerformAction = (entryDepartment: string) => {
-    return profile?.role === 'admin' || profile?.department === entryDepartment;
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+  const handleOpenTransferModal = (entryId: string, currentDepartment: Department, patientName: string, token: string) => {
+    setTransferModal({
+      isOpen: true,
+      entryId,
+      currentDepartment,
+      patientName,
+      token
     });
   };
+
+  // Determine queue display configuration based on user role
+  const getQueueConfig = () => {
+    const role = profile?.role;
+    const department = profile?.department;
+    
+    switch (role) {
+      case 'admin':
+        return {
+          title: 'Admin Dashboard - All Queues',
+          description: 'Monitor and manage all department queues with full access controls',
+          canFilter: true,
+          canPerformActions: true
+        };
+      case 'receptionist':
+        return {
+          title: 'Reception Desk - Queue Overview',
+          description: 'View all patient queues across departments (view-only access)',
+          canFilter: true,
+          canPerformActions: false
+        };
+      case 'doctor':
+        return {
+          title: 'Consultation Queue',
+          description: 'Manage patients in the consultation department',
+          canFilter: false,
+          canPerformActions: true
+        };
+      case 'lab_technician':
+        return {
+          title: 'Laboratory Queue',
+          description: 'Process laboratory requests and sample collections',
+          canFilter: false,
+          canPerformActions: true
+        };
+      case 'pharmacist':
+        return {
+          title: 'Pharmacy Queue',
+          description: 'Dispense medications and handle pharmacy requests',
+          canFilter: false,
+          canPerformActions: true
+        };
+      case 'xray_technician':
+        return {
+          title: 'X-ray Department Queue',
+          description: 'Handle X-ray imaging requests and appointments',
+          canFilter: false,
+          canPerformActions: true
+        };
+      case 'imaging_technician':
+        return {
+          title: 'Scan/Imaging Queue',
+          description: 'Manage CT, MRI, and other advanced imaging requests',
+          canFilter: false,
+          canPerformActions: true
+        };
+      case 'billing_staff':
+        return {
+          title: 'Billing Department Queue',
+          description: 'Process billing and payment-related requests',
+          canFilter: false,
+          canPerformActions: true
+        };
+      default:
+        return {
+          title: `${department} Queue`,
+          description: `Manage your department's queue`,
+          canFilter: false,
+          canPerformActions: true
+        };
+    }
+  };
+
+  const queueConfig = getQueueConfig();
 
   const handleSignOut = async () => {
     try {
@@ -152,185 +207,18 @@ export default function QueueMonitor() {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        {/* Filters */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Filters</CardTitle>
-            <CardDescription>Filter queue entries by department and status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                <Select 
-                  value={selectedDepartment} 
-                  onValueChange={(value: Department | 'all') => setSelectedDepartment(value)}
-                >
-                  <SelectTrigger className="w-40">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Departments</SelectItem>
-                    <SelectItem value="Consultation">Consultation</SelectItem>
-                    <SelectItem value="Lab">Laboratory</SelectItem>
-                    <SelectItem value="Pharmacy">Pharmacy</SelectItem>
-                    <SelectItem value="Billing">Billing</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <Select 
-                  value={selectedStatus} 
-                  onValueChange={(value: Status | 'all') => setSelectedStatus(value)}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="Waiting">Waiting</SelectItem>
-                    <SelectItem value="Called">Called</SelectItem>
-                    <SelectItem value="Served">Served</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                    <SelectItem value="Skipped">Skipped</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Queue Entries */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Queue Entries ({filteredEntries.length})</CardTitle>
-            <CardDescription>
-              Live queue status with real-time updates
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                <p className="mt-2 text-muted-foreground">Loading queue entries...</p>
-              </div>
-            ) : filteredEntries.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No queue entries found</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filteredEntries.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="border rounded-lg p-4 space-y-3 hover:shadow-sm transition-shadow"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="text-lg font-bold text-primary">
-                          {entry.token}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium">{entry.fullName}</span>
-                            {entry.priority === 'Emergency' && (
-                              <AlertTriangle className="h-4 w-4 text-red-500" />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                            <div className="flex items-center gap-1">
-                              <Building2 className="h-3 w-3" />
-                              {entry.department}
-                              {entry.transferredFrom && (
-                                <span className="text-blue-600">
-                                  (from {entry.transferredFrom})
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {formatTime(entry.timestamp)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <Badge className={getStatusColor(entry.status, entry.priority)}>
-                        {entry.status}
-                      </Badge>
-                    </div>
-
-                    {/* Action Buttons */}
-                    {canPerformAction(entry.department) && entry.status !== 'Completed' && entry.status !== 'Skipped' && (
-                      <div className="flex gap-2 flex-wrap">
-                        {entry.status === 'Waiting' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleStatusUpdate(entry.id, 'Called')}
-                          >
-                            <Phone className="h-3 w-3 mr-1" />
-                            Call
-                          </Button>
-                        )}
-                        
-                        {entry.status === 'Called' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleStatusUpdate(entry.id, 'Served')}
-                          >
-                            <Play className="h-3 w-3 mr-1" />
-                            Serve
-                          </Button>
-                        )}
-                        
-                        {entry.status === 'Served' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleStatusUpdate(entry.id, 'Completed')}
-                          >
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Complete
-                          </Button>
-                        )}
-                        
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleStatusUpdate(entry.id, 'Skipped')}
-                        >
-                          <XCircle className="h-3 w-3 mr-1" />
-                          Skip
-                        </Button>
-                        
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setTransferModal({
-                            isOpen: true,
-                            entryId: entry.id,
-                            currentDepartment: entry.department,
-                            patientName: entry.fullName,
-                            token: entry.token
-                          })}
-                        >
-                          <ArrowRightLeft className="h-3 w-3 mr-1" />
-                          Transfer
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <QueueDisplay
+          entries={entries}
+          title={queueConfig.title}
+          description={queueConfig.description}
+          canFilter={queueConfig.canFilter}
+          canPerformActions={queueConfig.canPerformActions}
+          userRole={profile?.role}
+          userDepartment={profile?.department}
+          onStatusUpdate={handleStatusUpdate}
+          onTransfer={handleOpenTransferModal}
+          loading={loading}
+        />
       </div>
 
       <TransferModal
