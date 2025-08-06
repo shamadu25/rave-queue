@@ -85,88 +85,81 @@ export const TokenGenerator = ({ onTokenGenerated }: TokenGeneratorProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserPlus className="h-5 w-5 text-primary" />
-          Generate Queue Token
-        </CardTitle>
-        <CardDescription>
-          Fill in your details to get a queue token
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name *</Label>
-            <Input
-              id="fullName"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Enter your full name"
-              required
-            />
-          </div>
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-3">
+          <Label htmlFor="fullName" className="text-base font-medium text-slate-700">
+            Patient Full Name *
+          </Label>
+          <Input
+            id="fullName"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Enter patient's full name"
+            className="h-12 text-base bg-white border-slate-200 focus:border-primary"
+            required
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phoneNumber" className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              Phone Number (Optional)
-            </Label>
-            <Input
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="Enter your phone number"
-              type="tel"
-            />
-          </div>
+        <div className="space-y-3">
+          <Label className="text-base font-medium text-slate-700 flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            Select Department *
+          </Label>
+          <Select value={department} onValueChange={(value: Department) => setDepartment(value)}>
+            <SelectTrigger className="h-12 text-base bg-white border-slate-200 focus:border-primary">
+              <SelectValue placeholder="Choose a department" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="Consultation">Consultation</SelectItem>
+              <SelectItem value="Lab">Laboratory</SelectItem>
+              <SelectItem value="Pharmacy">Pharmacy</SelectItem>
+              <SelectItem value="X-ray">X-ray</SelectItem>
+              <SelectItem value="Scan">Scan</SelectItem>
+              <SelectItem value="Billing">Billing</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
-              Department/Service *
-            </Label>
-            <Select value={department} onValueChange={(value: Department) => setDepartment(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select department" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Consultation">Consultation</SelectItem>
-                <SelectItem value="Lab">Laboratory</SelectItem>
-                <SelectItem value="Pharmacy">Pharmacy</SelectItem>
-                <SelectItem value="X-ray">X-ray</SelectItem>
-                <SelectItem value="Scan">Scan</SelectItem>
-                <SelectItem value="Billing">Billing</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="space-y-3">
+          <Label htmlFor="phoneNumber" className="text-base font-medium text-slate-700 flex items-center gap-2">
+            <Phone className="h-5 w-5" />
+            Phone Number (Optional)
+          </Label>
+          <Input
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="Enter phone number"
+            type="tel"
+            className="h-12 text-base bg-white border-slate-200 focus:border-primary"
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4" />
-              Priority
-            </Label>
-            <Select value={priority} onValueChange={(value: Priority) => setPriority(value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Normal">Normal</SelectItem>
-                <SelectItem value="Emergency">Emergency</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="space-y-3">
+          <Label className="text-base font-medium text-slate-700 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Priority
+          </Label>
+          <Select value={priority} onValueChange={(value: Priority) => setPriority(value)}>
+            <SelectTrigger className="h-12 text-base bg-white border-slate-200 focus:border-primary">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="Normal">Normal</SelectItem>
+              <SelectItem value="Emergency">Emergency</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={isGenerating}
-          >
-            {isGenerating ? 'Generating...' : 'Generate Token'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        <Button 
+          type="submit" 
+          className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90 transition-all duration-200" 
+          disabled={isGenerating}
+        >
+          {isGenerating ? 'Generating Token...' : 'Generate Token'}
+        </Button>
+      </form>
+    </div>
   );
 };

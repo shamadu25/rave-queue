@@ -79,6 +79,12 @@ const Index = () => {
           <p className="text-muted-foreground">Welcome to the Hospital Queue Management System</p>
         </div>
         <div className="flex items-center gap-3">
+          <Link to="/token">
+            <Button className="bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Generate Token
+            </Button>
+          </Link>
           {!profile && (
             <Link to="/auth">
               <Button variant="outline">

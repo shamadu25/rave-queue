@@ -32,6 +32,7 @@ import {
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home, role: "all" },
+  { title: "Generate Token", url: "/token", icon: PlusCircle, role: "all" },
   { title: "Queue Display", url: "/display", icon: Monitor, role: "all" },
   { title: "Queue Monitor", url: "/monitor", icon: Activity, role: "staff" },
 ];
