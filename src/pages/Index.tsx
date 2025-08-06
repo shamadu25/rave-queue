@@ -59,12 +59,20 @@ const Index = () => {
                 <p className="text-muted-foreground">Hospital Queue Token Generator & Monitor</p>
               </div>
             </div>
-            <Link to="/auth">
-              <Button variant="outline">
-                <Shield className="h-4 w-4 mr-2" />
-                Staff Login
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link to="/display">
+                <Button variant="outline">
+                  <Activity className="h-4 w-4 mr-2" />
+                  Queue Display
+                </Button>
+              </Link>
+              <Link to="/auth">
+                <Button variant="outline">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Staff Login
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

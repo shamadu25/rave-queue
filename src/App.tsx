@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import QueueMonitor from "./pages/QueueMonitor";
+import QueueDisplay from "./pages/QueueDisplay";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const AppContent = () => {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/display" element={<QueueDisplay />} />
       <Route 
         path="/monitor" 
         element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
