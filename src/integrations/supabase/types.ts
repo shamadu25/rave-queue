@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      queue_entries: {
+        Row: {
+          created_at: string
+          department: string
+          full_name: string
+          id: string
+          phone_number: string | null
+          priority: string
+          status: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department: string
+          full_name: string
+          id?: string
+          phone_number?: string | null
+          priority: string
+          status?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          full_name?: string
+          id?: string
+          phone_number?: string | null
+          priority?: string
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
