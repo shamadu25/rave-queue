@@ -56,6 +56,7 @@ interface SystemSetting {
 export const GeneralSettings = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [settings, setSettings] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -103,6 +104,7 @@ export const GeneralSettings = () => {
       }, {});
       
       setSettings(settingsMap);
+      setFormData(settingsMap);
     } catch (error) {
       console.error('Error loading data:', error);
       toast.error('Failed to load settings data');
@@ -133,6 +135,37 @@ export const GeneralSettings = () => {
       toast.error('Failed to update setting');
       throw error;
     }
+  };
+
+  const getSettingCategory = (key: string): string => {
+    const categories: Record<string, string> = {
+      'clinic_name': 'general',
+      'clinic_address': 'general',
+      'clinic_phone': 'general',
+      'clinic_email': 'general',
+      'operating_hours': 'general',
+      'website_url': 'general',
+      'emergency_contact': 'general',
+      'clinic_logo_url': 'general',
+      'footer_note': 'general',
+      'print_mode': 'general',
+      'theme_mode': 'general',
+      'enable_voice_announcements': 'general',
+      'enable_online_booking': 'general',
+      'enable_patient_feedback': 'general',
+      'auto_reset_midnight': 'queue',
+      'display_estimated_wait': 'queue',
+      'enable_display_screen': 'display',
+      'enable_sound_alerts': 'display',
+      'enable_sms_notifications': 'display',
+      'refresh_interval': 'display',
+      'max_queue_display_count': 'display',
+      'show_department_colors': 'display',
+      'default_priority': 'defaults',
+      'max_emergency_tokens': 'defaults',
+      'working_days': 'defaults'
+    };
+    return categories[key] || 'general';
   };
 
   const getSettingDescription = (key: string): string => {
@@ -175,27 +208,43 @@ export const GeneralSettings = () => {
       setSaving(true);
       
       // Validate required fields
-      if (!settings.clinic_name || settings.clinic_name.toString().replace(/"/g, '').trim() === '') {
+      const clinicName = formData.clinic_name?.toString().replace(/"/g, '').trim();
+      if (!clinicName) {
         toast.error('Hospital/Clinic name is required');
         return;
       }
 
       // Validate email format if provided
-      const emailValue = settings.clinic_email?.toString().replace(/"/g, '').trim();
+      const emailValue = formData.clinic_email?.toString().replace(/"/g, '').trim();
       if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
         toast.error('Please enter a valid email address');
         return;
       }
 
       // Validate website URL format if provided
-      const websiteValue = settings.website_url?.toString().replace(/"/g, '').trim();
-      if (websiteValue && !websiteValue.startsWith('http://') && !websiteValue.startsWith('https://')) {
+      const websiteValue = formData.website_url?.toString().replace(/"/g, '').trim();
+      if (websiteValue && websiteValue && !websiteValue.startsWith('http://') && !websiteValue.startsWith('https://')) {
         toast.error('Website URL must start with http:// or https://');
         return;
       }
 
-      // Force refresh data after save to ensure UI reflects database state
-      await loadData();
+      // Save all form data to database
+      const settingsToUpdate = Object.entries(formData).map(([key, value]) => ({
+        setting_key: key,
+        setting_value: value,
+        category: getSettingCategory(key),
+        description: getSettingDescription(key)
+      }));
+
+      const { error } = await supabase
+        .from('system_settings')
+        .upsert(settingsToUpdate);
+
+      if (error) throw error;
+
+      // Update local state to match database
+      setSettings(formData);
+      
       toast.success('✅ All settings saved successfully! Changes will be reflected across all modules.');
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -407,8 +456,8 @@ export const GeneralSettings = () => {
                     <Label htmlFor="clinic_name">Hospital/Clinic Name *</Label>
                     <Input
                       id="clinic_name"
-                      value={settings.clinic_name?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('clinic_name', `"${e.target.value}"`, 'general', false)}
+                      value={formData.clinic_name?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, clinic_name: `"${e.target.value}"` }))}
                       placeholder="Enter hospital/clinic name"
                     />
                     <p className="text-sm text-muted-foreground">This name appears on tokens and welcome screens</p>
@@ -422,8 +471,8 @@ export const GeneralSettings = () => {
                     <Input
                       id="clinic_email"
                       type="email"
-                      value={settings.clinic_email?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('clinic_email', `"${e.target.value}"`, 'general', false)}
+                      value={formData.clinic_email?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, clinic_email: `"${e.target.value}"` }))}
                       placeholder="info@sgclinic.com"
                     />
                     <p className="text-sm text-muted-foreground">Primary contact email for the clinic</p>
@@ -437,8 +486,8 @@ export const GeneralSettings = () => {
                     <Input
                       id="clinic_phone"
                       type="tel"
-                      value={settings.clinic_phone?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('clinic_phone', `"${e.target.value}"`, 'general', false)}
+                      value={formData.clinic_phone?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, clinic_phone: `"${e.target.value}"` }))}
                       placeholder="+1 (555) 123-4567"
                     />
                     <p className="text-sm text-muted-foreground">Primary phone number for contact</p>
@@ -452,8 +501,8 @@ export const GeneralSettings = () => {
                     <Input
                       id="emergency_contact"
                       type="tel"
-                      value={settings.emergency_contact?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('emergency_contact', `"${e.target.value}"`, 'general', false)}
+                      value={formData.emergency_contact?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, emergency_contact: `"${e.target.value}"` }))}
                       placeholder="+1 (555) 911-HELP"
                     />
                     <p className="text-sm text-muted-foreground">Emergency contact number</p>
@@ -466,8 +515,8 @@ export const GeneralSettings = () => {
                     </Label>
                     <Textarea
                       id="clinic_address"
-                      value={settings.clinic_address?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('clinic_address', `"${e.target.value}"`, 'general', false)}
+                      value={formData.clinic_address?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, clinic_address: `"${e.target.value}"` }))}
                       placeholder="123 Medical Center Drive, Healthcare City, HC 12345"
                       rows={2}
                     />
@@ -482,8 +531,8 @@ export const GeneralSettings = () => {
                     <Input
                       id="website_url"
                       type="url"
-                      value={settings.website_url?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('website_url', `"${e.target.value}"`, 'general', false)}
+                      value={formData.website_url?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, website_url: `"${e.target.value}"` }))}
                       placeholder="https://www.sgclinic.com"
                     />
                     <p className="text-sm text-muted-foreground">Official website URL</p>
@@ -493,8 +542,8 @@ export const GeneralSettings = () => {
                     <Label htmlFor="operating_hours">Operating Hours</Label>
                     <Input
                       id="operating_hours"
-                      value={settings.operating_hours?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('operating_hours', `"${e.target.value}"`, 'general', false)}
+                      value={formData.operating_hours?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, operating_hours: `"${e.target.value}"` }))}
                       placeholder="Monday - Friday: 8:00 AM - 6:00 PM"
                     />
                     <p className="text-sm text-muted-foreground">Business hours displayed to patients</p>
@@ -504,8 +553,8 @@ export const GeneralSettings = () => {
                     <Label htmlFor="footer_note">Footer Note</Label>
                     <Input
                       id="footer_note"
-                      value={settings.footer_note?.toString().replace(/"/g, '') || ""}
-                      onChange={(e) => updateSetting('footer_note', `"${e.target.value}"`, 'general', false)}
+                      value={formData.footer_note?.toString().replace(/"/g, '') || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, footer_note: `"${e.target.value}"` }))}
                       placeholder="e.g., Powered by RAVESOFT"
                     />
                     <p className="text-sm text-muted-foreground">Text displayed at the bottom of printed tickets</p>
@@ -527,8 +576,8 @@ export const GeneralSettings = () => {
                   <div className="space-y-2">
                     <Label>Print Mode</Label>
                     <Select
-                      value={settings.print_mode?.toString().replace(/"/g, '') || "popup"}
-                      onValueChange={(value) => updateSetting('print_mode', `"${value}"`, 'general', false)}
+                      value={formData.print_mode?.toString().replace(/"/g, '') || "popup"}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, print_mode: `"${value}"` }))}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -544,8 +593,8 @@ export const GeneralSettings = () => {
                   <div className="space-y-2">
                     <Label>Theme Mode</Label>
                     <Select
-                      value={settings.theme_mode?.toString().replace(/"/g, '') || "light"}
-                      onValueChange={(value) => updateSetting('theme_mode', `"${value}"`, 'general', false)}
+                      value={formData.theme_mode?.toString().replace(/"/g, '') || "light"}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, theme_mode: `"${value}"` }))}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -567,8 +616,8 @@ export const GeneralSettings = () => {
                       <p className="text-sm text-muted-foreground">Enable voice announcements when calling tokens</p>
                     </div>
                     <Switch
-                      checked={settings.enable_voice_announcements || false}
-                      onCheckedChange={(checked) => updateSetting('enable_voice_announcements', checked, 'general', false)}
+                      checked={formData.enable_voice_announcements || false}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_voice_announcements: checked }))}
                     />
                   </div>
 
@@ -578,8 +627,8 @@ export const GeneralSettings = () => {
                       <p className="text-sm text-muted-foreground">Allow patients to book appointments online</p>
                     </div>
                     <Switch
-                      checked={settings.enable_online_booking || false}
-                      onCheckedChange={(checked) => updateSetting('enable_online_booking', checked, 'general', false)}
+                      checked={formData.enable_online_booking || false}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_online_booking: checked }))}
                     />
                   </div>
 
@@ -589,8 +638,8 @@ export const GeneralSettings = () => {
                       <p className="text-sm text-muted-foreground">Allow patients to provide feedback</p>
                     </div>
                     <Switch
-                      checked={settings.enable_patient_feedback || false}
-                      onCheckedChange={(checked) => updateSetting('enable_patient_feedback', checked, 'general', false)}
+                      checked={formData.enable_patient_feedback || false}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enable_patient_feedback: checked }))}
                     />
                   </div>
                 </div>
@@ -621,7 +670,7 @@ export const GeneralSettings = () => {
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Changes are saved automatically when you edit them, but you can refresh to see current database values
+                  Make your changes and click "Save All Settings" to apply them to the database.
                 </p>
               </CardContent>
             </Card>
