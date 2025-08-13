@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { usePrintTicket } from '@/hooks/usePrintTicket';
 import { QueueEntry, Department, Priority } from '@/types/queue';
 import { UserPlus, Phone, Building2, AlertTriangle } from 'lucide-react';
 
@@ -28,6 +29,7 @@ export const TokenGenerator = ({ onTokenGenerated }: TokenGeneratorProps) => {
   const [priority, setPriority] = useState<Priority>('Normal');
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  const { printTicket } = usePrintTicket();
 
   const generateToken = (dept: Department): string => {
     const prefix = departmentPrefixes[dept];
@@ -61,6 +63,14 @@ export const TokenGenerator = ({ onTokenGenerated }: TokenGeneratorProps) => {
       };
 
       await onTokenGenerated(entryData);
+
+      // Auto-print ticket if enabled
+      const mockEntry: QueueEntry = {
+        id: `temp-${Date.now()}`,
+        ...entryData,
+        timestamp: new Date()
+      };
+      printTicket(mockEntry);
 
       toast({
         title: "Token Generated Successfully!",
