@@ -1,13 +1,32 @@
-import { useState } from 'react';
-import { TokenGenerator } from '@/components/TokenGenerator';
-import { QueueEntry } from '@/types/queue';
+import { useState, useEffect } from 'react';
+import { QueueEntry, Department } from '@/types/queue';
 import { useQueueEntries } from '@/hooks/useQueueEntries';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { usePrintTicket } from '@/hooks/usePrintTicket';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Printer } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { CheckCircle, Printer, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+
+interface DepartmentData {
+  id: string;
+  name: string;
+  color_code: string;
+  prefix: string;
+  is_active: boolean;
+}
+
+const departmentPrefixes: Record<string, string> = {
+  Consultation: 'C',
+  Lab: 'L',
+  Pharmacy: 'P',
+  'X-ray': 'X',
+  Scan: 'S',
+  Billing: 'B'
+};
 
 const TokenGeneration = () => {
   const { addEntry } = useQueueEntries();
@@ -15,19 +34,69 @@ const TokenGeneration = () => {
   const { printTicket } = usePrintTicket();
   const [generatedToken, setGeneratedToken] = useState<QueueEntry | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [patientName, setPatientName] = useState('');
+  const [departments, setDepartments] = useState<DepartmentData[]>([]);
+  const [loadingDepartments, setLoadingDepartments] = useState(true);
+  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
 
-  const handleTokenGenerated = async (newEntryData: Omit<QueueEntry, 'id' | 'timestamp'>) => {
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  const fetchDepartments = async () => {
     try {
-      const newEntry = await addEntry(newEntryData);
+      const { data, error } = await supabase
+        .from('departments')
+        .select('id, name, color_code, prefix, is_active')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      setDepartments(data || []);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+      toast.error('Failed to load departments');
+    } finally {
+      setLoadingDepartments(false);
+    }
+  };
+
+  const generateToken = (dept: string): string => {
+    const prefix = departmentPrefixes[dept] || dept.charAt(0).toUpperCase();
+    const randomNumber = Math.floor(Math.random() * 999) + 1;
+    return `${prefix}${randomNumber.toString().padStart(3, '0')}`;
+  };
+
+  const handleDepartmentClick = async (department: DepartmentData) => {
+    if (!patientName.trim()) {
+      toast.error('Please enter your name first');
+      return;
+    }
+
+    setSelectedDepartment(department.id);
+
+    try {
+      const token = generateToken(department.name);
+      const entryData = {
+        token,
+        fullName: patientName.trim(),
+        department: department.name as Department,
+        priority: 'Normal' as const,
+        status: 'Waiting' as const
+      };
+
+      const newEntry = await addEntry(entryData);
       if (newEntry) {
         setGeneratedToken(newEntry);
         setShowConfirmation(true);
-        // Auto-trigger print after successful token creation
+        setPatientName('');
+        setSelectedDepartment(null);
         printTicket(newEntry);
+        toast.success(`Token ${token} generated successfully!`);
       }
     } catch (error) {
       toast.error('Failed to generate token. Please try again.');
-      throw error;
+      setSelectedDepartment(null);
     }
   };
 
@@ -40,11 +109,13 @@ const TokenGeneration = () => {
   const handleNewToken = () => {
     setGeneratedToken(null);
     setShowConfirmation(false);
+    setPatientName('');
+    setSelectedDepartment(null);
   };
 
   const hospitalName = settings.clinic_name?.replace(/"/g, '') || 'Hospital Clinic';
 
-  if (settingsLoading) {
+  if (settingsLoading || loadingDepartments) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
@@ -136,11 +207,56 @@ const TokenGeneration = () => {
                     Get Your Queue Token
                   </h3>
                   <p className="text-slate-600">
-                    Fill in your details to receive a queue token
+                    Enter your name and select a department
                   </p>
                 </div>
                 
-                <TokenGenerator onTokenGenerated={handleTokenGenerated} />
+                {/* Patient Name Input */}
+                <div className="mb-8">
+                  <Label htmlFor="patientName" className="text-base font-medium text-slate-700 flex items-center gap-2 mb-3">
+                    <User className="h-5 w-5" />
+                    Enter your name
+                  </Label>
+                  <Input
+                    id="patientName"
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                    placeholder="Your full name"
+                    className="h-14 text-lg bg-white border-slate-200 focus:border-primary"
+                  />
+                </div>
+
+                {/* Department Buttons */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-slate-800 text-center">
+                    Select Department
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {departments.map((department) => (
+                      <Button
+                        key={department.id}
+                        onClick={() => handleDepartmentClick(department)}
+                        disabled={selectedDepartment === department.id}
+                        className={`
+                          h-20 p-4 text-white font-bold text-lg transition-all duration-200
+                          hover:scale-105 hover:shadow-lg active:scale-95
+                          ${selectedDepartment === department.id ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                        style={{
+                          backgroundColor: department.color_code,
+                          borderColor: department.color_code,
+                        }}
+                      >
+                        {selectedDepartment === department.id ? 'Generating...' : department.name}
+                      </Button>
+                    ))}
+                  </div>
+                  {departments.length === 0 && (
+                    <div className="text-center py-8 text-slate-500">
+                      No departments available
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}
