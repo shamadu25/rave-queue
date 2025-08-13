@@ -52,7 +52,7 @@ export default function QueueMonitor() {
   });
 
   // Get filtered entries based on user role and department
-  const { entries, loading, updateStatus, transferEntry } = useQueueMonitor(
+  const { entries, loading, updateStatus, transferEntry, deleteEntry } = useQueueMonitor(
     getUserDepartmentFilter(profile?.role, profile?.department)
   );
 
@@ -99,6 +99,15 @@ export default function QueueMonitor() {
       patientName,
       token
     });
+  };
+
+  const handleDelete = async (entryId: string) => {
+    try {
+      await deleteEntry(entryId);
+      toast.success('Queue entry deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete queue entry');
+    }
   };
 
   // Determine queue display configuration based on user role
@@ -195,18 +204,19 @@ export default function QueueMonitor() {
           </TabsList>
           
           <TabsContent value="queue" className="mt-6">
-            <ModernQueueList
-              entries={entries}
-              title={queueConfig.title}
-              description={queueConfig.description}
-              canFilter={queueConfig.canFilter}
-              canPerformActions={queueConfig.canPerformActions}
-              userRole={profile?.role}
-              userDepartment={profile?.department}
-              onUpdateStatus={handleStatusUpdate}
-              onTransfer={handleOpenTransferModal}
-              loading={loading}
-            />
+        <ModernQueueList
+          entries={entries}
+          title={queueConfig.title}
+          description={queueConfig.description}
+          canFilter={queueConfig.canFilter}
+          canPerformActions={queueConfig.canPerformActions}
+          userRole={profile?.role}
+          userDepartment={profile?.department}
+          onUpdateStatus={handleStatusUpdate}
+          onTransfer={handleOpenTransferModal}
+          onDelete={handleDelete}
+          loading={loading}
+        />
           </TabsContent>
           
           <TabsContent value="reports" className="mt-6">
@@ -218,18 +228,19 @@ export default function QueueMonitor() {
           </TabsContent>
         </Tabs>
       ) : (
-        <ModernQueueList
-          entries={entries}
-          title={queueConfig.title}
-          description={queueConfig.description}
-          canFilter={queueConfig.canFilter}
-          canPerformActions={queueConfig.canPerformActions}
-          userRole={profile?.role}
-          userDepartment={profile?.department}
-          onUpdateStatus={handleStatusUpdate}
-          onTransfer={handleOpenTransferModal}
-          loading={loading}
-        />
+            <ModernQueueList
+              entries={entries}
+              title={queueConfig.title}
+              description={queueConfig.description}
+              canFilter={queueConfig.canFilter}
+              canPerformActions={queueConfig.canPerformActions}
+              userRole={profile?.role}
+              userDepartment={profile?.department}
+              onUpdateStatus={handleStatusUpdate}
+              onTransfer={handleOpenTransferModal}
+              onDelete={handleDelete}
+              loading={loading}
+            />
       )}
 
       <TransferModal

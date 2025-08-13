@@ -155,6 +155,23 @@ export const useQueueMonitor = (userDepartment?: string) => {
     }
   };
 
+  const deleteEntry = async (entryId: string) => {
+    try {
+      const { error } = await supabase
+        .from('queue_entries')
+        .delete()
+        .eq('id', entryId);
+
+      if (error) throw error;
+      
+      // Update local state
+      setEntries(prev => prev.filter(entry => entry.id !== entryId));
+    } catch (error) {
+      console.error('Error deleting queue entry:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     fetchEntries();
 
@@ -190,6 +207,7 @@ export const useQueueMonitor = (userDepartment?: string) => {
     error,
     updateStatus,
     transferEntry,
+    deleteEntry,
     refetch: fetchEntries
   };
 };

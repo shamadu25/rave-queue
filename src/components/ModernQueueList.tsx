@@ -19,7 +19,8 @@ import {
   Radio,
   ScanLine,
   Receipt,
-  Filter
+  Filter,
+  Trash2
 } from 'lucide-react';
 import { QueueEntry, Status, Department } from '@/types/queue';
 
@@ -33,6 +34,7 @@ interface ModernQueueListProps {
   userDepartment?: string;
   onUpdateStatus?: (id: string, status: Status) => Promise<void> | void;
   onTransfer?: (entryId: string, currentDepartment: Department, patientName: string, token: string) => void;
+  onDelete?: (entryId: string) => Promise<void> | void;
   loading?: boolean;
 }
 
@@ -46,6 +48,7 @@ export function ModernQueueList({
   userDepartment,
   onUpdateStatus,
   onTransfer,
+  onDelete,
   loading = false
 }: ModernQueueListProps) {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | 'all'>('all');
@@ -307,6 +310,19 @@ export function ModernQueueList({
                         >
                           <ArrowRightLeft className="h-3 w-3" />
                           Next Department
+                        </Button>
+                      )}
+
+                      {/* Admin delete button */}
+                      {userRole === 'admin' && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => onDelete?.(entry.id)}
+                          className="gap-1"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                          Delete
                         </Button>
                       )}
                     </div>
