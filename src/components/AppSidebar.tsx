@@ -175,12 +175,14 @@ export function AppSidebar() {
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <BarChart3 className="h-4 w-4" />
-                    {!collapsed && <span>Reports</span>}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                   <SidebarMenuButton asChild>
+                     <NavLink to="/admin" className="flex items-center gap-3">
+                       <BarChart3 className="h-4 w-4" />
+                       {!collapsed && <span>Admin Panel</span>}
+                     </NavLink>
+                   </SidebarMenuButton>
+                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <NavLink to="/settings" className="flex items-center gap-3">

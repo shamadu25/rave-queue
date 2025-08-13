@@ -62,8 +62,8 @@ const TokenGeneration = () => {
     }
   };
 
-  const generateToken = (dept: string): string => {
-    const prefix = departmentPrefixes[dept] || dept.charAt(0).toUpperCase();
+  const generateToken = (department: DepartmentData): string => {
+    const prefix = department.prefix;
     const randomNumber = Math.floor(Math.random() * 999) + 1;
     return `${prefix}${randomNumber.toString().padStart(3, '0')}`;
   };
@@ -77,7 +77,7 @@ const TokenGeneration = () => {
     setSelectedDepartment(department.id);
 
     try {
-      const token = generateToken(department.name);
+      const token = generateToken(department);
       const entryData = {
         token,
         fullName: patientName.trim(),
@@ -206,9 +206,9 @@ const TokenGeneration = () => {
                   <h3 className="text-2xl font-bold text-slate-800 mb-2">
                     Get Your Queue Token
                   </h3>
-                  <p className="text-slate-600">
-                    Enter your name and select a department
-                  </p>
+                   <p className="text-slate-600">
+                     Enter your name and select a service
+                   </p>
                 </div>
                 
                 {/* Patient Name Input */}

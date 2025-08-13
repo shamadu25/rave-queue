@@ -106,22 +106,63 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Token Generator */}
+        {/* Admin Dashboard or Queue List based on role */}
         <div className="lg:col-span-1">
-          <Card className="medical-card">
-            <CardHeader>
-              <CardTitle className="heading-secondary flex items-center gap-2">
-                <PlusCircle className="h-5 w-5 text-primary" />
-                Generate New Token
-              </CardTitle>
-              <CardDescription>
-                Create a new queue token for patients
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TokenGenerator onTokenGenerated={handleTokenGenerated} />
-            </CardContent>
-          </Card>
+          {profile?.role === 'admin' ? (
+            <Card className="medical-card">
+              <CardHeader>
+                <CardTitle className="heading-secondary flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Admin Panel
+                </CardTitle>
+                <CardDescription>
+                  View reports and manage system
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Link to="/settings">
+                    <Button variant="outline" className="w-full justify-start">
+                      Settings
+                    </Button>
+                  </Link>
+                  <Link to="/monitor">
+                    <Button variant="outline" className="w-full justify-start">
+                      Queue Monitor
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="medical-card">
+              <CardHeader>
+                <CardTitle className="heading-secondary flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  Quick Actions
+                </CardTitle>
+                <CardDescription>
+                  Staff tools and access
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Link to="/token">
+                    <Button className="w-full bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90">
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Generate Token
+                    </Button>
+                  </Link>
+                  <Link to="/monitor">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Activity className="h-4 w-4 mr-2" />
+                      Monitor Queue
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
         
         {/* Queue List */}

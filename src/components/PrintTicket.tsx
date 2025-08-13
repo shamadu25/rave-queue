@@ -83,14 +83,17 @@ export const PrintTicket: React.FC<PrintTicketProps> = ({
              font-family: 'Courier New', monospace;
              font-size: 12px;
              line-height: 1.2;
-             color: #000;
-             border: 2px solid;
+             color: #000 !important;
+             border: 2px solid #000;
+             background: white !important;
            }
           
            .ticket-header {
-             color: white;
+             color: #000 !important;
+             background: white !important;
              padding: 2mm;
              margin: -4mm -4mm 2mm -4mm;
+             border-bottom: 1px solid #000;
            }
            
            .clinic-name {
@@ -99,14 +102,14 @@ export const PrintTicket: React.FC<PrintTicketProps> = ({
              font-size: 14px;
              margin: 0 0 2mm 0;
              text-transform: uppercase;
-             color: white;
+             color: #000 !important;
            }
           
            .date-time {
              text-align: center;
              margin: 0 0 2mm 0;
              font-size: 10px;
-             color: white;
+             color: #000 !important;
            }
           
           .ticket-divider {

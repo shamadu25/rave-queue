@@ -15,6 +15,7 @@ import QueueDisplay from "./pages/QueueDisplay";
 import TokenGeneration from "./pages/TokenGeneration";
 import Settings from "./pages/Settings";
 import PrintTicketPage from "./pages/PrintTicket";
+import AdminDashboardPage from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,10 @@ const AppContent = () => {
             path="/monitor" 
             element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
           />
+          <Route 
+            path="/admin" 
+            element={user ? <AdminDashboardPage /> : <Navigate to="/auth" replace />} 
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
@@ -85,6 +90,10 @@ const AppContent = () => {
               <Route 
                 path="/monitor" 
                 element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
+              />
+              <Route 
+                path="/admin" 
+                element={user ? <AdminDashboardPage /> : <Navigate to="/auth" replace />} 
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
