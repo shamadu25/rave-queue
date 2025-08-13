@@ -18,24 +18,12 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
   const { settings } = useSystemSettings();
   
   useEffect(() => {
-    // Ensure content is fully loaded before printing
-    const timer = setTimeout(() => {
-      try {
-        window.print();
-      } catch (error) {
-        console.error('Print failed:', error);
-        // Retry print after short delay
-        setTimeout(() => {
-          try {
-            window.print();
-          } catch (retryError) {
-            console.error('Print retry failed:', retryError);
-          }
-        }, 1000);
-      }
-    }, 800); // Increased delay for better reliability
-
-    return () => clearTimeout(timer);
+    // Print immediately without delay
+    try {
+      window.print();
+    } catch (error) {
+      console.error('Print failed:', error);
+    }
   }, []);
 
   const formatDateTime = (date: Date) => {
@@ -114,28 +102,37 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
               box-sizing: border-box;
             }
             
-            /* 80mm printer support */
-            @media print and (min-width: 80mm) {
-              @page {
-                size: 80mm auto;
-                margin: 0;
+              /* 80mm printer support */
+              @media print and (min-width: 80mm) {
+                @page {
+                  size: 80mm auto;
+                  margin: 0;
+                }
+                .ticket-content {
+                  width: 80mm;
+                  max-width: 80mm;
+                  padding: 4mm;
+                  font-size: 12px;
+                }
+                .hospital-name {
+                  font-size: 22px !important;
+                }
+                .token-display {
+                  font-size: 32px !important;
+                }
+                .department-name {
+                  font-size: 16px !important;
+                }
+                .counter-info {
+                  font-size: 12px !important;
+                }
+                .datetime-info {
+                  font-size: 10px !important;
+                }
+                .footer-text {
+                  font-size: 11px !important;
+                }
               }
-              .ticket-content {
-                width: 80mm;
-                max-width: 80mm;
-                padding: 4mm;
-                font-size: 11px;
-              }
-              .hospital-name {
-                font-size: 16px !important;
-              }
-              .token-display {
-                font-size: 24px !important;
-              }
-              .department-name {
-                font-size: 13px !important;
-              }
-            }
             
             .clinic-logo {
               width: 25mm !important;
@@ -146,34 +143,36 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
             }
             
             .hospital-name {
-              font-size: 14px !important;
+              font-size: 18px !important;
               font-weight: bold !important;
               text-transform: uppercase !important;
-              margin: 2mm 0 !important;
+              margin: 2mm 0 1mm 0 !important;
               color: #000 !important;
               text-align: center !important;
-              line-height: 1.2 !important;
+              line-height: 1.1 !important;
             }
             
             .separator {
-              border-top: 1px dashed #000 !important;
-              margin: 3mm 0 !important;
-              width: 100% !important;
+              color: #000 !important;
+              text-align: center !important;
+              margin: 1mm 0 2mm 0 !important;
+              font-weight: bold !important;
+              font-size: 12px !important;
             }
             
             .token-display {
-              font-size: 20px !important;
+              font-size: 28px !important;
               font-weight: bold !important;
-              margin: 3mm 0 !important;
+              margin: 2mm 0 !important;
               color: #000 !important;
               text-align: center !important;
               background: none !important;
-              border: 2px solid #000 !important;
-              padding: 2mm !important;
+              border: 3px solid #000 !important;
+              padding: 3mm !important;
             }
             
             .department-name {
-              font-size: 12px !important;
+              font-size: 14px !important;
               font-weight: bold !important;
               margin: 2mm 0 !important;
               color: #000 !important;
@@ -181,25 +180,27 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
             }
             
             .counter-info {
-              font-size: 10px !important;
+              font-size: 11px !important;
+              font-weight: bold !important;
               margin: 1mm 0 !important;
               color: #000 !important;
               text-align: center !important;
             }
             
             .datetime-info {
-              font-size: 8px !important;
+              font-size: 9px !important;
+              font-weight: bold !important;
               color: #000 !important;
-              text-align: left !important;
-              margin: 3mm 0 1mm 0 !important;
+              text-align: center !important;
+              margin: 2mm 0 1mm 0 !important;
             }
             
             .footer-text {
-              font-size: 9px !important;
+              font-size: 10px !important;
+              font-weight: bold !important;
               color: #000 !important;
               text-align: center !important;
               margin: 2mm 0 0 0 !important;
-              font-style: italic !important;
             }
             
             .emergency-badge {
@@ -336,17 +337,17 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
             {actualClinicName}
           </div>
           
-          <div className="separator"></div>
+          <div className="separator">========================</div>
           
-          {/* Token Number - Large, Bold, Centered */}
+          {/* Token Number - Extra Large, Bold, Centered */}
           <div 
             className="token-display"
             style={{
-              borderColor: entry.priority === 'Emergency' ? '#dc2626' : departmentColor,
-              color: entry.priority === 'Emergency' ? '#dc2626' : departmentColor
+              borderColor: entry.priority === 'Emergency' ? '#dc2626' : '#000',
+              color: entry.priority === 'Emergency' ? '#dc2626' : '#000'
             }}
           >
-            {entry.token}
+            TOKEN: {entry.token}
           </div>
           
           {/* Emergency Priority Badge */}
@@ -366,7 +367,7 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
             Counter: Available at Service Window
           </div>
           
-          <div className="separator"></div>
+          <div className="separator">========================</div>
           
           {/* Patient Information */}
           <div className="counter-info">
@@ -379,7 +380,7 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
             </div>
           )}
           
-          <div className="separator"></div>
+          <div className="separator">========================</div>
           
           {/* Date & Time - Small Font, Bottom Left */}
           <div className="datetime-info">
