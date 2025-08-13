@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, Users, Megaphone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
+import MarqueeHeader from './MarqueeHeader';
 
 interface QueueEntry {
   id: string;
@@ -111,7 +112,9 @@ const PublicDisplay: React.FC = () => {
   const hospitalName = settings.clinic_name?.replace(/"/g, '') || 'Hospital Queue System';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <>
+      <MarqueeHeader />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 pt-20">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -221,7 +224,8 @@ const PublicDisplay: React.FC = () => {
           animation: pulse-slow 2s ease-in-out infinite;
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 };
 

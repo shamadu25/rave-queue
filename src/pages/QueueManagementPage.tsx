@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import QueueManagement from '@/components/QueueManagement';
 import { Navigate } from 'react-router-dom';
+import MarqueeHeader from '@/components/MarqueeHeader';
 
 const QueueManagementPage: React.FC = () => {
   const { user, loading } = useAuth();
@@ -22,11 +23,14 @@ const QueueManagementPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <QueueManagement />
+    <>
+      <MarqueeHeader />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 pt-20">
+        <div className="max-w-7xl mx-auto">
+          <QueueManagement />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

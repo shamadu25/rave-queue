@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, Printer, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import MarqueeHeader from '@/components/MarqueeHeader';
 
 interface DepartmentData {
   id: string;
@@ -127,7 +128,9 @@ const TokenGeneration = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <>
+      <MarqueeHeader />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 pt-20">
       <div className="max-w-2xl mx-auto">
         {/* Welcome Heading */}
         <div className="mb-12 animate-in fade-in slide-in-from-left-4 duration-700">
@@ -263,6 +266,7 @@ const TokenGeneration = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
