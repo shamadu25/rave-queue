@@ -52,24 +52,41 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
         {`
           @media print {
             @page {
-              size: 80mm 120mm;
-              margin: 5mm;
+              size: 58mm 120mm;
+              margin: 2mm;
             }
             body {
-              font-family: 'Arial', sans-serif;
+              font-family: 'Courier New', 'Arial', monospace;
               margin: 0;
               padding: 0;
               background: white;
+              font-size: 12px;
+              line-height: 1.2;
             }
             .ticket-container {
-              width: 70mm;
+              width: 54mm;
               background: white;
-              padding: 5mm;
+              padding: 2mm;
               text-align: center;
-              border: 1px solid #ddd;
+              border: none;
             }
             .no-print {
               display: none !important;
+            }
+            
+            /* 80mm thermal printer support */
+            @media print and (min-width: 80mm) {
+              @page {
+                size: 80mm 120mm;
+                margin: 3mm;
+              }
+              .ticket-container {
+                width: 74mm;
+                padding: 3mm;
+              }
+              body {
+                font-size: 14px;
+              }
             }
           }
 
@@ -80,11 +97,11 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
               font-family: 'Arial', sans-serif;
             }
             .ticket-container {
-              width: 80mm;
-              max-width: 300px;
+              width: 58mm;
+              max-width: 250px;
               margin: 0 auto;
               background: white;
-              padding: 15px;
+              padding: 10px;
               border: 2px dashed #ddd;
               border-radius: 8px;
               box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -212,8 +229,16 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
       </style>
 
       <div className="ticket-container">
-        {/* Header */}
+        {/* Header with Logo Support */}
         <div className="ticket-header">
+          {settings.clinic_logo_url && (
+            <img 
+              src={settings.clinic_logo_url.replace(/"/g, '')} 
+              alt="Clinic Logo" 
+              style={{ width: '40px', height: '40px', marginBottom: '5px' }}
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          )}
           <h1 className="clinic-name">{actualClinicName}</h1>
           <div className="ticket-datetime">
             <div>{date}</div>

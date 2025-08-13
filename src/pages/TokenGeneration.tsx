@@ -32,7 +32,7 @@ const departmentPrefixes: Record<string, string> = {
 const TokenGeneration = () => {
   const { addEntry } = useQueueEntries();
   const { settings, loading: settingsLoading } = useSystemSettings();
-  const { printTicket } = usePrintTicket();
+  const { printTicket, printTicketManual } = usePrintTicket();
   const [generatedToken, setGeneratedToken] = useState<QueueEntry | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [patientName, setPatientName] = useState('');
@@ -110,7 +110,7 @@ const TokenGeneration = () => {
     if (generatedToken) {
       // Find the department color for the generated token
       const dept = departments.find(d => d.name === generatedToken.department);
-      printTicket(generatedToken, dept?.color_code);
+      printTicketManual(generatedToken, dept?.color_code);
     }
   };
 
@@ -186,7 +186,7 @@ const TokenGeneration = () => {
                       className="flex-1"
                     >
                       <Printer className="w-4 h-4 mr-2" />
-                      Print Token
+                      Print Again
                     </Button>
                     <Button 
                       onClick={handleNewToken}
