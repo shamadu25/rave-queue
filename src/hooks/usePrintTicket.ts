@@ -26,7 +26,7 @@ export const usePrintTicket = () => {
     
     iframe.onload = () => {
       try {
-        // Small delay to ensure content is loaded
+        // Increased delay to ensure content is fully loaded
         setTimeout(() => {
           // Try direct iframe printing for better thermal printer support
           if (iframe.contentWindow) {
@@ -38,8 +38,8 @@ export const usePrintTicket = () => {
             if (document.body.contains(iframe)) {
               document.body.removeChild(iframe);
             }
-          }, 3000);
-        }, 500);
+          }, 4000); // Longer cleanup delay
+        }, 1000); // Longer load delay
       } catch (error) {
         console.warn('Silent printing failed:', error);
         // Clean up iframe on error

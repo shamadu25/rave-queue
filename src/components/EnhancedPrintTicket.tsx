@@ -18,10 +18,22 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
   const { settings } = useSystemSettings();
   
   useEffect(() => {
-    // Auto-print after component mounts
+    // Ensure content is fully loaded before printing
     const timer = setTimeout(() => {
-      window.print();
-    }, 500);
+      try {
+        window.print();
+      } catch (error) {
+        console.error('Print failed:', error);
+        // Retry print after short delay
+        setTimeout(() => {
+          try {
+            window.print();
+          } catch (retryError) {
+            console.error('Print retry failed:', retryError);
+          }
+        }, 1000);
+      }
+    }, 800); // Increased delay for better reliability
 
     return () => clearTimeout(timer);
   }, []);
