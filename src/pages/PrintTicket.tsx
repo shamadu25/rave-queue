@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PrintTicket } from '@/components/PrintTicket';
 import { QueueEntry } from '@/types/queue';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,8 +7,10 @@ import { supabase } from '@/integrations/supabase/client';
 const PrintTicketPage: React.FC = () => {
   const { tokenId } = useParams<{ tokenId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [entry, setEntry] = useState<QueueEntry | null>(null);
   const [systemSettings, setSystemSettings] = useState<Record<string, any>>({});
+  const [departmentColor, setDepartmentColor] = useState<string>('#3b82f6');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +36,18 @@ const PrintTicketPage: React.FC = () => {
           .select('*');
 
         if (settingsError) throw settingsError;
+
+        // Load department information to get color
+        const { data: departmentData } = await supabase
+          .from('departments')
+          .select('color_code')
+          .eq('name', entryData.department)
+          .single();
+
+        // Get color from URL parameter or department data
+        const colorFromUrl = searchParams.get('color');
+        const departmentColorCode = colorFromUrl || departmentData?.color_code || '#3b82f6';
+        setDepartmentColor(departmentColorCode);
 
         const settingsMap = (settingsData || []).reduce((acc, setting) => {
           acc[setting.setting_key] = setting.setting_value;
@@ -126,8 +140,9 @@ const PrintTicketPage: React.FC = () => {
   return (
     <PrintTicket
       entry={entry}
-      clinicName={systemSettings.clinic_name || "Hospital Clinic"}
+      clinicName={systemSettings.clinic_name || "Globe Health Assessment Clinic"}
       footerNote={systemSettings.footer_note || "Thank you for visiting"}
+      departmentColor={departmentColor}
     />
   );
 };

@@ -92,8 +92,13 @@ const TokenGeneration = () => {
         setShowConfirmation(true);
         setPatientName('');
         setSelectedDepartment(null);
-        printTicket(newEntry);
+        printTicket(newEntry, department.color_code);
         toast.success(`Token ${token} generated successfully!`);
+        
+        // Auto-redirect after 20 seconds
+        setTimeout(() => {
+          handleNewToken();
+        }, 20000);
       }
     } catch (error) {
       toast.error('Failed to generate token. Please try again.');
@@ -103,7 +108,9 @@ const TokenGeneration = () => {
 
   const handlePrintToken = () => {
     if (generatedToken) {
-      printTicket(generatedToken);
+      // Find the department color for the generated token
+      const dept = departments.find(d => d.name === generatedToken.department);
+      printTicket(generatedToken, dept?.color_code);
     }
   };
 
@@ -222,7 +229,7 @@ const TokenGeneration = () => {
                 {/* Department Buttons */}
                 <div className="space-y-4">
                   <h4 className="text-lg font-semibold text-slate-800 text-center">
-                    Select Department
+                    Select Service
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {departments.map((department) => (

@@ -62,12 +62,12 @@ export const GeneralSettings = () => {
         return;
       }
 
-      // Prepare settings for update
+      // Prepare settings for update - handle empty strings gracefully
       const settingsToUpdate = Object.entries(formData)
-        .filter(([key, value]) => value !== undefined && value !== null)
+        .filter(([key, value]) => key && value !== undefined)
         .map(([key, value]) => ({
           key,
-          value,
+          value: value === null ? '' : value, // Convert null to empty string
           category: getSettingCategory(key)
         }));
 
@@ -257,6 +257,18 @@ export const GeneralSettings = () => {
                     onChange={(e) => handleInputChange('operating_hours', e.target.value)}
                     placeholder="Monday - Friday: 8:00 AM - 6:00 PM"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="clinic_logo_url">Clinic Logo URL</Label>
+                  <Input
+                    id="clinic_logo_url"
+                    type="url"
+                    value={formData.clinic_logo_url || ""}
+                    onChange={(e) => handleInputChange('clinic_logo_url', e.target.value)}
+                    placeholder="https://example.com/logo.png"
+                  />
+                  <p className="text-sm text-muted-foreground">URL to your clinic's logo image</p>
                 </div>
 
                 <div className="space-y-2 md:col-span-2">

@@ -5,12 +5,14 @@ interface PrintTicketProps {
   entry: QueueEntry;
   clinicName?: string;
   footerNote?: string;
+  departmentColor?: string;
 }
 
 export const PrintTicket: React.FC<PrintTicketProps> = ({ 
   entry, 
-  clinicName = "Hospital Clinic", 
-  footerNote = "Thank you for visiting" 
+  clinicName = "Globe Health Assessment Clinic", 
+  footerNote = "Thank you for visiting",
+  departmentColor = "#3b82f6"
 }) => {
   useEffect(() => {
     // Auto-trigger print dialog when component mounts
@@ -34,8 +36,8 @@ export const PrintTicket: React.FC<PrintTicketProps> = ({
 
   return (
     <div className="print-ticket">
-      <div className="ticket-content">
-        <div className="ticket-header">
+      <div className="ticket-content" style={{ borderColor: departmentColor }}>
+        <div className="ticket-header" style={{ backgroundColor: departmentColor }}>
           <h2 className="clinic-name">{clinicName}</h2>
           <p className="date-time">Date: {formatDateTime(entry.timestamp)}</p>
         </div>
@@ -74,29 +76,38 @@ export const PrintTicket: React.FC<PrintTicketProps> = ({
             width: 100%;
           }
           
-          .ticket-content {
-            width: 58mm;
-            margin: 0 auto;
-            padding: 4mm;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.2;
-            color: #000;
-          }
+           .ticket-content {
+             width: 58mm;
+             margin: 0 auto;
+             padding: 4mm;
+             font-family: 'Courier New', monospace;
+             font-size: 12px;
+             line-height: 1.2;
+             color: #000;
+             border: 2px solid;
+           }
           
-          .clinic-name {
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            margin: 0 0 2mm 0;
-            text-transform: uppercase;
-          }
+           .ticket-header {
+             color: white;
+             padding: 2mm;
+             margin: -4mm -4mm 2mm -4mm;
+           }
+           
+           .clinic-name {
+             text-align: center;
+             font-weight: bold;
+             font-size: 14px;
+             margin: 0 0 2mm 0;
+             text-transform: uppercase;
+             color: white;
+           }
           
-          .date-time {
-            text-align: center;
-            margin: 0 0 2mm 0;
-            font-size: 10px;
-          }
+           .date-time {
+             text-align: center;
+             margin: 0 0 2mm 0;
+             font-size: 10px;
+             color: white;
+           }
           
           .ticket-divider {
             text-align: center;
@@ -141,31 +152,39 @@ export const PrintTicket: React.FC<PrintTicketProps> = ({
             justify-content: center;
           }
           
-          .ticket-content {
-            width: 200px;
-            padding: 20px;
-            border: 2px dashed #ccc;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.4;
-            background: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-          }
+           .ticket-content {
+             width: 200px;
+             padding: 20px;
+             border: 2px solid;
+             font-family: 'Courier New', monospace;
+             font-size: 14px;
+             line-height: 1.4;
+             background: white;
+             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+           }
           
-          .clinic-name {
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-            margin: 0 0 8px 0;
-            text-transform: uppercase;
-          }
+           .ticket-header {
+             color: white;
+             padding: 12px;
+             margin: -20px -20px 12px -20px;
+             border-radius: 4px 4px 0 0;
+           }
+           
+           .clinic-name {
+             text-align: center;
+             font-weight: bold;
+             font-size: 16px;
+             margin: 0 0 8px 0;
+             text-transform: uppercase;
+             color: white;
+           }
           
-          .date-time {
-            text-align: center;
-            margin: 0 0 8px 0;
-            font-size: 12px;
-            color: #666;
-          }
+           .date-time {
+             text-align: center;
+             margin: 0;
+             font-size: 12px;
+             color: white;
+           }
           
           .ticket-divider {
             text-align: center;

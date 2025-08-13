@@ -104,7 +104,7 @@ export const TokenGenerator = ({ onTokenGenerated }: TokenGeneratorProps) => {
         <div className="space-y-3">
           <Label className="text-base font-medium text-slate-700 flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Select Department *
+            Select Service *
           </Label>
           <Select value={department} onValueChange={(value: Department) => setDepartment(value)}>
             <SelectTrigger className="h-12 text-base bg-white border-slate-200 focus:border-primary">
