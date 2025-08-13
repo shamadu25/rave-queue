@@ -131,18 +131,8 @@ const TokenGeneration = () => {
     <>
       <MarqueeHeader />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 pt-20">
-      <div className="max-w-2xl mx-auto">
-        {/* Welcome Heading */}
-        <div className="mb-12 animate-in fade-in slide-in-from-left-4 duration-700">
-          <h1 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-2">
-            WELCOME TO
-          </h1>
-          <h2 className="text-4xl lg:text-5xl font-bold text-primary">
-            {hospitalName.toUpperCase()}
-          </h2>
-        </div>
-
-        {/* Main Content */}
+        <div className="max-w-2xl mx-auto">
+          {/* Main Content */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
           {showConfirmation && generatedToken ? (
             // Confirmation Card
