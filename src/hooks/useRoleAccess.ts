@@ -8,6 +8,9 @@ export interface Permission {
   canCallTokens: boolean;
   canViewAllTokens: boolean;
   canViewReports: boolean;
+  canTransferTokens: boolean;
+  canDeleteTokens: boolean;
+  canManageRoles: boolean;
   allowedDepartments: string[];
 }
 
@@ -16,16 +19,19 @@ export const useRoleAccess = () => {
 
   const getPermissions = (): Permission => {
     if (!profile) {
-      return {
-        canManageUsers: false,
-        canManageDepartments: false,
-        canManageSettings: false,
-        canGenerateTokens: false,
-        canCallTokens: false,
-        canViewAllTokens: false,
-        canViewReports: false,
-        allowedDepartments: []
-      };
+        return {
+          canManageUsers: false,
+          canManageDepartments: false,
+          canManageSettings: false,
+          canGenerateTokens: false,
+          canCallTokens: false,
+          canViewAllTokens: false,
+          canViewReports: false,
+          canTransferTokens: false,
+          canDeleteTokens: false,
+          canManageRoles: false,
+          allowedDepartments: []
+        };
     }
 
     const role = profile.role;
@@ -40,6 +46,9 @@ export const useRoleAccess = () => {
           canCallTokens: true,
           canViewAllTokens: true,
           canViewReports: true,
+          canTransferTokens: true,
+          canDeleteTokens: true,
+          canManageRoles: true,
           allowedDepartments: ['all'] // Admin can access all departments
         };
 
@@ -52,6 +61,9 @@ export const useRoleAccess = () => {
           canCallTokens: false,
           canViewAllTokens: true,
           canViewReports: false,
+          canTransferTokens: false,
+          canDeleteTokens: false,
+          canManageRoles: false,
           allowedDepartments: ['all'] // Receptionist can generate tokens for all departments
         };
 
@@ -65,6 +77,9 @@ export const useRoleAccess = () => {
           canCallTokens: true,
           canViewAllTokens: false,
           canViewReports: false,
+          canTransferTokens: true, // Can transfer within their scope
+          canDeleteTokens: false,
+          canManageRoles: false,
           allowedDepartments: [profile.department] // Can only access their assigned department
         };
 
@@ -77,7 +92,25 @@ export const useRoleAccess = () => {
           canCallTokens: true,
           canViewAllTokens: false,
           canViewReports: false,
+          canTransferTokens: true, // Can transfer within their scope
+          canDeleteTokens: false,
+          canManageRoles: false,
           allowedDepartments: [profile.department]
+        };
+
+      case 'viewer':
+        return {
+          canManageUsers: false,
+          canManageDepartments: false,
+          canManageSettings: false,
+          canGenerateTokens: false,
+          canCallTokens: false,
+          canViewAllTokens: true, // Read-only access
+          canViewReports: true, // Read-only access
+          canTransferTokens: false,
+          canDeleteTokens: false,
+          canManageRoles: false,
+          allowedDepartments: ['all'] // Can view all departments
         };
 
       default:
@@ -89,6 +122,9 @@ export const useRoleAccess = () => {
           canCallTokens: false,
           canViewAllTokens: false,
           canViewReports: false,
+          canTransferTokens: false,
+          canDeleteTokens: false,
+          canManageRoles: false,
           allowedDepartments: []
         };
     }
@@ -97,10 +133,14 @@ export const useRoleAccess = () => {
   const permissions = getPermissions();
 
   const hasPermission = (permission: keyof Omit<Permission, 'allowedDepartments'>) => {
+    // Admin always has all permissions
+    if (profile?.role === 'admin') return true;
     return permissions[permission];
   };
 
   const canAccessDepartment = (departmentName: string) => {
+    // Admin can access all departments
+    if (profile?.role === 'admin') return true;
     return permissions.allowedDepartments.includes('all') || 
            permissions.allowedDepartments.includes(departmentName);
   };

@@ -17,7 +17,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   fallbackPath = '/'
 }) => {
   const { user, loading } = useAuth();
-  const { hasPermission, currentRole } = useRoleAccess();
+  const { hasPermission, currentRole, isAdmin } = useRoleAccess();
 
   if (loading) {
     return (
@@ -29,6 +29,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   if (!user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Admin bypasses all role and permission checks
+  if (isAdmin()) {
+    return <>{children}</>;
   }
 
   // Check role-based access
