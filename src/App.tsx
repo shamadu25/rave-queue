@@ -57,14 +57,10 @@ const AppContent = () => {
             path="/settings" 
             element={user ? <Settings /> : <Navigate to="/auth" replace />} 
           />
-          <Route 
-            path="/monitor" 
-            element={
-              <ProtectedRoute requiredPermission="canCallTokens">
-                <QueueMonitor />
-              </ProtectedRoute>
-            } 
-          />
+           <Route 
+             path="/monitor" 
+             element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
+           />
           <Route 
             path="/admin" 
             element={user ? <AdminDashboardPage /> : <Navigate to="/auth" replace />} 
@@ -92,21 +88,9 @@ const AppContent = () => {
               } />
               <Route path="/auth" element={<Auth />} />
               <Route path="/queue-display" element={<QueueDisplay />} />
-              <Route path="/queue-monitor" element={
-                <ProtectedRoute requiredPermission="canCallTokens">
-                  <QueueMonitor />
-                </ProtectedRoute>
-              } />
-              <Route path="/monitor" element={
-                <ProtectedRoute requiredPermission="canCallTokens">
-                  <QueueMonitor />
-                </ProtectedRoute>
-              } />
-              <Route path="/queue-management" element={
-                <ProtectedRoute requiredPermission="canViewAllTokens">
-                  <QueueManagementPage />
-                </ProtectedRoute>
-              } />
+               <Route path="/queue-monitor" element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} />
+               <Route path="/monitor" element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} />
+               <Route path="/queue-management" element={user ? <QueueManagementPage /> : <Navigate to="/auth" replace />} />
               <Route path="/print/:tokenId" element={<PrintTicketPage />} />
               <Route 
                 path="/settings" 

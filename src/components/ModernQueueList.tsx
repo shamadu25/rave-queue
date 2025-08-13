@@ -90,10 +90,8 @@ export function ModernQueueList({
 
   const canPerformActionOnEntry = (entryDepartment: string) => {
     if (!canPerformActions) return false;
-    // Admin can perform actions on any department's tokens
-    if (userRole === 'admin') return true;
-    // Other roles can only manage their own department
-    return userDepartment === entryDepartment;
+    // All logged-in users can now perform actions on tokens from any department
+    return true;
   };
 
   const formatTime = (date: Date) => {

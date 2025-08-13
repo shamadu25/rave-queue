@@ -38,6 +38,11 @@ export const useRoleAccess = () => {
 
     const role = profile.role;
 
+    // ALL logged-in users can now perform queue management actions
+    const canDoQueueActions = true;
+    const canViewAllTokens = true;
+    const canAccessAllDepartments = true;
+
     switch (role) {
       case 'admin':
         return {
@@ -45,13 +50,13 @@ export const useRoleAccess = () => {
           canManageDepartments: true,
           canManageSettings: true,
           canGenerateTokens: true,
-          canCallTokens: true,
-          canViewAllTokens: true,
+          canCallTokens: canDoQueueActions,
+          canViewAllTokens: canViewAllTokens,
           canViewReports: true,
-          canTransferTokens: true,
-          canDeleteTokens: true,
+          canTransferTokens: canDoQueueActions,
+          canDeleteTokens: true, // Only admins can delete
           canManageRoles: true,
-          allowedDepartments: ['all'] // Admin can access all departments
+          allowedDepartments: ['all']
         };
 
       case 'receptionist':
@@ -60,44 +65,30 @@ export const useRoleAccess = () => {
           canManageDepartments: false,
           canManageSettings: false,
           canGenerateTokens: true,
-          canCallTokens: false,
-          canViewAllTokens: true,
+          canCallTokens: canDoQueueActions,
+          canViewAllTokens: canViewAllTokens,
           canViewReports: false,
-          canTransferTokens: false,
+          canTransferTokens: canDoQueueActions,
           canDeleteTokens: false,
           canManageRoles: false,
-          allowedDepartments: ['all'] // Receptionist can generate tokens for all departments
+          allowedDepartments: ['all']
         };
 
       case 'doctor':
       case 'nurse':
-        return {
-          canManageUsers: false,
-          canManageDepartments: false,
-          canManageSettings: false,
-          canGenerateTokens: false,
-          canCallTokens: true,
-          canViewAllTokens: false,
-          canViewReports: false,
-          canTransferTokens: true, // Can transfer within their scope
-          canDeleteTokens: false,
-          canManageRoles: false,
-          allowedDepartments: [profile.department] // Can only access their assigned department
-        };
-
       case 'staff':
         return {
           canManageUsers: false,
           canManageDepartments: false,
           canManageSettings: false,
           canGenerateTokens: false,
-          canCallTokens: true,
-          canViewAllTokens: false,
+          canCallTokens: canDoQueueActions,
+          canViewAllTokens: canViewAllTokens,
           canViewReports: false,
-          canTransferTokens: true, // Can transfer within their scope
+          canTransferTokens: canDoQueueActions,
           canDeleteTokens: false,
           canManageRoles: false,
-          allowedDepartments: [profile.department]
+          allowedDepartments: canAccessAllDepartments ? ['all'] : [profile.department]
         };
 
       case 'viewer':
@@ -106,13 +97,13 @@ export const useRoleAccess = () => {
           canManageDepartments: false,
           canManageSettings: false,
           canGenerateTokens: false,
-          canCallTokens: false,
-          canViewAllTokens: true, // Read-only access
-          canViewReports: true, // Read-only access
-          canTransferTokens: false,
+          canCallTokens: canDoQueueActions,
+          canViewAllTokens: canViewAllTokens,
+          canViewReports: true,
+          canTransferTokens: canDoQueueActions,
           canDeleteTokens: false,
           canManageRoles: false,
-          allowedDepartments: ['all'] // Can view all departments
+          allowedDepartments: ['all']
         };
 
       default:

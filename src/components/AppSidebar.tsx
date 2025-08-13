@@ -35,8 +35,8 @@ const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home, permission: null },
   { title: "Generate Token", url: "/token", icon: PlusCircle, permission: "canGenerateTokens" },
   { title: "Queue Display", url: "/queue-display", icon: Monitor, permission: null },
-  { title: "Queue Monitor", url: "/queue-monitor", icon: Activity, permission: "canCallTokens" },
-  { title: "Queue Management", url: "/queue-management", icon: Users, permission: "canViewAllTokens" },
+   { title: "Queue Monitor", url: "/queue-monitor", icon: Activity, permission: null },
+   { title: "Queue Management", url: "/queue-management", icon: Users, permission: null },
 ];
 
 const departmentItems = [
