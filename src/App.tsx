@@ -59,7 +59,11 @@ const AppContent = () => {
           />
           <Route 
             path="/monitor" 
-            element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
+            element={
+              <ProtectedRoute requiredPermission="canCallTokens">
+                <QueueMonitor />
+              </ProtectedRoute>
+            } 
           />
           <Route 
             path="/admin" 
@@ -89,6 +93,11 @@ const AppContent = () => {
               <Route path="/auth" element={<Auth />} />
               <Route path="/queue-display" element={<QueueDisplay />} />
               <Route path="/queue-monitor" element={
+                <ProtectedRoute requiredPermission="canCallTokens">
+                  <QueueMonitor />
+                </ProtectedRoute>
+              } />
+              <Route path="/monitor" element={
                 <ProtectedRoute requiredPermission="canCallTokens">
                   <QueueMonitor />
                 </ProtectedRoute>

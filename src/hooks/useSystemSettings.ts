@@ -92,15 +92,14 @@ export const useSystemSettings = () => {
 
       const { error } = await supabase
         .from('system_settings')
-        .upsert(settingsToUpsert);
+        .upsert(settingsToUpsert, {
+          onConflict: 'setting_key'
+        });
 
       if (error) throw error;
 
-      const newSettings = { ...settings };
-      updates.forEach(update => {
-        newSettings[update.key] = update.value;
-      });
-      setSettings(newSettings);
+      // Reload settings to ensure we have the latest state
+      await loadSettings();
 
       toast.success('Settings saved successfully');
       return true;
