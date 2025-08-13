@@ -18,6 +18,7 @@ interface User {
   id: string;
   email: string;
   full_name: string;
+  username: string;
   role: string;
   department: string;
   created_at: string;
@@ -44,7 +45,8 @@ const UserManagement: React.FC = () => {
     email: '',
     password: '',
     full_name: '',
-    role: 'user',
+    username: '',
+    role: 'doctor',
     department: ''
   });
 
@@ -90,13 +92,23 @@ const UserManagement: React.FC = () => {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate required fields
+    if (!formData.email || !formData.password || !formData.full_name || !formData.username) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     try {
+      const redirectUrl = `${window.location.origin}/`;
+      
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             full_name: formData.full_name,
+            username: formData.username,
             role: formData.role,
             department: formData.department
           }
@@ -105,10 +117,14 @@ const UserManagement: React.FC = () => {
 
       if (error) throw error;
 
-      toast.success('User created successfully');
+      toast.success('User created successfully! They will receive a confirmation email.');
       setIsCreateModalOpen(false);
-      setFormData({ email: '', password: '', full_name: '', role: 'user', department: '' });
-      fetchUsers();
+      setFormData({ email: '', password: '', full_name: '', username: '', role: 'doctor', department: '' });
+      
+      // Refresh users list after a short delay to allow for database trigger
+      setTimeout(() => {
+        fetchUsers();
+      }, 1000);
     } catch (error: any) {
       console.error('Error creating user:', error);
       toast.error(error.message || 'Failed to create user');
@@ -175,7 +191,8 @@ const UserManagement: React.FC = () => {
   const filteredUsers = users.filter(user =>
     user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.role.toLowerCase().includes(searchTerm.toLowerCase())
+    user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const availableDepartments = departments.filter(dept =>
@@ -236,14 +253,27 @@ const UserManagement: React.FC = () => {
                 />
               </div>
               <div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  value={formData.username}
+                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                  placeholder="Unique username for login"
+                  required
+                />
+              </div>
+              <div>
                 <Label htmlFor="role">Role</Label>
                 <Select value={formData.role} onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="user">Department User</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="admin">Admin (Full Access)</SelectItem>
+                    <SelectItem value="receptionist">Receptionist (Token Generation)</SelectItem>
+                    <SelectItem value="doctor">Doctor (Department Access)</SelectItem>
+                    <SelectItem value="nurse">Nurse (Department Access)</SelectItem>
+                    <SelectItem value="staff">Staff (Basic Access)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -289,6 +319,7 @@ const UserManagement: React.FC = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Username</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Primary Department</TableHead>
@@ -299,13 +330,23 @@ const UserManagement: React.FC = () => {
               {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.full_name}</TableCell>
+                  <TableCell className="font-mono text-sm">{user.username || 'N/A'}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                      {user.role === 'admin' ? 'Admin' : 'User'}
+                    <Badge variant={user.role === 'admin' ? 'default' : 
+                                  user.role === 'receptionist' ? 'outline' : 'secondary'}>
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell>{user.department}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: departments.find(d => d.name === user.department)?.color_code || '#gray' }}
+                      />
+                      {user.department}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Dialog open={isDepartmentModalOpen && selectedUser?.id === user.id} 

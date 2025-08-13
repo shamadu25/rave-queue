@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 import {
   Sidebar,
   SidebarContent,
@@ -31,10 +32,11 @@ import {
 } from "@/components/ui/sidebar";
 
 const navigationItems = [
-  { title: "Dashboard", url: "/", icon: Home, role: "all" },
-  { title: "Generate Token", url: "/token", icon: PlusCircle, role: "all" },
-  { title: "Queue Display", url: "/display", icon: Monitor, role: "all" },
-  { title: "Queue Monitor", url: "/monitor", icon: Activity, role: "staff" },
+  { title: "Dashboard", url: "/", icon: Home, permission: null },
+  { title: "Generate Token", url: "/token", icon: PlusCircle, permission: "canGenerateTokens" },
+  { title: "Queue Display", url: "/queue-display", icon: Monitor, permission: null },
+  { title: "Queue Monitor", url: "/queue-monitor", icon: Activity, permission: "canCallTokens" },
+  { title: "Queue Management", url: "/queue-management", icon: Users, permission: "canViewAllTokens" },
 ];
 
 const departmentItems = [
@@ -49,14 +51,12 @@ const departmentItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const { profile } = useAuth();
+  const { hasPermission, isAdmin } = useRoleAccess();
   const location = useLocation();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
   const collapsed = state === "collapsed";
-
-  const canAccessStaff = profile?.role && profile.role !== 'patient';
-  const isAdmin = profile?.role === 'admin';
 
   const getRoleBasedTitle = () => {
     if (!profile?.role) return "Queue Management";
@@ -124,7 +124,8 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => {
-                if (item.role === "staff" && !canAccessStaff) return null;
+                // Check permissions for this item
+                if (item.permission && !hasPermission(item.permission as any)) return null;
                 
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -145,25 +146,18 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Department Quick Access - only for staff */}
-        {canAccessStaff && (
+        {/* Department Quick Access - show current department for staff */}
+        {profile?.department && !isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel>Departments</SidebarGroupLabel>
+            <SidebarGroupLabel>My Department</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {departmentItems.map((item) => (
-                  <SidebarMenuItem key={item.department}>
-                    <SidebarMenuButton 
-                      className={`
-                        hover:bg-muted/50 text-muted-foreground hover:text-foreground
-                        ${profile?.department === item.department ? 'bg-primary/5 text-primary' : ''}
-                      `}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                <SidebarMenuItem>
+                  <SidebarMenuButton className="bg-primary/5 text-primary">
+                    <Activity className="h-4 w-4" />
+                    {!collapsed && <span>{profile.department}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -175,26 +169,28 @@ export function AppSidebar() {
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                 <SidebarMenuItem>
-                   <SidebarMenuButton asChild>
-                     <NavLink to="/admin" className="flex items-center gap-3">
-                       <BarChart3 className="h-4 w-4" />
-                       {!collapsed && <span>Admin Panel</span>}
-                     </NavLink>
-                   </SidebarMenuButton>
-                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <NavLink to="/settings" className="flex items-center gap-3">
-                      <Settings className="h-4 w-4" />
-                      {!collapsed && <span>Settings</span>}
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={isActive("/admin-dashboard")}
+                    className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary"
+                  >
+                    <NavLink to="/admin-dashboard" className="flex items-center gap-3">
+                      <BarChart3 className="h-4 w-4" />
+                      {!collapsed && <span>Admin Dashboard</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <Users className="h-4 w-4" />
-                    {!collapsed && <span>User Management</span>}
+                  <SidebarMenuButton 
+                    asChild
+                    isActive={isActive("/settings")}
+                    className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary"
+                  >
+                    <NavLink to="/settings" className="flex items-center gap-3">
+                      <Settings className="h-4 w-4" />
+                      {!collapsed && <span>Settings</span>}
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

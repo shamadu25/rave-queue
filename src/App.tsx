@@ -16,7 +16,9 @@ import TokenGeneration from "./pages/TokenGeneration";
 import Settings from "./pages/Settings";
 import PrintTicketPage from "./pages/PrintTicket";
 import AdminDashboardPage from "./pages/AdminDashboard";
+import QueueManagementPage from "./pages/QueueManagementPage";
 import NotFound from "./pages/NotFound";
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
@@ -79,21 +81,39 @@ const AppContent = () => {
           <main className="flex-1 overflow-auto">
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/token" element={<TokenGeneration />} />
+              <Route path="/token" element={
+                <ProtectedRoute requiredPermission="canGenerateTokens">
+                  <TokenGeneration />
+                </ProtectedRoute>
+              } />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/display" element={<QueueDisplay />} />
+              <Route path="/queue-display" element={<QueueDisplay />} />
+              <Route path="/queue-monitor" element={
+                <ProtectedRoute requiredPermission="canCallTokens">
+                  <QueueMonitor />
+                </ProtectedRoute>
+              } />
+              <Route path="/queue-management" element={
+                <ProtectedRoute requiredPermission="canViewAllTokens">
+                  <QueueManagementPage />
+                </ProtectedRoute>
+              } />
               <Route path="/print/:tokenId" element={<PrintTicketPage />} />
               <Route 
                 path="/settings" 
-                element={user ? <Settings /> : <Navigate to="/auth" replace />} 
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <Settings />
+                  </ProtectedRoute>
+                } 
               />
               <Route 
-                path="/monitor" 
-                element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
-              />
-              <Route 
-                path="/admin" 
-                element={user ? <AdminDashboardPage /> : <Navigate to="/auth" replace />} 
+                path="/admin-dashboard" 
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminDashboardPage />
+                  </ProtectedRoute>
+                } 
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
