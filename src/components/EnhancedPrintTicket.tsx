@@ -46,211 +46,289 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
   const actualClinicName = clinicName || settings.clinic_name?.replace(/"/g, '') || 'Medical Center';
   const actualFooterNote = footerNote || settings.footer_note?.replace(/"/g, '') || 'Powered by RAVESOFT';
 
+  const formatPrintDateTime = (date: Date) => {
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  };
+
   return (
     <>
       <style>
         {`
           @media print {
-            @page {
-              size: 58mm 120mm;
-              margin: 2mm;
+            * {
+              visibility: hidden;
             }
+            .thermal-ticket, .thermal-ticket * {
+              visibility: visible;
+            }
+            .thermal-ticket {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+            }
+            
+            @page {
+              size: 58mm auto;
+              margin: 0;
+            }
+            
             body {
-              font-family: 'Courier New', 'Arial', monospace;
+              font-family: 'Courier New', monospace;
               margin: 0;
               padding: 0;
               background: white;
-              font-size: 12px;
-              line-height: 1.2;
-            }
-            .ticket-container {
-              width: 54mm;
-              background: white;
-              padding: 2mm;
-              text-align: center;
-              border: none;
-            }
-            .no-print {
-              display: none !important;
+              color: #000 !important;
             }
             
-            /* 80mm thermal printer support */
+            .ticket-content {
+              width: 58mm;
+              max-width: 58mm;
+              background: white !important;
+              color: #000 !important;
+              font-family: 'Courier New', monospace;
+              font-size: 10px;
+              line-height: 1.3;
+              text-align: center;
+              padding: 3mm;
+              margin: 0;
+              box-sizing: border-box;
+            }
+            
+            /* 80mm printer support */
             @media print and (min-width: 80mm) {
               @page {
-                size: 80mm 120mm;
-                margin: 3mm;
+                size: 80mm auto;
+                margin: 0;
               }
-              .ticket-container {
-                width: 74mm;
-                padding: 3mm;
+              .ticket-content {
+                width: 80mm;
+                max-width: 80mm;
+                padding: 4mm;
+                font-size: 11px;
               }
-              body {
-                font-size: 14px;
+              .hospital-name {
+                font-size: 16px !important;
+              }
+              .token-display {
+                font-size: 24px !important;
+              }
+              .department-name {
+                font-size: 13px !important;
               }
             }
+            
+            .clinic-logo {
+              width: 25mm !important;
+              height: auto !important;
+              max-height: 15mm !important;
+              margin: 0 auto 2mm auto !important;
+              display: block !important;
+            }
+            
+            .hospital-name {
+              font-size: 14px !important;
+              font-weight: bold !important;
+              text-transform: uppercase !important;
+              margin: 2mm 0 !important;
+              color: #000 !important;
+              text-align: center !important;
+              line-height: 1.2 !important;
+            }
+            
+            .separator {
+              border-top: 1px dashed #000 !important;
+              margin: 3mm 0 !important;
+              width: 100% !important;
+            }
+            
+            .token-display {
+              font-size: 20px !important;
+              font-weight: bold !important;
+              margin: 3mm 0 !important;
+              color: #000 !important;
+              text-align: center !important;
+              background: none !important;
+              border: 2px solid #000 !important;
+              padding: 2mm !important;
+            }
+            
+            .department-name {
+              font-size: 12px !important;
+              font-weight: bold !important;
+              margin: 2mm 0 !important;
+              color: #000 !important;
+              text-align: center !important;
+            }
+            
+            .counter-info {
+              font-size: 10px !important;
+              margin: 1mm 0 !important;
+              color: #000 !important;
+              text-align: center !important;
+            }
+            
+            .datetime-info {
+              font-size: 8px !important;
+              color: #000 !important;
+              text-align: left !important;
+              margin: 3mm 0 1mm 0 !important;
+            }
+            
+            .footer-text {
+              font-size: 9px !important;
+              color: #000 !important;
+              text-align: center !important;
+              margin: 2mm 0 0 0 !important;
+              font-style: italic !important;
+            }
+            
+            .emergency-badge {
+              background: #000 !important;
+              color: white !important;
+              padding: 1mm 2mm !important;
+              margin: 2mm 0 !important;
+              font-size: 8px !important;
+              font-weight: bold !important;
+            }
           }
-
+          
           @media screen {
-            body {
-              background: #f0f0f0;
-              padding: 20px;
-              font-family: 'Arial', sans-serif;
+            .thermal-ticket {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100vw;
+              height: 100vh;
+              background: rgba(0,0,0,0.8);
+              z-index: 9999;
+              display: flex;
+              align-items: center;
+              justify-content: center;
             }
-            .ticket-container {
-              width: 58mm;
-              max-width: 250px;
-              margin: 0 auto;
+            
+            .ticket-content {
+              width: 220px;
+              max-width: 220px;
               background: white;
-              padding: 10px;
-              border: 2px dashed #ddd;
-              border-radius: 8px;
-              box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+              font-family: 'Courier New', monospace;
+              font-size: 12px;
+              line-height: 1.4;
+              text-align: center;
+              padding: 15px;
+              border: 2px solid #ddd;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+              border-radius: 4px;
             }
-          }
-
-          .ticket-header {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
-            margin-bottom: 10px;
-          }
-
-          .clinic-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 0 0 4px 0;
-            color: #333;
-          }
-
-          .ticket-datetime {
-            font-size: 10px;
-            color: #666;
-            margin: 2px 0;
-          }
-
-          .token-section {
-            margin: 15px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-          }
-
-          .token-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 4px;
-          }
-
-          .token-number {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 8px 0;
-            padding: 8px;
-            border: 2px solid;
-            border-radius: 6px;
-            background: white;
-          }
-
-          .patient-info {
-            margin: 12px 0;
-            text-align: left;
-          }
-
-          .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 4px 0;
-            font-size: 11px;
-          }
-
-          .info-label {
-            color: #666;
-            font-weight: 500;
-          }
-
-          .info-value {
-            color: #333;
-            font-weight: bold;
-          }
-
-          .department-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: bold;
-            color: white;
-            margin: 8px 0;
-          }
-
-          .status-section {
-            margin: 12px 0;
-            padding: 8px;
-            background: #f0f8ff;
-            border-radius: 4px;
-          }
-
-          .status-label {
-            font-size: 10px;
-            color: #666;
-            margin-bottom: 2px;
-          }
-
-          .status-value {
-            font-size: 14px;
-            font-weight: bold;
-            color: #0066cc;
-          }
-
-          .footer-section {
-            border-top: 1px solid #eee;
-            padding-top: 8px;
-            margin-top: 12px;
-          }
-
-          .footer-note {
-            font-size: 9px;
-            color: #666;
-            font-style: italic;
-          }
-
-          .instructions {
-            font-size: 9px;
-            color: #666;
-            margin-top: 6px;
-            line-height: 1.3;
-          }
-
-          .priority-emergency {
-            background: #dc2626 !important;
-            color: white !important;
-            border-color: #dc2626 !important;
+            
+            .clinic-logo {
+              width: 50px;
+              height: auto;
+              max-height: 30px;
+              margin: 0 auto 8px auto;
+              display: block;
+            }
+            
+            .hospital-name {
+              font-size: 16px;
+              font-weight: bold;
+              text-transform: uppercase;
+              margin: 8px 0;
+              color: #333;
+              text-align: center;
+              line-height: 1.2;
+            }
+            
+            .separator {
+              border-top: 1px dashed #ccc;
+              margin: 12px 0;
+              width: 100%;
+            }
+            
+            .token-display {
+              font-size: 28px;
+              font-weight: bold;
+              margin: 12px 0;
+              color: #2563eb;
+              text-align: center;
+              border: 2px solid #2563eb;
+              padding: 8px;
+              border-radius: 4px;
+            }
+            
+            .department-name {
+              font-size: 14px;
+              font-weight: bold;
+              margin: 8px 0;
+              color: #333;
+              text-align: center;
+            }
+            
+            .counter-info {
+              font-size: 12px;
+              margin: 4px 0;
+              color: #666;
+              text-align: center;
+            }
+            
+            .datetime-info {
+              font-size: 10px;
+              color: #666;
+              text-align: left;
+              margin: 12px 0 4px 0;
+            }
+            
+            .footer-text {
+              font-size: 11px;
+              color: #666;
+              text-align: center;
+              margin: 8px 0 0 0;
+              font-style: italic;
+            }
+            
+            .emergency-badge {
+              background: #dc2626;
+              color: white;
+              padding: 4px 8px;
+              margin: 8px 0;
+              font-size: 10px;
+              font-weight: bold;
+              border-radius: 12px;
+              display: inline-block;
+            }
           }
         `}
       </style>
 
-      <div className="ticket-container">
-        {/* Header with Logo Support */}
-        <div className="ticket-header">
+      <div className="thermal-ticket">
+        <div className="ticket-content">
+          {/* Company Logo */}
           {settings.clinic_logo_url && (
             <img 
               src={settings.clinic_logo_url.replace(/"/g, '')} 
               alt="Clinic Logo" 
-              style={{ width: '40px', height: '40px', marginBottom: '5px' }}
+              className="clinic-logo"
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           )}
-          <h1 className="clinic-name">{actualClinicName}</h1>
-          <div className="ticket-datetime">
-            <div>{date}</div>
-            <div>{time}</div>
+          
+          {/* Hospital Name - Bold, Centered, Large Font */}
+          <div className="hospital-name">
+            {actualClinicName}
           </div>
-        </div>
-
-        {/* Token Section */}
-        <div className="token-section">
-          <div className="token-label">Queue Token</div>
+          
+          <div className="separator"></div>
+          
+          {/* Token Number - Large, Bold, Centered */}
           <div 
-            className={`token-number ${entry.priority === 'Emergency' ? 'priority-emergency' : ''}`}
+            className="token-display"
             style={{
               borderColor: entry.priority === 'Emergency' ? '#dc2626' : departmentColor,
               color: entry.priority === 'Emergency' ? '#dc2626' : departmentColor
@@ -258,50 +336,49 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
           >
             {entry.token}
           </div>
+          
+          {/* Emergency Priority Badge */}
           {entry.priority === 'Emergency' && (
-            <div style={{ color: '#dc2626', fontWeight: 'bold', fontSize: '12px' }}>
+            <div className="emergency-badge">
               EMERGENCY PRIORITY
             </div>
           )}
-        </div>
-
-        {/* Patient Information */}
-        <div className="patient-info">
-          <div className="info-row">
-            <span className="info-label">Patient:</span>
-            <span className="info-value">{entry.fullName}</span>
+          
+          {/* Department Name - Centered */}
+          <div className="department-name">
+            {entry.department}
           </div>
+          
+          {/* Counter Number (if assigned) */}
+          <div className="counter-info">
+            Counter: Available at Service Window
+          </div>
+          
+          <div className="separator"></div>
+          
+          {/* Patient Information */}
+          <div className="counter-info">
+            Patient: {entry.fullName}
+          </div>
+          
           {entry.phoneNumber && (
-            <div className="info-row">
-              <span className="info-label">Phone:</span>
-              <span className="info-value">{entry.phoneNumber}</span>
+            <div className="counter-info">
+              Phone: {entry.phoneNumber}
             </div>
           )}
-        </div>
-
-        {/* Department */}
-        <div 
-          className="department-badge"
-          style={{ backgroundColor: departmentColor }}
-        >
-          {entry.department}
-        </div>
-
-        {/* Status */}
-        <div className="status-section">
-          <div className="status-label">Current Status</div>
-          <div className="status-value">{entry.status}</div>
-        </div>
-
-        {/* Footer */}
-        <div className="footer-section">
-          <div className="instructions">
-            Please wait for your token to be called.
-            <br />
-            Stay near the waiting area.
+          
+          <div className="separator"></div>
+          
+          {/* Date & Time - Small Font, Bottom Left */}
+          <div className="datetime-info">
+            Issued: {formatPrintDateTime(entry.timestamp)}
           </div>
+          
+          {/* Custom Footer Text - Centered */}
           {actualFooterNote && (
-            <div className="footer-note">{actualFooterNote}</div>
+            <div className="footer-text">
+              {actualFooterNote}
+            </div>
           )}
         </div>
       </div>
