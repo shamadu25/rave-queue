@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { PrintTicket } from '@/components/PrintTicket';
+import { EnhancedPrintTicket } from '@/components/EnhancedPrintTicket';
 import { QueueEntry } from '@/types/queue';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -138,10 +138,10 @@ const PrintTicketPage: React.FC = () => {
   }
 
   return (
-    <PrintTicket
+    <EnhancedPrintTicket
       entry={entry}
-      clinicName={systemSettings.clinic_name || "Globe Health Assessment Clinic"}
-      footerNote={systemSettings.footer_note || "Thank you for visiting"}
+      clinicName={systemSettings.clinic_name || "Advanced Medical Center"}
+      footerNote={systemSettings.footer_note || "Powered by RAVESOFT"}
       departmentColor={departmentColor}
     />
   );
