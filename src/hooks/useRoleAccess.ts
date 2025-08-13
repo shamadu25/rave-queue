@@ -1,4 +1,5 @@
 import { useAuth } from './useAuth';
+import { useSystemSettings } from './useSystemSettings';
 
 export interface Permission {
   canManageUsers: boolean;
@@ -16,6 +17,7 @@ export interface Permission {
 
 export const useRoleAccess = () => {
   const { profile } = useAuth();
+  const { settings } = useSystemSettings();
 
   const getPermissions = (): Permission => {
     if (!profile) {
@@ -141,8 +143,22 @@ export const useRoleAccess = () => {
   const canAccessDepartment = (departmentName: string) => {
     // Admin can access all departments
     if (profile?.role === 'admin') return true;
+    
+    // Check if allow all users setting is enabled
+    const allowAllUsers = settings.allow_all_users_call_tokens === 'true' || settings.allow_all_users_call_tokens === true;
+    if (allowAllUsers) return true;
+    
     return permissions.allowedDepartments.includes('all') || 
            permissions.allowedDepartments.includes(departmentName);
+  };
+
+  const canCallTokensFromAnyDepartment = () => {
+    // Admin always can
+    if (profile?.role === 'admin') return true;
+    
+    // Check if allow all users setting is enabled
+    const allowAllUsers = settings.allow_all_users_call_tokens === 'true' || settings.allow_all_users_call_tokens === true;
+    return allowAllUsers;
   };
 
   const isAdmin = () => profile?.role === 'admin';
@@ -153,6 +169,7 @@ export const useRoleAccess = () => {
     permissions,
     hasPermission,
     canAccessDepartment,
+    canCallTokensFromAnyDepartment,
     isAdmin,
     isReceptionist,
     isDepartmentStaff,

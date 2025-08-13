@@ -6,18 +6,38 @@ export const usePrintTicket = () => {
     const colorParam = departmentColor ? `?color=${encodeURIComponent(departmentColor)}` : '';
     const printUrl = `/print/${entry.id}${colorParam}`;
     
-    // For direct printing, just open the window and it will auto-print
-    const printWindow = window.open(printUrl, '_blank', 'width=400,height=600,scrollbars=no,resizable=no');
+    // For silent auto-printing, open in a hidden iframe and trigger print
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = printUrl;
     
-    if (!printWindow) {
-      // Fallback: navigate to print page in same window
-      window.location.href = printUrl;
-    } else {
-      // Close the print window after a short delay to allow printing
-      setTimeout(() => {
-        printWindow.close();
-      }, 3000);
-    }
+    iframe.onload = () => {
+      try {
+        // Try to print the iframe content directly
+        iframe.contentWindow?.print();
+        
+        // Remove iframe after printing
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 2000);
+      } catch (error) {
+        console.warn('Silent printing failed, opening print window:', error);
+        // Fallback to opening print window
+        const printWindow = window.open(printUrl, '_blank', 'width=400,height=600,scrollbars=no,resizable=no');
+        
+        if (!printWindow) {
+          // Final fallback: navigate to print page in same window
+          window.location.href = printUrl;
+        } else {
+          // Close the print window after a short delay
+          setTimeout(() => {
+            printWindow.close();
+          }, 3000);
+        }
+      }
+    };
+    
+    document.body.appendChild(iframe);
   };
 
   return { printTicket };

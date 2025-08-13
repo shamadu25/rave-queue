@@ -110,19 +110,11 @@ const AppContent = () => {
               <Route path="/print/:tokenId" element={<PrintTicketPage />} />
               <Route 
                 path="/settings" 
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <Settings />
-                  </ProtectedRoute>
-                } 
+                element={user ? <Settings /> : <Navigate to="/auth" replace />} 
               />
               <Route 
                 path="/admin-dashboard" 
-                element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboardPage />
-                  </ProtectedRoute>
-                } 
+                element={user ? <AdminDashboardPage /> : <Navigate to="/auth" replace />} 
               />
               <Route path="*" element={<NotFound />} />
             </Routes>

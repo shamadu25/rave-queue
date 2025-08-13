@@ -397,6 +397,17 @@ export const GeneralSettings = () => {
                   onCheckedChange={(checked) => handleInputChange('display_estimated_wait', checked)}
                 />
               </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Allow All Users to Call Next Token</Label>
+                  <p className="text-sm text-muted-foreground">Allow all staff to call tokens from any department</p>
+                </div>
+                <Switch
+                  checked={formData.allow_all_users_call_tokens === 'true' || formData.allow_all_users_call_tokens === true}
+                  onCheckedChange={(checked) => handleInputChange('allow_all_users_call_tokens', checked)}
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

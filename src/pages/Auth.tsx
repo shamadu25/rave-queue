@@ -145,13 +145,15 @@ export default function Auth() {
 
                 <div className="mt-6 space-y-2 text-sm text-muted-foreground">
                   <p className="font-medium">Demo Credentials:</p>
-                  <p>Doctor: doctor@queue.com / 123456</p>
-                  <p>Lab: lab@queue.com / 123456</p>
-                  <p>Pharmacy: pharmacy@queue.com / 123456</p>
-                  <p>X-ray: xray@queue.com / 123456</p>
-                  <p>Scan: scan@queue.com / 123456</p>
-                  <p>Reception: reception@queue.com / 123456</p>
-                  <p>Admin: admin@queue.com / 123456</p>
+                  <p className="text-green-600 font-semibold">🔑 Super Admin: admin@hospital.com / 123456</p>
+                  <p className="text-blue-600 font-semibold">👤 Universal Staff: user@queue.com / 123456</p>
+                  <div className="mt-2 pt-2 border-t">
+                    <p className="text-xs opacity-75">Legacy accounts:</p>
+                    <p>Admin: admin@queue.com / 123456</p>
+                    <p>Doctor: doctor@queue.com / 123456</p>
+                    <p>Lab: lab@queue.com / 123456</p>
+                    <p>Pharmacy: pharmacy@queue.com / 123456</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
