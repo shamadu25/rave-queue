@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { QueueEntry, Department } from '@/types/queue';
 import { useQueueEntries } from '@/hooks/useQueueEntries';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
-//import { usePrintTicket } from '@/hooks/usePrintTicket';
+import { usePrintTicket } from '@/hooks/usePrintTicket';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-//import { CheckCircle, Printer, User } from 'lucide-react';
+import { CheckCircle, Printer, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import MarqueeHeader from '@/components/MarqueeHeader';
@@ -32,7 +32,7 @@ const departmentPrefixes: Record<string, string> = {
 const TokenGeneration = () => {
   const { addEntry } = useQueueEntries();
   const { settings, loading: settingsLoading } = useSystemSettings();
-  //const { printTicket } = usePrintTicket();
+  const { printTicket } = usePrintTicket();
   const [generatedToken, setGeneratedToken] = useState<QueueEntry | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [patientName, setPatientName] = useState('');
@@ -109,8 +109,8 @@ const TokenGeneration = () => {
   const handlePrintToken = () => {
     if (generatedToken) {
       // Find the department color for the generated token
-      //const dept = departments.find(d => d.name === generatedToken.department);
-    //  printTicketManual(generatedToken, dept?.color_code);
+    /const dept = departments.find(d => d.name === generatedToken.department);
+     printTicketManual(generatedToken, dept?.color_code);
     }
   };
 
@@ -123,13 +123,13 @@ const TokenGeneration = () => {
 
   const hospitalName = settings.clinic_name?.replace(/"/g, '') || 'Hospital Clinic';
 
-//  if (settingsLoading || loadingDepartments) {
- //   return (
-  //    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-   //     <div className="text-center">
-   //       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-    //      <p className="mt-2 text-muted-foreground">Loading...</p>
-    //    </div>
+  if (settingsLoading || loadingDepartments) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+       <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
