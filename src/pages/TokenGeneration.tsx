@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { QueueEntry, Department } from '@/types/queue';
 import { useQueueEntries } from '@/hooks/useQueueEntries';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
-import { usePrintTicket } from '@/hooks/usePrintTicket';
+//import { usePrintTicket } from '@/hooks/usePrintTicket';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
