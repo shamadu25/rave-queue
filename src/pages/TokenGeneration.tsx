@@ -110,7 +110,7 @@ const TokenGeneration = () => {
     if (generatedToken) {
       // Find the department color for the generated token
       const dept = departments.find(d => d.name === generatedToken.department);
-      printTicketManual(generatedToken, dept?.color_code);
+    //  printTicketManual(generatedToken, dept?.color_code);
     }
   };
 
