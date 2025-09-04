@@ -32,7 +32,7 @@ const departmentPrefixes: Record<string, string> = {
 const TokenGeneration = () => {
   const { addEntry } = useQueueEntries();
   const { settings, loading: settingsLoading } = useSystemSettings();
-  const { printTicket } = usePrintTicket();
+  //const { printTicket } = usePrintTicket();
   const [generatedToken, setGeneratedToken] = useState<QueueEntry | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [patientName, setPatientName] = useState('');
@@ -92,7 +92,7 @@ const TokenGeneration = () => {
         setShowConfirmation(true);
         setPatientName('');
         setSelectedDepartment(null);
-        printTicket(newEntry, department.color_code);
+        //printTicket(newEntry, department.color_code);
         toast.success(`Token ${token} generated successfully!`);
         
         // Auto-redirect after 30 seconds
@@ -109,7 +109,7 @@ const TokenGeneration = () => {
   const handlePrintToken = () => {
     if (generatedToken) {
       // Find the department color for the generated token
-      const dept = departments.find(d => d.name === generatedToken.department);
+      //const dept = departments.find(d => d.name === generatedToken.department);
     //  printTicketManual(generatedToken, dept?.color_code);
     }
   };
