@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, Printer, User } from 'lucide-react';
+//import { CheckCircle, Printer, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import MarqueeHeader from '@/components/MarqueeHeader';
@@ -32,7 +32,7 @@ const departmentPrefixes: Record<string, string> = {
 const TokenGeneration = () => {
   const { addEntry } = useQueueEntries();
   const { settings, loading: settingsLoading } = useSystemSettings();
-  const { printTicket, printTicketManual } = usePrintTicket();
+  const { printTicket } = usePrintTicket();
   const [generatedToken, setGeneratedToken] = useState<QueueEntry | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [patientName, setPatientName] = useState('');
@@ -95,10 +95,10 @@ const TokenGeneration = () => {
         printTicket(newEntry, department.color_code);
         toast.success(`Token ${token} generated successfully!`);
         
-        // Auto-redirect after 20 seconds
+        // Auto-redirect after 30 seconds
         setTimeout(() => {
           handleNewToken();
-        }, 20000);
+        }, 30000);
       }
     } catch (error) {
       toast.error('Failed to generate token. Please try again.');
