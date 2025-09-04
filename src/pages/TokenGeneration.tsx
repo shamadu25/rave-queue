@@ -32,7 +32,7 @@ const departmentPrefixes: Record<string, string> = {
 const TokenGeneration = () => {
   const { addEntry } = useQueueEntries();
   const { settings, loading: settingsLoading } = useSystemSettings();
-  const { printTicket } = usePrintTicket();
+  const { printTicket, printTicketManual } = usePrintTicket();
   const [generatedToken, setGeneratedToken] = useState<QueueEntry | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [patientName, setPatientName] = useState('');
@@ -92,13 +92,13 @@ const TokenGeneration = () => {
         setShowConfirmation(true);
         setPatientName('');
         setSelectedDepartment(null);
-        //printTicket(newEntry, department.color_code);
+        printTicket(newEntry, department.color_code);
         toast.success(`Token ${token} generated successfully!`);
         
-        // Auto-redirect after 30 seconds
+        // Auto-redirect after 20 seconds
         setTimeout(() => {
           handleNewToken();
-        }, 30000);
+        }, 20000);
       }
     } catch (error) {
       toast.error('Failed to generate token. Please try again.');
@@ -109,8 +109,8 @@ const TokenGeneration = () => {
   const handlePrintToken = () => {
     if (generatedToken) {
       // Find the department color for the generated token
-    /const dept = departments.find(d => d.name === generatedToken.department);
-     printTicketManual(generatedToken, dept?.color_code);
+      const dept = departments.find(d => d.name === generatedToken.department);
+      printTicketManual(generatedToken, dept?.color_code);
     }
   };
 
@@ -126,7 +126,7 @@ const TokenGeneration = () => {
   if (settingsLoading || loadingDepartments) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-       <div className="text-center">
+        <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="mt-2 text-muted-foreground">Loading...</p>
         </div>
