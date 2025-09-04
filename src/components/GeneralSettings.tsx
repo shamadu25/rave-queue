@@ -101,6 +101,7 @@ export const GeneralSettings = () => {
       'enable_online_booking': 'general',
       'enable_patient_feedback': 'general',
       'enable_auto_print': 'general',
+      'enable_silent_printing': 'general',
       'auto_reset_midnight': 'queue',
       'display_estimated_wait': 'queue',
       'enable_display_screen': 'display',
@@ -371,6 +372,17 @@ export const GeneralSettings = () => {
                   <Switch
                     checked={formData.enable_auto_print || false}
                     onCheckedChange={(checked) => handleInputChange('enable_auto_print', checked)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Silent Printing</Label>
+                    <p className="text-sm text-muted-foreground">Print tickets immediately without showing print dialog or confirmation</p>
+                  </div>
+                  <Switch
+                    checked={formData.enable_silent_printing || false}
+                    onCheckedChange={(checked) => handleInputChange('enable_silent_printing', checked)}
                   />
                 </div>
               </div>

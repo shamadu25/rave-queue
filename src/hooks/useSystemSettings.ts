@@ -17,6 +17,8 @@ interface SystemSettings {
   enable_voice_announcements?: boolean;
   enable_online_booking?: boolean;
   enable_patient_feedback?: boolean;
+  enable_auto_print?: boolean;
+  enable_silent_printing?: boolean;
   auto_reset_midnight?: boolean;
   display_estimated_wait?: boolean;
   enable_display_screen?: boolean;
@@ -126,6 +128,8 @@ export const useSystemSettings = () => {
       'enable_voice_announcements': 'Enable voice announcements for queue calls',
       'enable_online_booking': 'Allow patients to book appointments online',
       'enable_patient_feedback': 'Allow patients to provide feedback',
+      'enable_auto_print': 'Automatically print tickets when tokens are generated',
+      'enable_silent_printing': 'Print tickets silently without showing print dialog',
       'auto_reset_midnight': 'Automatically reset queue counters every day',
       'display_estimated_wait': 'Show estimated wait times to patients',
       'enable_display_screen': 'Show the public queue display screen',
