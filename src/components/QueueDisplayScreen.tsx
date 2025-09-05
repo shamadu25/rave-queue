@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { TextToSpeechService } from '@/components/TextToSpeechService';
 import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
+import { useTextToSpeech } from '@/services/textToSpeechService';
+import { AnnouncementTicker } from '@/components/AnnouncementTicker';
 import { 
   Volume2, 
   VolumeX, 
@@ -28,11 +30,19 @@ export function QueueDisplayScreen({
 }: QueueDisplayScreenProps) {
   const { entries, loading } = useQueueMonitor();
   const { settings } = useSystemSettings();
+  const { announceWithChime, isEnabled } = useTextToSpeech();
   const [currentlyServing, setCurrentlyServing] = useState<any>(null);
   const [upcomingTokens, setUpcomingTokens] = useState<any[]>([]);
   const [audioEnabled, setAudioEnabled] = useState(enableAudio);
   const [lastAnnouncedToken, setLastAnnouncedToken] = useState<string>('');
   const [userInteracted, setUserInteracted] = useState(false);
+  const [announcement, setAnnouncement] = useState<{
+    message: string;
+    department?: string;
+    departmentColor?: string;
+    token?: string;
+    show: boolean;
+  }>({ message: '', show: false });
   
   const ttsService = useRef<TextToSpeechService | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -333,13 +343,22 @@ export function QueueDisplayScreen({
           <p>
             {settings.clinic_name?.toString().replace(/"/g, '') || 'SG CLINIC'} Queue Management System • Live Updates • 
             {audioEnabled && settings.enable_voice_announcements !== false ? 
-              (userInteracted ? ' 🔊 Audio Ready' : ' 🔊 Click to Enable Audio') : 
-              ' 🔇 Audio Disabled'
+              <span className="text-green-600 font-medium">🔊 Audio Enabled</span> : 
+              <span className="text-muted-foreground">🔇 Audio Disabled</span>
             }
-            {settings.use_native_voice !== false ? ' • Native Voice' : ' • Enhanced Audio'}
           </p>
         </div>
       </div>
+
+      {/* Announcement Ticker */}
+      <AnnouncementTicker
+        message={announcement.message}
+        department={announcement.department}
+        departmentColor={announcement.departmentColor}
+        token={announcement.token}
+        show={announcement.show}
+        onHide={() => setAnnouncement(prev => ({ ...prev, show: false }))}
+      />
     </div>
   );
 }

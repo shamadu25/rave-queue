@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { StatusBadge } from '@/components/StatusBadge';
+import { useAnnouncementQueue } from '@/hooks/useAnnouncementQueue';
 import { 
   Phone, 
   Play, 
@@ -53,6 +54,7 @@ export function ModernQueueList({
 }: ModernQueueListProps) {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<Status | 'all'>('all');
+  const { announceToken } = useAnnouncementQueue();
 
   const filteredEntries = entries.filter(entry => {
     if (selectedDepartment !== 'all' && entry.department !== selectedDepartment) {
@@ -267,7 +269,19 @@ export function ModernQueueList({
                         <Button
                           size="sm"
                           variant={nextAction.variant}
-                          onClick={() => onUpdateStatus?.(entry.id, nextAction.action as Status)}
+                          onClick={async () => {
+                            const newStatus = nextAction.action as Status;
+                            onUpdateStatus?.(entry.id, newStatus);
+                            
+                            // Play announcement when calling a token
+                            if (newStatus === 'Called') {
+                              try {
+                                await announceToken(entry.token, entry.department);
+                              } catch (error) {
+                                console.error('Announcement failed:', error);
+                              }
+                            }
+                          }}
                           className="gap-1"
                         >
                           <nextAction.icon className="h-3 w-3" />

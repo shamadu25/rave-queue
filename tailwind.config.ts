@@ -18,6 +18,11 @@ export default {
 			}
 		},
 		extend: {
+			animation: {
+				'pulse-slow': 'pulse 2s ease-in-out infinite',
+				'bounce': 'bounce 1s infinite',
+				'ping': 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
+			},
 			fontFamily: {
 				'inter': ['Inter', 'sans-serif'],
 				'poppins': ['Poppins', 'sans-serif'],

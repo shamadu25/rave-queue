@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
+import { AnnouncementSettings } from '@/components/AnnouncementSettings';
 import { toast } from 'sonner';
 import { 
   Settings, 
@@ -20,7 +21,8 @@ import {
   Phone,
   Mail,
   Globe,
-  AlertTriangle
+  AlertTriangle,
+  Volume2
 } from 'lucide-react';
 
 export const GeneralSettings = () => {
@@ -139,7 +141,7 @@ export const GeneralSettings = () => {
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="general">
             <Settings className="h-4 w-4 mr-2" />
             General
@@ -151,6 +153,10 @@ export const GeneralSettings = () => {
           <TabsTrigger value="display">
             <Monitor className="h-4 w-4 mr-2" />
             Display & Alerts
+          </TabsTrigger>
+          <TabsTrigger value="announcements">
+            <Volume2 className="h-4 w-4 mr-2" />
+            Announcements
           </TabsTrigger>
           <TabsTrigger value="defaults">
             <Building2 className="h-4 w-4 mr-2" />
@@ -561,6 +567,11 @@ export const GeneralSettings = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Announcements Tab */}
+        <TabsContent value="announcements" className="space-y-4">
+          <AnnouncementSettings />
         </TabsContent>
       </Tabs>
 

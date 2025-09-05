@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       departments: {
         Row: {
+          announcement_template: string | null
           color_code: string | null
           created_at: string
           end_time: string
@@ -29,6 +30,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          announcement_template?: string | null
           color_code?: string | null
           created_at?: string
           end_time?: string
@@ -42,6 +44,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          announcement_template?: string | null
           color_code?: string | null
           created_at?: string
           end_time?: string

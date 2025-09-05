@@ -77,12 +77,76 @@ class TextToSpeechService {
     this.synthesis.speak(utterance);
   }
 
-  public announceToken(token: string, department: string, counter?: string, hospitalName?: string) {
-    const counterText = counter ? ` at ${counter}` : '';
-    const hospitalText = hospitalName ? ` at ${hospitalName}` : '';
-    const message = `Token ${token}, please proceed to ${department}${counterText}${hospitalText}`;
+  public announceToken(token: string, department: string, counter?: string, hospitalName?: string, template?: string) {
+    let message: string;
+    
+    if (template) {
+      // Use custom template with variable substitution
+      message = template
+        .replace(/{number}/g, token)
+        .replace(/{department}/g, department)
+        .replace(/{hospitalName}/g, hospitalName || 'Hospital')
+        .replace(/{room}/g, counter || '');
+    } else {
+      // Fallback to default template
+      const counterText = counter ? ` at ${counter}` : '';
+      const hospitalText = hospitalName ? ` at ${hospitalName}` : '';
+      message = `Token ${token}, please proceed to ${department}${counterText}${hospitalText}`;
+    }
     
     this.speak(message, 'high');
+  }
+
+  public async announceWithChime(token: string, department: string, counter?: string, hospitalName?: string, template?: string, enableChime: boolean = true) {
+    if (enableChime) {
+      await this.playChime();
+      // Small delay before announcement
+      setTimeout(() => {
+        this.announceToken(token, department, counter, hospitalName, template);
+      }, 500);
+    } else {
+      this.announceToken(token, department, counter, hospitalName, template);
+    }
+  }
+
+  public async playChime(volume: number = 0.6): Promise<void> {
+    return new Promise<void>((resolve) => {
+      try {
+        const audioContext = new AudioContext();
+        const duration = 0.3;
+        
+        // Create two-tone chime
+        const createTone = (frequency: number, startTime: number, duration: number) => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.setValueAtTime(frequency, startTime);
+          oscillator.type = 'sine';
+          
+          gainNode.gain.setValueAtTime(0, startTime);
+          gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+          
+          oscillator.start(startTime);
+          oscillator.stop(startTime + duration);
+          
+          return oscillator;
+        };
+
+        // Play two-tone chime: high-low
+        const now = audioContext.currentTime;
+        createTone(800, now, duration);
+        createTone(600, now + duration * 0.7, duration);
+        
+        setTimeout(resolve, (duration * 2) * 1000);
+      } catch (error) {
+        console.error('Failed to play chime:', error);
+        resolve();
+      }
+    });
   }
 
   public announceTransfer(token: string, fromDept: string, toDept: string, hospitalName?: string) {
@@ -136,10 +200,20 @@ export const useTextToSpeech = () => {
 
   return {
     speak: (text: string, priority?: 'high' | 'normal') => ttsService.speak(text, priority),
-    announceToken: (token: string, department: string, counter?: string) => 
-      ttsService.announceToken(token, department, counter, settings?.clinic_name),
+    announceToken: (token: string, department: string, counter?: string, template?: string) => 
+      ttsService.announceToken(token, department, counter, settings?.clinic_name, template),
+    announceWithChime: (token: string, department: string, counter?: string, template?: string) =>
+      ttsService.announceWithChime(
+        token, 
+        department, 
+        counter, 
+        settings?.clinic_name, 
+        template, 
+        settings?.enable_announcement_chime === true || String(settings?.enable_announcement_chime) === 'true'
+      ),
     announceTransfer: (token: string, fromDept: string, toDept: string) =>
       ttsService.announceTransfer(token, fromDept, toDept, settings?.clinic_name),
+    playChime: (volume?: number) => ttsService.playChime(volume || parseFloat(String(settings?.chime_volume || 0.6))),
     stop: () => ttsService.stop(),
     pause: () => ttsService.pause(),
     resume: () => ttsService.resume(),
