@@ -82,9 +82,7 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <DynamicBranding variant="header" logoSize="lg" />
-              <div>
-             /*   <p className="text-muted-foreground text-lg">Welcome to the Digital Queue Management System</p> */
-              </div>
+             
             </div>
             <div className="flex items-center gap-3">
               <Link to="/public-display">
