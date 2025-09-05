@@ -27,7 +27,7 @@ const AppContent = () => {
   const location = useLocation();
   
   // Routes that should be displayed without sidebar/topbar (fullscreen)
-  const fullscreenRoutes = ['/token', '/print'];
+  const fullscreenRoutes = ['/auth', '/token', '/print'];
   const isFullscreenRoute = fullscreenRoutes.some(route => 
     location.pathname === route || location.pathname.startsWith(route + '/')
   );
