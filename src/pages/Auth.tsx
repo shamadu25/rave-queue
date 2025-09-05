@@ -130,39 +130,39 @@ export default function Auth() {
                 {/* Sign In Form */}
                 <TabsContent value="signin">
                   <form onSubmit={handleSignIn} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-white font-medium">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                     <div className="space-y-2">
+                      <Label htmlFor="email" className="text-black font-bold">Email</Label>
+                      <div className="relative auth-input">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/60 w-4 h-4 z-10" />
                         <Input
                           id="email"
                           type="email"
                           placeholder="Enter your email"
                           value={signInForm.email}
                           onChange={(e) => setSignInForm(prev => ({ ...prev, email: e.target.value }))}
-                          className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20 glow-on-hover"
+                          className="pl-10 auth-input-field text-black font-bold placeholder:text-black/80 focus:outline-none focus:ring-0"
                           required
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password" className="text-white font-medium">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                      <Label htmlFor="password" className="text-black font-bold">Password</Label>
+                      <div className="relative auth-input">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/60 w-4 h-4 z-10" />
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter your password"
                           value={signInForm.password}
                           onChange={(e) => setSignInForm(prev => ({ ...prev, password: e.target.value }))}
-                          className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20 glow-on-hover"
+                          className="pl-10 pr-10 auth-input-field text-black font-bold placeholder:text-black/80 focus:outline-none focus:ring-0"
                           required
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black/60 hover:text-black z-10"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
@@ -172,15 +172,16 @@ export default function Auth() {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full btn-gradient py-3 text-lg font-semibold disabled:opacity-50"
+                      className="w-full auth-button-gradient py-3 text-lg font-bold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+                      style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
                     >
                       {loading ? 'Signing In...' : 'Sign In'}
                     </Button>
 
                     {/* Demo credentials */}
                     <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10">
-                      <p className="text-xs text-white/70 mb-2">Demo Credentials:</p>
-                      <div className="grid grid-cols-1 gap-1 text-xs text-white/80">
+                      <p className="text-xs text-black/90 font-bold mb-2">Demo Credentials:</p>
+                      <div className="grid grid-cols-1 gap-1 text-xs text-black/80 font-medium">
                         <span>Admin: admin@hospital.com / 123456</span>
                         <span>User: user@queue.com / 123456</span>
                       </div>
@@ -193,54 +194,54 @@ export default function Auth() {
                   <form onSubmit={handleSignUp} className="space-y-4">
                     <div className="grid grid-cols-1 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="fullName" className="text-white font-medium">Full Name</Label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                        <Label htmlFor="fullName" className="text-black font-bold">Full Name</Label>
+                        <div className="relative auth-input">
+                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/60 w-4 h-4 z-10" />
                           <Input
                             id="fullName"
                             type="text"
                             placeholder="Enter your full name"
                             value={signUpForm.fullName}
                             onChange={(e) => setSignUpForm(prev => ({ ...prev, fullName: e.target.value }))}
-                            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20"
+                            className="pl-10 auth-input-field text-black font-bold placeholder:text-black/80 focus:outline-none focus:ring-0"
                             required
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="signup-email" className="text-white font-medium">Email</Label>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                        <Label htmlFor="signup-email" className="text-black font-bold">Email</Label>
+                        <div className="relative auth-input">
+                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/60 w-4 h-4 z-10" />
                           <Input
                             id="signup-email"
                             type="email"
                             placeholder="Enter your email"
                             value={signUpForm.email}
                             onChange={(e) => setSignUpForm(prev => ({ ...prev, email: e.target.value }))}
-                            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20"
+                            className="pl-10 auth-input-field text-black font-bold placeholder:text-black/80 focus:outline-none focus:ring-0"
                             required
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="signup-password" className="text-white font-medium">Password</Label>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                        <Label htmlFor="signup-password" className="text-black font-bold">Password</Label>
+                        <div className="relative auth-input">
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black/60 w-4 h-4 z-10" />
                           <Input
                             id="signup-password"
                             type={showPassword ? "text" : "password"}
                             placeholder="Create a password"
                             value={signUpForm.password}
                             onChange={(e) => setSignUpForm(prev => ({ ...prev, password: e.target.value }))}
-                            className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20"
+                            className="pl-10 pr-10 auth-input-field text-black font-bold placeholder:text-black/80 focus:outline-none focus:ring-0"
                             required
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black/60 hover:text-black z-10"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -248,10 +249,10 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="role" className="text-white font-medium">Role</Label>
+                        <Label htmlFor="role" className="text-black font-bold">Role</Label>
                         <Select value={signUpForm.role} onValueChange={(value) => setSignUpForm(prev => ({ ...prev, role: value }))}>
-                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                            <Shield className="w-4 h-4 mr-2 text-white/60" />
+                          <SelectTrigger className="auth-input-field text-black font-bold">
+                            <Shield className="w-4 h-4 mr-2 text-black/60" />
                             <SelectValue placeholder="Select your role" />
                           </SelectTrigger>
                           <SelectContent>
@@ -265,9 +266,9 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="department" className="text-white font-medium">Department</Label>
+                        <Label htmlFor="department" className="text-black font-bold">Department</Label>
                         <Select value={signUpForm.department} onValueChange={(value) => setSignUpForm(prev => ({ ...prev, department: value }))}>
-                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                          <SelectTrigger className="auth-input-field text-black font-bold">
                             <SelectValue placeholder="Select department" />
                           </SelectTrigger>
                           <SelectContent>
@@ -284,7 +285,8 @@ export default function Auth() {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full btn-gradient py-3 text-lg font-semibold disabled:opacity-50"
+                      className="w-full auth-button-gradient py-3 text-lg font-bold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+                      style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
                     >
                       {loading ? 'Creating Account...' : 'Create Account'}
                     </Button>

@@ -95,6 +95,10 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Auth form specific gradients */
+    --auth-input-gradient: linear-gradient(90deg, #3b82f6 0%, #14b8a6 50%, #8b5cf6 100%);
+    --auth-button-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #8b5cf6 100%);
   }
 
   .dark {
@@ -331,4 +335,53 @@
   50% {
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.6), 0 0 50px rgba(59, 130, 246, 0.3);
   }
+}
+
+/* Auth form styles */
+.auth-input {
+  @apply relative;
+}
+
+.auth-input-field {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-input-field::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  background: var(--auth-input-gradient);
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: -1;
+}
+
+.auth-input-field:focus::before {
+  background: var(--auth-input-gradient);
+  filter: brightness(1.2);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.auth-button-gradient {
+  background: var(--auth-button-gradient);
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.auth-button-gradient:hover {
+  animation-duration: 1s;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
