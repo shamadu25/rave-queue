@@ -584,9 +584,24 @@ export const GeneralSettings = () => {
           </Card>
         </TabsContent>
 
-        {/* Announcements Tab */}
+        {/* Queue Display Settings Tab */}
+        <TabsContent value="queue-display" className="space-y-4">
+          <QueueDisplaySettings />
+        </TabsContent>
+
+        {/* Enhanced Announcements Tab */}
         <TabsContent value="announcements" className="space-y-4">
-          <AnnouncementSettings />
+          <EnhancedAnnouncementSettings />
+        </TabsContent>
+
+        {/* Role-Based Access Tab */}
+        <TabsContent value="access" className="space-y-4">
+          <RoleBasedAccess />
+        </TabsContent>
+
+        {/* Enhanced Print Settings Tab */}
+        <TabsContent value="print" className="space-y-4">
+          <EnhancedPrintSettings />
         </TabsContent>
       </Tabs>
 

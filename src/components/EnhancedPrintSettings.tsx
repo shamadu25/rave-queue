@@ -40,9 +40,9 @@ export const EnhancedPrintSettings = () => {
       print_thermal_mode: settings?.print_thermal_mode === true || String(settings?.print_thermal_mode) === 'true',
       print_logo_size: settings?.print_logo_size || 'md',
       print_font_bold: settings?.print_font_bold === true || String(settings?.print_font_bold) === 'true',
-      print_include_qr: settings?.print_include_qr === true || settings?.print_include_qr === 'true',
-      enable_auto_print: settings?.enable_auto_print === true || settings?.enable_auto_print === 'true',
-      enable_silent_printing: settings?.enable_silent_printing === true || settings?.enable_silent_printing === 'true'
+      print_include_qr: settings?.print_include_qr === true || String(settings?.print_include_qr) === 'true',
+      enable_auto_print: settings?.enable_auto_print === true || String(settings?.enable_auto_print) === 'true',
+      enable_silent_printing: settings?.enable_silent_printing === true || String(settings?.enable_silent_printing) === 'true'
     });
   }, [settings]);
 

@@ -4,6 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { StatusBadge } from '@/components/StatusBadge';
+import { useQueueMonitor } from '@/hooks/useQueueMonitor';
+import { useSystemSettings } from '@/hooks/useSystemSettings';
+import { useTextToSpeech } from '@/services/textToSpeechService';
+import { AnnouncementTicker } from '@/components/AnnouncementTicker';
+import { useAuth } from '@/hooks/useAuth';
 import { useAnnouncementQueue } from '@/hooks/useAnnouncementQueue';
 import { 
   Phone, 
@@ -55,6 +60,8 @@ export function ModernQueueList({
   const [selectedDepartment, setSelectedDepartment] = useState<Department | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<Status | 'all'>('all');
   const { announceToken } = useAnnouncementQueue();
+  const { settings } = useSystemSettings();
+  const { profile } = useAuth();
 
   const filteredEntries = entries.filter(entry => {
     if (selectedDepartment !== 'all' && entry.department !== selectedDepartment) {
@@ -92,7 +99,16 @@ export function ModernQueueList({
 
   const canPerformActionOnEntry = (entryDepartment: string) => {
     if (!canPerformActions) return false;
-    // All logged-in users can now perform actions on tokens from any department
+    
+    // Check if staff access is restricted to own department
+    const restrictAccess = settings?.staff_access_own_department === true || String(settings?.staff_access_own_department) === 'true';
+    
+    if (restrictAccess && userRole !== 'admin') {
+      // Non-admin users are restricted to their own department
+      return userDepartment === entryDepartment;
+    }
+    
+    // Admin or unrestricted access - can perform actions on any department
     return true;
   };
 
@@ -289,6 +305,7 @@ export function ModernQueueList({
                         </Button>
                       )}
                       
+                      {/* Check cross-department transfer permission */}
                       {entry.status !== 'Completed' && entry.status !== 'Skipped' && (
                         <>
                           <Button
@@ -301,19 +318,27 @@ export function ModernQueueList({
                             Skip
                           </Button>
                           
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => onTransfer?.(entry.id, entry.department, entry.fullName, entry.token)}
-                            className="gap-1"
-                          >
-                            <ArrowRightLeft className="h-3 w-3" />
-                            Transfer
-                          </Button>
+                          {(settings?.allow_cross_department_transfer === true || 
+                            String(settings?.allow_cross_department_transfer) === 'true' || 
+                            userRole === 'admin') && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onTransfer?.(entry.id, entry.department, entry.fullName, entry.token)}
+                              className="gap-1"
+                            >
+                              <ArrowRightLeft className="h-3 w-3" />
+                              Transfer
+                            </Button>
+                          )}
                         </>
                       )}
 
                       {entry.status === 'Completed' && (
+                        settings?.allow_cross_department_transfer === true || 
+                        String(settings?.allow_cross_department_transfer) === 'true' || 
+                        userRole === 'admin'
+                      ) && (
                         <Button
                           size="sm"
                           variant="outline"
