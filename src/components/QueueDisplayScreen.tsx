@@ -36,6 +36,7 @@ export function QueueDisplayScreen({
   const [audioEnabled, setAudioEnabled] = useState(enableAudio);
   const [lastAnnouncedToken, setLastAnnouncedToken] = useState<string>('');
   const [userInteracted, setUserInteracted] = useState(false);
+  const [displaySettings, setDisplaySettings] = useState<Record<string, any>>({});
   const [announcement, setAnnouncement] = useState<{
     message: string;
     department?: string;
@@ -46,6 +47,34 @@ export function QueueDisplayScreen({
   
   const ttsService = useRef<TextToSpeechService | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Load display settings from system settings
+  useEffect(() => {
+    setDisplaySettings({
+      background_start: settings?.display_background_start || '#3B82F6',
+      background_end: settings?.display_background_end || '#1D4ED8',
+      header_text: settings?.display_header_text || 'Welcome to Our Healthcare Facility',
+      header_font_size: parseInt(String(settings?.display_header_font_size || 32)),
+      header_color: settings?.display_header_color || '#FFFFFF',
+      token_font_size: parseInt(String(settings?.display_token_font_size || 64)),
+      department_font_size: parseInt(String(settings?.display_department_font_size || 20)),
+      ticker_font_size: parseInt(String(settings?.display_ticker_font_size || 18)),
+      logo_enabled: settings?.display_logo_enabled === true || String(settings?.display_logo_enabled) === 'true',
+      logo_size: settings?.display_logo_size || 'md',
+      token_glow: settings?.display_token_glow === true || String(settings?.display_token_glow) === 'true',
+      department_colors: settings?.display_department_colors === true || String(settings?.display_department_colors) === 'true'
+    });
+  }, [settings]);
+
+  // Listen for display settings updates
+  useEffect(() => {
+    const handleSettingsUpdate = (event: CustomEvent) => {
+      setDisplaySettings(event.detail);
+    };
+
+    window.addEventListener('queueDisplaySettingsUpdated', handleSettingsUpdate as EventListener);
+    return () => window.removeEventListener('queueDisplaySettingsUpdated', handleSettingsUpdate as EventListener);
+  }, []);
 
   // Initialize TTS service and enable user interaction
   useEffect(() => {
@@ -187,15 +216,26 @@ export function QueueDisplayScreen({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-background flex flex-col">
+    <div 
+      className="min-h-screen flex flex-col"
+      style={{
+        background: `linear-gradient(135deg, ${displaySettings.background_start}, ${displaySettings.background_end})`
+      }}
+    >
       {/* Header */}
-      <div className="bg-white border-b shadow-sm p-4">
+      <div className="bg-white/90 backdrop-blur border-b shadow-sm p-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <Activity className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                {department ? `${department} Department` : settings.clinic_name?.toString().replace(/"/g, '') || 'SG CLINIC'}
+              <h1 
+                className="font-bold text-foreground"
+                style={{
+                  fontSize: `${displaySettings.header_font_size}px`,
+                  color: displaySettings.header_color
+                }}
+              >
+                {displaySettings.header_text || (department ? `${department} Department` : settings.clinic_name?.toString().replace(/"/g, '') || 'SG CLINIC')}
               </h1>
               <p className="text-muted-foreground">
                 {department ? 'Department Queue Display' : 'Live Queue Status'}
@@ -245,11 +285,17 @@ export function QueueDisplayScreen({
                   </div>
                   
                   <div className="space-y-4">
-                    <div className="text-8xl font-bold text-primary tracking-wider">
+                    <div 
+                      className={`font-bold text-primary tracking-wider ${displaySettings.token_glow ? 'filter drop-shadow-lg' : ''}`}
+                      style={{ fontSize: `${displaySettings.token_font_size}px` }}
+                    >
                       {currentlyServing.token}
                     </div>
                     
-                    <div className="flex items-center justify-center gap-3 text-2xl text-muted-foreground">
+                    <div 
+                      className="flex items-center justify-center gap-3 text-muted-foreground"
+                      style={{ fontSize: `${displaySettings.department_font_size}px` }}
+                    >
                       <span>Please proceed to</span>
                       <ArrowRight className="h-6 w-6" />
                       <span className="font-semibold text-foreground">

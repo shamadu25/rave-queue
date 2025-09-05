@@ -12,6 +12,8 @@ import { QueueDisplaySettings } from '@/components/QueueDisplaySettings';
 import { EnhancedAnnouncementSettings } from '@/components/EnhancedAnnouncementSettings';
 import { RoleBasedAccess } from '@/components/RoleBasedAccess';
 import { EnhancedPrintSettings } from '@/components/EnhancedPrintSettings';
+import { EnhancedTicketTemplateSettings } from '@/components/EnhancedTicketTemplateSettings';
+import { EnhancedDynamicBranding } from '@/components/EnhancedDynamicBranding';
 import { toast } from 'sonner';
 import { 
   Settings, 
@@ -601,7 +603,10 @@ export const GeneralSettings = () => {
 
         {/* Enhanced Print Settings Tab */}
         <TabsContent value="print" className="space-y-4">
-          <EnhancedPrintSettings />
+          <div className="space-y-6">
+            <EnhancedPrintSettings />
+            <EnhancedTicketTemplateSettings />
+          </div>
         </TabsContent>
       </Tabs>
 

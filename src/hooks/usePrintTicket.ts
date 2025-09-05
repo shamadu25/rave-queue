@@ -1,5 +1,8 @@
+import React from 'react';
 import { QueueEntry } from '@/types/queue';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
+import { EnhancedPrintTicket } from '@/components/EnhancedPrintTicket';
+import { createRoot } from 'react-dom/client';
 
 export const usePrintTicket = () => {
   const { settings } = useSystemSettings();
@@ -23,43 +26,47 @@ export const usePrintTicket = () => {
     const printUrl = `/print/${entry.id}${colorParam}`;
     
     if (silentPrintingEnabled) {
-      // Silent printing - use iframe approach to avoid dialogs
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.style.position = 'absolute';
-      iframe.style.left = '-9999px';
-      iframe.src = printUrl;
-      
-      iframe.onload = () => {
-        try {
-          // Print immediately without delay to default printer
-          if (iframe.contentWindow) {
-            iframe.contentWindow.print();
-          }
-          
-          // Clean up iframe after printing
-          setTimeout(() => {
-            if (document.body.contains(iframe)) {
-              document.body.removeChild(iframe);
+      // Enhanced silent printing with React component rendering
+      try {
+        const printContainer = document.createElement('div');
+        printContainer.style.position = 'fixed';
+        printContainer.style.top = '-9999px';
+        printContainer.style.left = '-9999px';
+        printContainer.style.visibility = 'hidden';
+        document.body.appendChild(printContainer);
+
+        const root = createRoot(printContainer);
+        root.render(
+          React.createElement(EnhancedPrintTicket, {
+            entry,
+            departmentColor
+          })
+        );
+
+        // Allow rendering to complete, then print and cleanup
+        setTimeout(() => {
+          try {
+            window.print();
+            setTimeout(() => {
+              if (document.body.contains(printContainer)) {
+                root.unmount();
+                document.body.removeChild(printContainer);
+              }
+            }, 2000);
+          } catch (error) {
+            console.warn('Enhanced silent printing failed, falling back to iframe:', error);
+            // Fallback to iframe method
+            if (document.body.contains(printContainer)) {
+              root.unmount();
+              document.body.removeChild(printContainer);
             }
-          }, 1500);
-        } catch (error) {
-          console.warn('Silent printing failed:', error);
-          // Clean up iframe on error
-          if (document.body.contains(iframe)) {
-            document.body.removeChild(iframe);
+            fallbackIframePrint(printUrl);
           }
-        }
-      };
-      
-      iframe.onerror = () => {
-        console.error('Failed to load print content for silent printing');
-        if (document.body.contains(iframe)) {
-          document.body.removeChild(iframe);
-        }
-      };
-      
-      document.body.appendChild(iframe);
+        }, 500);
+      } catch (error) {
+        console.warn('React rendering failed, using iframe fallback:', error);
+        fallbackIframePrint(printUrl);
+      }
     } else {
       // Standard printing - open print dialog for manual printer selection
       const printWindow = window.open(printUrl, '_blank', 'width=400,height=600,scrollbars=no,resizable=no');
@@ -69,6 +76,41 @@ export const usePrintTicket = () => {
         window.location.href = printUrl;
       }
     }
+  };
+
+  const fallbackIframePrint = (printUrl: string) => {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.style.position = 'absolute';
+    iframe.style.left = '-9999px';
+    iframe.src = printUrl;
+    
+    iframe.onload = () => {
+      try {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.print();
+        }
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 1500);
+      } catch (error) {
+        console.warn('Iframe printing also failed:', error);
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      }
+    };
+    
+    iframe.onerror = () => {
+      console.error('Failed to load print content');
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+    };
+    
+    document.body.appendChild(iframe);
   };
 
   const printTicketManual = (entry: QueueEntry, departmentColor?: string) => {

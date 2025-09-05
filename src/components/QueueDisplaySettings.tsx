@@ -80,7 +80,7 @@ export const QueueDisplaySettings = () => {
     try {
       setSaving(true);
       
-      // Prepare settings for update
+      // Prepare settings for update with proper categories
       const settingsToUpdate = Object.entries(formData)
         .filter(([key, value]) => key && value !== undefined)
         .map(([key, value]) => ({
@@ -92,6 +92,13 @@ export const QueueDisplaySettings = () => {
       const success = await updateMultipleSettings(settingsToUpdate);
       
       if (success) {
+        // Force reload of display settings to ensure immediate propagation
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('queueDisplaySettingsUpdated', { 
+            detail: formData 
+          }));
+        }, 500);
+        
         toast.success('✅ Queue Display settings saved! Changes will reflect immediately on all display screens.');
       }
     } catch (error) {

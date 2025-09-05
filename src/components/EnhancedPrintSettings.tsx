@@ -54,6 +54,13 @@ export const EnhancedPrintSettings = () => {
     try {
       setSaving(true);
       
+      // Include ticket template settings
+      const templateSettings = [
+        { key: 'ticket_header_template', value: formData.ticket_header_template || 'Logo + {hospitalName}', category: 'print' },
+        { key: 'ticket_body_template', value: formData.ticket_body_template || 'Token: {token}\nService: {department}\nDate: {date}\nTime: {time}', category: 'print' },
+        { key: 'ticket_footer_template', value: formData.ticket_footer_template || 'Thank you for visiting {hospitalName}', category: 'print' }
+      ];
+
       const settingsToUpdate = Object.entries(formData)
         .filter(([key, value]) => key && value !== undefined)
         .map(([key, value]) => ({
@@ -62,10 +69,17 @@ export const EnhancedPrintSettings = () => {
           category: 'print'
         }));
 
-      const success = await updateMultipleSettings(settingsToUpdate);
+      // Combine all settings including templates
+      const allSettings = [...settingsToUpdate, ...templateSettings];
+      const success = await updateMultipleSettings(allSettings);
       
       if (success) {
-        toast.success('✅ Print settings saved! Changes will apply to all new printed tickets.');
+        // Notify other components about ticket template changes
+        window.dispatchEvent(new CustomEvent('ticketTemplateUpdated', { 
+          detail: formData 
+        }));
+        
+        toast.success('✅ Print settings and ticket templates saved! Changes will apply to all new printed tickets.');
       }
     } catch (error) {
       console.error('Error saving print settings:', error);
