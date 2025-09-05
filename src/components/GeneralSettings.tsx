@@ -8,7 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
-import { AnnouncementSettings } from '@/components/AnnouncementSettings';
+import { QueueDisplaySettings } from '@/components/QueueDisplaySettings';
+import { EnhancedAnnouncementSettings } from '@/components/EnhancedAnnouncementSettings';
+import { RoleBasedAccess } from '@/components/RoleBasedAccess';
+import { EnhancedPrintSettings } from '@/components/EnhancedPrintSettings';
 import { toast } from 'sonner';
 import { 
   Settings, 
@@ -141,22 +144,34 @@ export const GeneralSettings = () => {
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-8">
           <TabsTrigger value="general">
             <Settings className="h-4 w-4 mr-2" />
             General
           </TabsTrigger>
-          <TabsTrigger value="queue">
-            <Clock className="h-4 w-4 mr-2" />
-            Queue Config
-          </TabsTrigger>
-          <TabsTrigger value="display">
+          <TabsTrigger value="queue-display">
             <Monitor className="h-4 w-4 mr-2" />
-            Display & Alerts
+            Display
           </TabsTrigger>
           <TabsTrigger value="announcements">
             <Volume2 className="h-4 w-4 mr-2" />
-            Announcements
+            Voice
+          </TabsTrigger>
+          <TabsTrigger value="access">
+            <Building2 className="h-4 w-4 mr-2" />
+            Access
+          </TabsTrigger>
+          <TabsTrigger value="print">
+            <Building2 className="h-4 w-4 mr-2" />
+            Print
+          </TabsTrigger>
+          <TabsTrigger value="queue">
+            <Clock className="h-4 w-4 mr-2" />
+            Queue
+          </TabsTrigger>
+          <TabsTrigger value="display">
+            <Monitor className="h-4 w-4 mr-2" />
+            Alerts
           </TabsTrigger>
           <TabsTrigger value="defaults">
             <Building2 className="h-4 w-4 mr-2" />
