@@ -34,7 +34,9 @@ interface SystemSettings {
 }
 
 export const useSystemSettings = () => {
-  const [settings, setSettings] = useState<SystemSettings>({});
+  const [settings, setSettings] = useState<SystemSettings>({
+    enable_silent_printing: false  // Default to popup printing
+  });
   const [loading, setLoading] = useState(true);
 
   const loadSettings = async () => {
