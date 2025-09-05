@@ -1,16 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Modern Hospital Queue Management System Design System */
+/* Production-Ready Queue Management System Design System */
 
 @layer base {
   :root {
-    /* Modern medical theme color palette */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 9%;
+    /* Enhanced gradient color system */
+    --background: 220 25% 97%;
+    --foreground: 220 15% 8%;
+    
+    /* Animated gradient colors */
+    --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #14b8a6 25%, #8b5cf6 50%, #06b6d4 75%, #3b82f6 100%);
+    --gradient-secondary: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    
+    /* Glassmorphism effects */
+    --glass-backdrop: blur(16px);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 9%;
@@ -87,8 +98,17 @@
   }
 
   .dark {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 95%;
+    --background: 220 25% 5%;
+    --foreground: 220 15% 95%;
+    
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #14b8a6 25%, #8b5cf6 50%, #06b6d4 75%, #3b82f6 100%);
+    --gradient-secondary: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    --gradient-card: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.6) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(15,23,42,0.4) 0%, rgba(30,41,59,0.2) 100%);
+    
+    --glass-border: rgba(71, 85, 105, 0.3);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 
     --card: 0 0% 7%;
     --card-foreground: 0 0% 95%;
@@ -147,7 +167,73 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-foreground font-poppins;
+  }
+  
+  /* Animated backgrounds */
+  .gradient-animated {
+    background: var(--gradient-primary);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+  }
+  
+  /* Glassmorphism styles */
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-card {
+    @apply glass rounded-2xl border border-white/20;
+  }
+  
+  /* Enhanced button styles */
+  .btn-gradient {
+    @apply relative overflow-hidden bg-gradient-to-r from-primary via-blue-500 to-teal-500 text-white font-semibold;
+    background-size: 200% 200%;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-gradient:hover {
+    background-position: right center;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Floating particles animation */
+  .particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+  }
+  
+  .particle {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: particleFloat 15s infinite linear;
+  }
+  
+  /* Glowing effects */
+  .glow {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.2);
+  }
+  
+  .glow-on-hover {
+    transition: all 0.3s ease;
+  }
+  
+  .glow-on-hover:hover {
+    @apply glow;
   }
 
   /* Custom status pill styles */
@@ -174,14 +260,75 @@
 
   /* Professional typography */
   .heading-primary {
-    @apply text-2xl font-semibold text-foreground;
+    @apply text-3xl font-bold text-foreground tracking-tight;
   }
 
   .heading-secondary {
-    @apply text-lg font-medium text-foreground;
+    @apply text-xl font-semibold text-foreground;
   }
 
   .text-subtle {
     @apply text-sm text-muted-foreground;
+  }
+}
+
+/* Enhanced animations */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6), 0 0 50px rgba(59, 130, 246, 0.3);
   }
 }

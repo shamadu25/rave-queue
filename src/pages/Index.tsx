@@ -4,12 +4,14 @@ import { ModernQueueList } from '@/components/ModernQueueList';
 import { DashboardStats } from '@/components/DashboardStats';
 import { QueueEntry, Status } from '@/types/queue';
 import { useQueueEntries } from '@/hooks/useQueueEntries';
-import { Activity, Shield, PlusCircle } from 'lucide-react';
+import { Activity, Shield, PlusCircle, Monitor } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { usePrintTicket } from '@/hooks/usePrintTicket';
+import { DynamicBranding } from '@/components/DynamicBranding';
+import { AnimatedBackground } from '@/components/AnimatedBackground';
 
 const Index = () => {
   const { entries: queueEntries, loading, addEntry, updateStatus } = useQueueEntries();
@@ -61,123 +63,154 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Loading queue data...</p>
+      <AnimatedBackground variant="dashboard">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-muted-foreground">Loading queue data...</p>
+          </div>
         </div>
-      </div>
+      </AnimatedBackground>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">{getPageTitle()}</h1>
-          <p className="text-muted-foreground">Welcome to the Hospital Queue Management System</p>
+    <AnimatedBackground variant="dashboard">
+      <div className="p-6 space-y-6 relative z-10">
+        {/* Enhanced Page Header with Dynamic Branding */}
+        <div className="glass-card p-6 border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <DynamicBranding variant="header" logoSize="lg" />
+              <div>
+                <h1 className="text-4xl font-bold text-foreground">{getPageTitle()}</h1>
+                <p className="text-muted-foreground text-lg">Welcome to the Digital Queue Management System</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link to="/public-display">
+                <Button variant="outline" className="glow-on-hover">
+                  <Monitor className="h-4 w-4 mr-2" />
+                  Public Display
+                </Button>
+              </Link>
+              <Link to="/token">
+                <Button className="btn-gradient">
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Generate Token
+                </Button>
+              </Link>
+              {!profile && (
+                <Link to="/auth">
+                  <Button variant="outline" className="glow-on-hover">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Staff Login
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Link to="/token">
-            <Button className="bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90">
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Generate Token
-            </Button>
-          </Link>
-          {!profile && (
-            <Link to="/auth">
-              <Button variant="outline">
-                <Shield className="h-4 w-4 mr-2" />
-                Staff Login
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
 
-      {/* Dashboard Stats */}
-      <DashboardStats
-        totalEntries={totalEntries}
-        waitingCount={waitingCount}
-        inProgressCount={inProgressCount}
-        completedCount={completedCount}
-      />
-
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Admin Dashboard or Queue List based on role */}
-        <div className="lg:col-span-1">
-          {profile?.role === 'admin' ? (
-            <Card className="medical-card">
-              <CardHeader>
-                <CardTitle className="heading-secondary flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  Admin Panel
-                </CardTitle>
-                <CardDescription>
-                  View reports and manage system
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Link to="/settings">
-                    <Button variant="outline" className="w-full justify-start">
-                      Settings
-                    </Button>
-                  </Link>
-                  <Link to="/monitor">
-                    <Button variant="outline" className="w-full justify-start">
-                      Queue Monitor
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="medical-card">
-              <CardHeader>
-                <CardTitle className="heading-secondary flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  Quick Actions
-                </CardTitle>
-                <CardDescription>
-                  Staff tools and access
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Link to="/token">
-                    <Button className="w-full bg-gradient-to-r from-primary to-blue-400 hover:from-primary/90 hover:to-blue-400/90">
-                      <PlusCircle className="h-4 w-4 mr-2" />
-                      Generate Token
-                    </Button>
-                  </Link>
-                  <Link to="/monitor">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Activity className="h-4 w-4 mr-2" />
-                      Monitor Queue
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-        
-        {/* Queue List */}
-        <div className="lg:col-span-2">
-          <ModernQueueList 
-            entries={queueEntries} 
-            title="Active Queue"
-            description="Current patients in the queue system"
-            canFilter={true}
-            onUpdateStatus={handleStatusUpdate}
-            loading={loading}
+        {/* Enhanced Dashboard Stats */}
+        <div className="animate-fade-in-up">
+          <DashboardStats
+            totalEntries={totalEntries}
+            waitingCount={waitingCount}
+            inProgressCount={inProgressCount}
+            completedCount={completedCount}
           />
         </div>
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Enhanced Quick Actions */}
+          <div className="lg:col-span-1">
+            {profile?.role === 'admin' ? (
+              <Card className="glass-card border-white/20 hover:border-white/30 transition-all duration-300">
+                <CardHeader>
+                  <CardTitle className="heading-secondary flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    Admin Control Panel
+                  </CardTitle>
+                  <CardDescription>
+                    System management and oversight
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <Link to="/settings">
+                      <Button variant="outline" className="w-full justify-start glow-on-hover">
+                        System Settings
+                      </Button>
+                    </Link>
+                    <Link to="/monitor">
+                      <Button variant="outline" className="w-full justify-start glow-on-hover">
+                        Queue Monitor
+                      </Button>
+                    </Link>
+                    <Link to="/public-display">
+                      <Button variant="outline" className="w-full justify-start glow-on-hover">
+                        <Monitor className="h-4 w-4 mr-2" />
+                        Public Display
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="glass-card border-white/20 hover:border-white/30 transition-all duration-300">
+                <CardHeader>
+                  <CardTitle className="heading-secondary flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-primary" />
+                    Quick Actions
+                  </CardTitle>
+                  <CardDescription>
+                    Essential tools and access
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <Link to="/token">
+                      <Button className="w-full btn-gradient">
+                        <PlusCircle className="h-4 w-4 mr-2" />
+                        Generate Token
+                      </Button>
+                    </Link>
+                    <Link to="/monitor">
+                      <Button variant="outline" className="w-full justify-start glow-on-hover">
+                        <Activity className="h-4 w-4 mr-2" />
+                        Monitor Queue
+                      </Button>
+                    </Link>
+                    <Link to="/public-display">
+                      <Button variant="outline" className="w-full justify-start glow-on-hover">
+                        <Monitor className="h-4 w-4 mr-2" />
+                        Public Display
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+          
+          {/* Enhanced Queue List */}
+          <div className="lg:col-span-2">
+            <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <ModernQueueList 
+                entries={queueEntries} 
+                title="Active Queue"
+                description="Current patients in the queue system"
+                canFilter={true}
+                onUpdateStatus={handleStatusUpdate}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </AnimatedBackground>
   );
 };
 

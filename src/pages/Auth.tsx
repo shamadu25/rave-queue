@@ -1,32 +1,36 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Hospital, Mail, Lock, User, Shield, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { toast } from 'sonner';
-import { LogIn, UserPlus, Activity } from 'lucide-react';
+import { AnimatedBackground } from '@/components/AnimatedBackground';
 
 export default function Auth() {
-  const { user, signIn, signUp } = useAuth();
+  const [isSignIn, setIsSignIn] = useState(true);
   const [loading, setLoading] = useState(false);
-
-  // Sign in form state
-  const [signInData, setSignInData] = useState({
+  const [showPassword, setShowPassword] = useState(false);
+  const { user, signIn, signUp } = useAuth();
+  const { settings } = useSystemSettings();
+  
+  // Form states
+  const [signInForm, setSignInForm] = useState({
     email: '',
-    password: '',
+    password: ''
   });
-
-  // Sign up form state
-  const [signUpData, setSignUpData] = useState({
+  
+  const [signUpForm, setSignUpForm] = useState({
     email: '',
     password: '',
     fullName: '',
-    role: '',
-    department: '',
+    role: 'doctor',
+    department: 'Consultation'
   });
 
   // Redirect if already authenticated
@@ -39,19 +43,14 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const { error } = await signIn(signInData.email, signInData.password);
-      
+      const { error } = await signIn(signInForm.email, signInForm.password);
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Invalid email or password. Please check your credentials.');
-        } else {
-          toast.error(error.message);
-        }
+        toast.error(error.message);
       } else {
-        toast.success('Signed in successfully!');
+        toast.success('Welcome back! Redirecting to dashboard...');
       }
     } catch (error) {
-      toast.error('An unexpected error occurred.');
+      toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -63,192 +62,246 @@ export default function Auth() {
 
     try {
       const { error } = await signUp(
-        signUpData.email,
-        signUpData.password,
-        signUpData.fullName,
-        signUpData.role,
-        signUpData.department
+        signUpForm.email,
+        signUpForm.password,
+        signUpForm.fullName,
+        signUpForm.role,
+        signUpForm.department
       );
       
       if (error) {
-        if (error.message.includes('User already registered')) {
-          toast.error('This email is already registered. Please sign in instead.');
-        } else {
-          toast.error(error.message);
-        }
+        toast.error(error.message);
       } else {
-        toast.success('Account created successfully! Please check your email to confirm your account.');
+        toast.success('Account created successfully! Please check your email to verify your account.');
+        setIsSignIn(true);
       }
     } catch (error) {
-      toast.error('An unexpected error occurred.');
+      toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   };
 
+  const hospitalName = settings?.clinic_name || 'Your Hospital Name';
+  const hasLogo = settings?.clinic_logo;
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Activity className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold">Queue Management</h1>
-          </div>
-          <p className="text-muted-foreground">Staff Authentication Portal</p>
-        </div>
-
-        <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="signin">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <LogIn className="h-5 w-5" />
-                  Sign In
-                </CardTitle>
-                <CardDescription>
-                  Enter your credentials to access the queue monitor
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      value={signInData.email}
-                      onChange={(e) => setSignInData(prev => ({ ...prev, email: e.target.value }))}
-                      placeholder="Enter your email"
-                      required
+    <AnimatedBackground variant="login">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto">
+          {/* Glassmorphism login card */}
+          <Card className="glass-card border-white/20 shadow-2xl animate-fade-in-up">
+            {/* Hospital branding */}
+            <CardHeader className="text-center pb-4">
+              <div className="flex flex-col items-center gap-4 mb-4">
+                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center glow-on-hover">
+                  {hasLogo ? (
+                    <img 
+                      src={settings.clinic_logo} 
+                      alt={hospitalName}
+                      className="w-12 h-12 object-contain rounded-full"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <Input
-                      id="signin-password"
-                      type="password"
-                      value={signInData.password}
-                      onChange={(e) => setSignInData(prev => ({ ...prev, password: e.target.value }))}
-                      placeholder="Enter your password"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Signing in...' : 'Sign In'}
-                  </Button>
-                </form>
-
-                <div className="mt-6 space-y-2 text-sm text-muted-foreground">
-                  <p className="font-medium">Demo Credentials:</p>
-                  <p className="text-green-600 font-semibold">🔑 Super Admin: admin@hospital.com / 123456</p>
-                  <p className="text-blue-600 font-semibold">👤 Universal Staff: user@queue.com / 123456</p>
-                  <div className="mt-2 pt-2 border-t">
-                    <p className="text-xs opacity-75">Legacy accounts:</p>
-                    <p>Admin: admin@queue.com / 123456</p>
-                    <p>Doctor: doctor@queue.com / 123456</p>
-                    <p>Lab: lab@queue.com / 123456</p>
-                    <p>Pharmacy: pharmacy@queue.com / 123456</p>
-                  </div>
+                  ) : (
+                    <Hospital className="w-8 h-8 text-white" />
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div>
+                  <CardTitle className="text-2xl font-bold text-white mb-1">
+                    {hospitalName}
+                  </CardTitle>
+                  <CardDescription className="text-white/80 text-sm">
+                    Smart Queue Management System
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
 
-          <TabsContent value="signup">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <UserPlus className="h-5 w-5" />
-                  Create Account
-                </CardTitle>
-                <CardDescription>
-                  Register as a new staff member
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
-                    <Input
-                      id="signup-name"
-                      value={signUpData.fullName}
-                      onChange={(e) => setSignUpData(prev => ({ ...prev, fullName: e.target.value }))}
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      value={signUpData.email}
-                      onChange={(e) => setSignUpData(prev => ({ ...prev, email: e.target.value }))}
-                      placeholder="Enter your email"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      value={signUpData.password}
-                      onChange={(e) => setSignUpData(prev => ({ ...prev, password: e.target.value }))}
-                      placeholder="Create a password"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select value={signUpData.role} onValueChange={(value) => setSignUpData(prev => ({ ...prev, role: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="doctor">Doctor</SelectItem>
-                        <SelectItem value="lab_technician">Lab Technician</SelectItem>
-                        <SelectItem value="pharmacist">Pharmacist</SelectItem>
-                        <SelectItem value="xray_technician">X-ray Technician</SelectItem>
-                        <SelectItem value="imaging_technician">Imaging Technician</SelectItem>
-                        <SelectItem value="billing_staff">Billing Staff</SelectItem>
-                        <SelectItem value="receptionist">Receptionist</SelectItem>
-                        <SelectItem value="admin">Administrator</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="department">Department</Label>
-                    <Select value={signUpData.department} onValueChange={(value) => setSignUpData(prev => ({ ...prev, department: value }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your department" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Consultation">Consultation</SelectItem>
-                        <SelectItem value="Lab">Laboratory</SelectItem>
-                        <SelectItem value="Pharmacy">Pharmacy</SelectItem>
-                        <SelectItem value="X-ray">X-ray</SelectItem>
-                        <SelectItem value="Scan">Scan</SelectItem>
-                        <SelectItem value="Billing">Billing</SelectItem>
-                        <SelectItem value="Reception">Reception</SelectItem>
-                        <SelectItem value="Admin">Administration</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Creating account...' : 'Create Account'}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            <CardContent className="space-y-6">
+              <Tabs value={isSignIn ? 'signin' : 'signup'} onValueChange={(value) => setIsSignIn(value === 'signin')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm">
+                  <TabsTrigger value="signin" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
+                    Sign In
+                  </TabsTrigger>
+                  <TabsTrigger value="signup" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
+                    Sign Up
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Sign In Form */}
+                <TabsContent value="signin">
+                  <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-white font-medium">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={signInForm.email}
+                          onChange={(e) => setSignInForm(prev => ({ ...prev, email: e.target.value }))}
+                          className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20 glow-on-hover"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-white font-medium">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          value={signInForm.password}
+                          onChange={(e) => setSignInForm(prev => ({ ...prev, password: e.target.value }))}
+                          className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20 glow-on-hover"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full btn-gradient py-3 text-lg font-semibold disabled:opacity-50"
+                    >
+                      {loading ? 'Signing In...' : 'Sign In'}
+                    </Button>
+
+                    {/* Demo credentials */}
+                    <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10">
+                      <p className="text-xs text-white/70 mb-2">Demo Credentials:</p>
+                      <div className="grid grid-cols-1 gap-1 text-xs text-white/80">
+                        <span>Admin: admin@hospital.com / 123456</span>
+                        <span>User: user@queue.com / 123456</span>
+                      </div>
+                    </div>
+                  </form>
+                </TabsContent>
+
+                {/* Sign Up Form */}
+                <TabsContent value="signup">
+                  <form onSubmit={handleSignUp} className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="fullName" className="text-white font-medium">Full Name</Label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                          <Input
+                            id="fullName"
+                            type="text"
+                            placeholder="Enter your full name"
+                            value={signUpForm.fullName}
+                            onChange={(e) => setSignUpForm(prev => ({ ...prev, fullName: e.target.value }))}
+                            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-email" className="text-white font-medium">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                          <Input
+                            id="signup-email"
+                            type="email"
+                            placeholder="Enter your email"
+                            value={signUpForm.email}
+                            onChange={(e) => setSignUpForm(prev => ({ ...prev, email: e.target.value }))}
+                            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-password" className="text-white font-medium">Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                          <Input
+                            id="signup-password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Create a password"
+                            value={signUpForm.password}
+                            onChange={(e) => setSignUpForm(prev => ({ ...prev, password: e.target.value }))}
+                            className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 focus:ring-white/20"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="role" className="text-white font-medium">Role</Label>
+                        <Select value={signUpForm.role} onValueChange={(value) => setSignUpForm(prev => ({ ...prev, role: value }))}>
+                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                            <Shield className="w-4 h-4 mr-2 text-white/60" />
+                            <SelectValue placeholder="Select your role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="doctor">Doctor</SelectItem>
+                            <SelectItem value="nurse">Nurse</SelectItem>
+                            <SelectItem value="receptionist">Receptionist</SelectItem>
+                            <SelectItem value="staff">Staff</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="department" className="text-white font-medium">Department</Label>
+                        <Select value={signUpForm.department} onValueChange={(value) => setSignUpForm(prev => ({ ...prev, department: value }))}>
+                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                            <SelectValue placeholder="Select department" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Consultation">Consultation</SelectItem>
+                            <SelectItem value="Lab">Laboratory</SelectItem>
+                            <SelectItem value="Pharmacy">Pharmacy</SelectItem>
+                            <SelectItem value="X-ray">X-ray</SelectItem>
+                            <SelectItem value="Billing">Billing</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full btn-gradient py-3 text-lg font-semibold disabled:opacity-50"
+                    >
+                      {loading ? 'Creating Account...' : 'Create Account'}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+
+              {/* Tagline */}
+              <div className="text-center pt-4 border-t border-white/10">
+                <p className="text-white/80 text-sm font-medium">
+                  Smart Queue Management for Modern Hospitals
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </AnimatedBackground>
   );
 }
