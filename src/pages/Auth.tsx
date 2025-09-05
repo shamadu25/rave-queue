@@ -106,10 +106,10 @@ export default function Auth() {
                   )}
                 </div>
                 <div>
-                  <CardTitle className="text-2xl font-bold text-white mb-1">
+                  <CardTitle className="text-2xl font-bold text-black mb-1">
                     {hospitalName}
                   </CardTitle>
-                  <CardDescription className="text-white/80 text-sm">
+                  <CardDescription className="text-black text-sm font-bold">
                     Smart Queue Management System
                   </CardDescription>
                 </div>
@@ -119,10 +119,10 @@ export default function Auth() {
             <CardContent className="space-y-6">
               <Tabs value={isSignIn ? 'signin' : 'signup'} onValueChange={(value) => setIsSignIn(value === 'signin')} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm">
-                  <TabsTrigger value="signin" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
+                  <TabsTrigger value="signin" className="text-black font-bold data-[state=active]:bg-white/20 data-[state=active]:text-black data-[state=active]:font-bold">
                     Sign In
                   </TabsTrigger>
-                  <TabsTrigger value="signup" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white">
+                  <TabsTrigger value="signup" className="text-black font-bold data-[state=active]:bg-white/20 data-[state=active]:text-black data-[state=active]:font-bold">
                     Sign Up
                   </TabsTrigger>
                 </TabsList>
@@ -296,7 +296,7 @@ export default function Auth() {
 
               {/* Tagline */}
               <div className="text-center pt-4 border-t border-white/10">
-                <p className="text-white/80 text-sm font-medium">
+                <p className="text-black text-sm font-bold">
                   Smart Queue Management for Modern Hospitals
                 </p>
               </div>
