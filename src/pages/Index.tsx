@@ -83,7 +83,6 @@ const Index = () => {
             <div className="flex items-center gap-6">
               <DynamicBranding variant="header" logoSize="lg" />
               <div>
-             /*   <h1 className="text-4xl font-bold text-foreground">{getPageTitle()}</h1>  */
              /*   <p className="text-muted-foreground text-lg">Welcome to the Digital Queue Management System</p> */
               </div>
             </div>
