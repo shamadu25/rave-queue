@@ -24,7 +24,7 @@ class TextToSpeechService {
       rate: 1.0,
       pitch: 1.0,
       volume: 0.8,
-      language: 'en-US'
+      language: 'en-UK'
     };
     
     this.loadVoices();
@@ -126,7 +126,7 @@ export const useTextToSpeech = () => {
         pitch: parseFloat(String(settings.voice_pitch || 1.0)),
         volume: parseFloat(String(settings.voice_volume || 0.8)),
         voice: String(settings.voice_name || 'default'),
-        language: String(settings.voice_language || 'en-US')
+        language: String(settings.voice_language || 'en-UK')
       });
     }
   }, [settings]);
