@@ -289,7 +289,7 @@ export function ModernQueueList({
                             const newStatus = nextAction.action as Status;
                             onUpdateStatus?.(entry.id, newStatus);
                             
-                            // Play announcement when calling a token
+                             // Play announcement when calling a token
                             if (newStatus === 'Called') {
                               try {
                                 await announceToken(entry.token, entry.department);
