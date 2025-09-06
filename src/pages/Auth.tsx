@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -84,6 +85,23 @@ export default function Auth() {
 
   const hospitalName = settings?.clinic_name || 'Your Hospital Name';
   const hasLogo = settings?.clinic_logo;
+
+  // Update document title and favicon dynamically
+  React.useEffect(() => {
+    document.title = `${hospitalName} - Queue Management System`;
+    
+    if (hasLogo) {
+      const favicon = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (favicon) {
+        favicon.href = settings.clinic_logo;
+      } else {
+        const newFavicon = document.createElement('link');
+        newFavicon.rel = 'icon';
+        newFavicon.href = settings.clinic_logo;
+        document.head.appendChild(newFavicon);
+      }
+    }
+  }, [hospitalName, hasLogo, settings?.clinic_logo]);
 
   return (
     <AnimatedBackground variant="login">

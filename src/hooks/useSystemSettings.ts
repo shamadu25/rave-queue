@@ -35,7 +35,40 @@ interface SystemSettings {
 
 export const useSystemSettings = () => {
   const [settings, setSettings] = useState<SystemSettings>({
-    enable_silent_printing: false  // Default to popup printing
+    enable_silent_printing: false,  // Default to popup printing
+    clinic_name: 'Your Hospital Name',
+    clinic_logo: '',
+    clinic_address: '',
+    clinic_phone: '',
+    clinic_email: '',
+    website_url: '',
+    operating_hours: '8:00 AM - 5:00 PM',
+    emergency_contact: '',
+    footer_note: 'Thank you for visiting our hospital',
+    enable_voice_announcements: true,
+    voice_gender: 'female',
+    voice_style: 'friendly',
+    voice_accent: 'us',
+    voice_rate: 0.8,
+    voice_pitch: 1.0,
+    voice_volume: 0.8,
+    enable_announcement_chime: true,
+    chime_volume: 0.6,
+    display_background_start: '#3B82F6',
+    display_background_end: '#1D4ED8',
+    display_header_text: 'Welcome to Our Healthcare Facility',
+    display_header_font_size: 32,
+    display_header_color: '#FFFFFF',
+    display_token_font_size: 64,
+    display_department_font_size: 20,
+    display_ticker_font_size: 18,
+    display_logo_enabled: true,
+    display_logo_size: 'md',
+    display_token_glow: true,
+    display_department_colors: true,
+    ticker_text: 'Welcome to our hospital. For emergency assistance, dial 911.',
+    ticker_speed: 50,
+    ticker_color: '#FFFFFF'
   });
   const [loading, setLoading] = useState(true);
 
@@ -104,6 +137,11 @@ export const useSystemSettings = () => {
 
       // Reload settings to ensure we have the latest state
       await loadSettings();
+
+      // Broadcast settings update for real-time sync
+      window.dispatchEvent(new CustomEvent('systemSettingsUpdated', { 
+        detail: settings 
+      }));
 
       toast.success('Settings saved successfully');
       return true;
