@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import QueueMonitor from "./pages/QueueMonitor";
 import QueueDisplay from "./pages/QueueDisplay";
+import QueueDisplayPage from "./pages/QueueDisplayPage";
 import TokenGeneration from "./pages/TokenGeneration";
 import Settings from "./pages/Settings";
 import PrintTicketPage from "./pages/PrintTicket";
@@ -27,7 +28,7 @@ const AppContent = () => {
   const location = useLocation();
   
   // Routes that should be displayed without sidebar/topbar (fullscreen)
-  const fullscreenRoutes = ['/auth', '/token', '/print'];
+  const fullscreenRoutes = ['/auth', '/token', '/print', '/display'];
   const isFullscreenRoute = fullscreenRoutes.some(route => 
     location.pathname === route || location.pathname.startsWith(route + '/')
   );
@@ -51,9 +52,9 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/token" element={<TokenGeneration />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/display" element={<QueueDisplay />} />
-          <Route path="/display/universal" element={<QueueDisplay />} />
-          <Route path="/display/department/:departmentName" element={<QueueDisplay />} />
+          <Route path="/display" element={<QueueDisplayPage />} />
+          <Route path="/display/universal" element={<QueueDisplayPage />} />
+          <Route path="/display/department/:departmentName" element={<QueueDisplayPage />} />
           <Route path="/print/:tokenId" element={<PrintTicketPage />} />
           <Route 
             path="/settings" 
