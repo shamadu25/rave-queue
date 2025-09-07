@@ -52,6 +52,8 @@ const AppContent = () => {
           <Route path="/token" element={<TokenGeneration />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/display" element={<QueueDisplay />} />
+          <Route path="/display/universal" element={<QueueDisplay />} />
+          <Route path="/display/department/:departmentName" element={<QueueDisplay />} />
           <Route path="/print/:tokenId" element={<PrintTicketPage />} />
           <Route 
             path="/settings" 
