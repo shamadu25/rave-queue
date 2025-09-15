@@ -34,10 +34,6 @@ export default function Auth() {
     department: 'Consultation'
   });
 
-  // Redirect if already authenticated
-  if (user) {
-    return <Navigate to="/monitor" replace />;
-  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +98,11 @@ export default function Auth() {
       }
     }
   }, [hospitalName, hasLogo, settings?.clinic_logo]);
+
+  // Redirect if already authenticated
+  if (user) {
+    return <Navigate to="/monitor" replace />;
+  }
 
   return (
     <AnimatedBackground variant="login">
