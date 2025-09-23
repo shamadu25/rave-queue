@@ -175,7 +175,7 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
     };
   }, []);
 
-  // Process queue entries by department
+  // Process queue entries by department with Reception-First logic
   useEffect(() => {
     const currentEntries = offlineMode && cachedData ? cachedData.entries : entries;
     
@@ -184,10 +184,17 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
       return;
     }
 
-    // Group entries by department
+    // Group entries by department - Reception is always shown first
     const queues: {[key: string]: {currentServing: any; waiting: any[]; totalWaiting: number}} = {};
     
-    Object.keys(departmentConfig).forEach(dept => {
+    // Add Reception as the first department
+    const receptionConfig = { 
+      'Reception': { color: '#6B7280', icon: '🏥', counter: 'Reception Desk' }
+    };
+    
+    const allDeptConfig = { ...receptionConfig, ...departmentConfig };
+    
+    Object.keys(allDeptConfig).forEach(dept => {
       const deptEntries = currentEntries.filter(entry => entry.department === dept);
       
       // Find currently serving tokens
@@ -208,7 +215,7 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
         totalWaiting: waiting.length
       };
 
-      // Handle announcements for each department
+      // Handle announcements for each department (Reception-First aware)
       if (!offlineMode && 
           currentServing && 
           audioEnabled && 
@@ -217,13 +224,15 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
           currentServing.status === 'Called' &&
           userInteracted) {
         
-        const template = settings?.announcement_template || 
-          'Token {number}, please proceed to {room}, {department} at {hospitalName}';
+        // Use Reception-specific template for Reception, department template for others
+        const template = dept === 'Reception' 
+          ? (settings?.reception_announcement_template || 'Token {number}, please proceed to Reception.')
+          : (settings?.department_announcement_template || 'Token {number}, please proceed to {department}.');
         
         announceWithChime(
           currentServing.token,
           currentServing.department,
-          departmentConfig[dept].counter,
+          allDeptConfig[dept].counter,
           template
         );
         
@@ -385,6 +394,100 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
       <div className="flex-1 p-8 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Reception Department - Always show first */}
+            {(() => {
+              const receptionQueue = departmentQueues['Reception'];
+              const hasQueue = receptionQueue && (receptionQueue.currentServing || receptionQueue.waiting.length > 0);
+              
+              return (
+                <Card 
+                  key="Reception"
+                  className="bg-white/95 backdrop-blur-sm shadow-xl border-0 overflow-hidden hover:scale-105 transition-all duration-300 border-2 border-yellow-300"
+                >
+                  <CardContent className="p-6">
+                    {/* Reception Header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-gray-100"
+                      >
+                        🏥
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-xl text-gray-700">
+                          Reception
+                        </h3>
+                        <p className="text-sm text-muted-foreground">Registration & Triage</p>
+                      </div>
+                    </div>
+
+                    {/* Current Token */}
+                    {receptionQueue?.currentServing ? (
+                      <div className="text-center mb-4">
+                        <div className="text-sm text-muted-foreground mb-1">Now Serving</div>
+                        <div 
+                          className="text-4xl font-black mb-2 animate-pulse text-gray-700"
+                          style={{ 
+                            textShadow: currentSettings?.display_token_glow ? `0 0 20px #6B728040` : 'none'
+                          }}
+                        >
+                          {receptionQueue.currentServing.token}
+                        </div>
+                        <StatusBadge 
+                          status={receptionQueue.currentServing.status} 
+                          priority={receptionQueue.currentServing.priority}
+                          className="text-sm"
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-center mb-4 py-8">
+                        <Clock className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                        <div className="text-lg text-muted-foreground">No Queue</div>
+                      </div>
+                    )}
+
+                    {/* Waiting Count */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Waiting</span>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className="font-semibold border-gray-500 text-gray-700"
+                      >
+                        {receptionQueue?.totalWaiting || 0}
+                      </Badge>
+                    </div>
+
+                    {/* Next in Queue */}
+                    {receptionQueue?.waiting && receptionQueue.waiting.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="text-xs text-muted-foreground mb-2">Next Up</div>
+                        <div className="flex gap-2">
+                          {receptionQueue.waiting.slice(0, 3).map((token: any, index: number) => (
+                            <div 
+                              key={token.id}
+                              className={`text-sm font-medium px-2 py-1 rounded ${
+                                index === 0 ? 'bg-primary/10 text-primary' : 'bg-muted/50 text-muted-foreground'
+                              }`}
+                            >
+                              {token.token}
+                            </div>
+                          ))}
+                          {receptionQueue.waiting.length > 3 && (
+                            <div className="text-sm text-muted-foreground px-2 py-1">
+                              +{receptionQueue.waiting.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })()}
+            
+            {/* Other Departments */}
             {Object.entries(departmentConfig).map(([department, config]) => {
               const queue = departmentQueues[department];
               const hasQueue = queue && (queue.currentServing || queue.waiting.length > 0);

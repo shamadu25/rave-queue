@@ -1,5 +1,6 @@
-export type Department = 'Consultation' | 'Lab' | 'Pharmacy' | 'Billing' | 'X-ray' | 'Scan';
+export type Department = 'Consultation' | 'Lab' | 'Pharmacy' | 'Billing' | 'X-ray' | 'Scan' | 'Reception';
 export const Department = {
+  Reception: 'Reception' as const,
   Consultation: 'Consultation' as const,
   Lab: 'Lab' as const,
   Pharmacy: 'Pharmacy' as const,
@@ -16,6 +17,7 @@ export interface QueueEntry {
   fullName: string;
   phoneNumber?: string;
   department: Department;
+  intended_department?: string; // Added for Reception-First workflow
   priority: Priority;
   status: Status;
   timestamp: Date;

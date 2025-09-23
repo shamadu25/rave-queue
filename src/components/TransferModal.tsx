@@ -17,6 +17,7 @@ interface TransferModalProps {
 }
 
 const departments = [
+  { value: 'Reception', label: 'Reception' },
   { value: 'Consultation', label: 'Consultation' },
   { value: 'Lab', label: 'Laboratory' },
   { value: 'Pharmacy', label: 'Pharmacy' },

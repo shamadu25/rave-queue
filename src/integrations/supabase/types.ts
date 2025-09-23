@@ -135,6 +135,7 @@ export type Database = {
           department: string
           full_name: string
           id: string
+          intended_department: string | null
           phone_number: string | null
           priority: string
           served_at: string | null
@@ -152,6 +153,7 @@ export type Database = {
           department: string
           full_name: string
           id?: string
+          intended_department?: string | null
           phone_number?: string | null
           priority: string
           served_at?: string | null
@@ -169,6 +171,7 @@ export type Database = {
           department?: string
           full_name?: string
           id?: string
+          intended_department?: string | null
           phone_number?: string | null
           priority?: string
           served_at?: string | null

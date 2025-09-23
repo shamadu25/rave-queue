@@ -77,23 +77,37 @@ const TokenGeneration = () => {
     setSelectedDepartment(department.id);
 
     try {
-      const token = generateToken(department);
+      // Generate token with Reception prefix for Reception-First workflow
+      const token = `REC${Math.floor(Math.random() * 999) + 1}`.padEnd(6, '0');
       const entryData = {
         token,
         fullName: patientName.trim(),
-        department: department.name as Department,
+        department: 'Reception' as Department, // Always go to Reception first
         priority: 'Normal' as const,
         status: 'Waiting' as const
       };
 
-      const newEntry = await addEntry(entryData);
+      // Store the intended department and add to Reception queue
+      const newEntry = await addEntry({
+        ...entryData,
+        // Store intended department in a custom field for now
+      });
+      
+      // Also store intended department in database
       if (newEntry) {
-        setGeneratedToken(newEntry);
+        const { error } = await supabase
+          .from('queue_entries')
+          .update({ intended_department: department.name })
+          .eq('id', newEntry.id);
+          
+        if (error) console.error('Error updating intended department:', error);
+        
+        setGeneratedToken({ ...newEntry, intended_department: department.name });
         setShowConfirmation(true);
         setPatientName('');
         setSelectedDepartment(null);
-        printTicket(newEntry, department.color_code);
-        toast.success(`Token ${token} generated successfully!`);
+        printTicket({ ...newEntry, intended_department: department.name }, '#6B7280'); // Reception color
+        toast.success(`Token ${token} generated for ${department.name} - First report to Reception!`);
         
         // Auto-redirect after 20 seconds
         setTimeout(() => {
@@ -167,14 +181,20 @@ const TokenGeneration = () => {
                       </p>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-slate-600">Department</p>
-                        <p className="font-semibold text-slate-800">{generatedToken.department}</p>
+                    <div className="grid grid-cols-1 gap-4 text-sm">
+                      <div className="text-center bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                        <p className="text-yellow-800 font-semibold text-lg mb-1">🏥 First Report To: Reception</p>
+                        <p className="text-yellow-700">Selected Service: <span className="font-semibold">{(generatedToken as any)?.intended_department || 'N/A'}</span></p>
                       </div>
-                      <div>
-                        <p className="text-slate-600">Status</p>
-                        <p className="font-semibold text-waiting">Waiting</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-slate-600">Current Queue</p>
+                          <p className="font-semibold text-slate-800">{generatedToken.department}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">Status</p>
+                          <p className="font-semibold text-waiting">Waiting</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -207,7 +227,7 @@ const TokenGeneration = () => {
                     Get Your Queue Token
                   </h3>
                    <p className="text-slate-600">
-                     Enter your name and select a service
+                     Enter your name and select your service. You will first be called to Reception for registration.
                    </p>
                 </div>
                 

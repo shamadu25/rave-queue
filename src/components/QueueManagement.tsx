@@ -233,9 +233,33 @@ const QueueManagement: React.FC = () => {
       </div>
 
       {/* Department Call Buttons */}
+  // Department Call Buttons - Reception-First workflow aware
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Reception Department - Always show first with special styling */}
+        <Card key="reception" className="border-2 border-yellow-400 bg-yellow-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center justify-between">
+              <span className="text-gray-700">Reception</span>
+              <Badge variant="outline" className="border-gray-500 text-gray-700">
+                {getWaitingCount('Reception')} waiting
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => callNextToken('Reception')}
+              disabled={getWaitingCount('Reception') === 0}
+              className="w-full flex items-center gap-2 bg-gray-600 hover:bg-gray-700"
+            >
+              <Megaphone className="h-4 w-4" />
+              Call Next Patient
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Other Departments */}
         {departments
-          .filter(dept => allowedDepartments.includes(dept.name))
+          .filter(dept => allowedDepartments.includes(dept.name) && dept.name !== 'Reception')
           .map((department) => {
             const waitingCount = getWaitingCount(department.name);
             return (

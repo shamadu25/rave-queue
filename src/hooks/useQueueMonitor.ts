@@ -35,6 +35,7 @@ export const useQueueMonitor = (userDepartment?: string) => {
         fullName: entry.full_name,
         phoneNumber: entry.phone_number,
         department: entry.department as Department,
+        intended_department: entry.intended_department, // Add intended department
         priority: entry.priority as 'Normal' | 'Emergency',
         status: entry.status as Status,
         timestamp: new Date(entry.created_at),
