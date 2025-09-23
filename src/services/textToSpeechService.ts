@@ -80,18 +80,25 @@ class TextToSpeechService {
   public announceToken(token: string, department: string, counter?: string, hospitalName?: string, template?: string) {
     let message: string;
     
+    // Extract service prefix from token
+    const prefix = token.match(/^[A-Z]+/)?.[0] || '';
+    
     if (template) {
-      // Use custom template with variable substitution
+      // Use custom template with variable substitution including prefix
       message = template
         .replace(/{number}/g, token)
+        .replace(/{prefix}/g, prefix)
         .replace(/{department}/g, department)
         .replace(/{hospitalName}/g, hospitalName || 'Hospital')
         .replace(/{room}/g, counter || '');
     } else {
-      // Fallback to default template
+      // Enhanced fallback template with service context
       const counterText = counter ? ` at ${counter}` : '';
       const hospitalText = hospitalName ? ` at ${hospitalName}` : '';
-      message = `Token ${token}, please proceed to ${department}${counterText}${hospitalText}`;
+      const serviceContext = department === 'Reception' 
+        ? `. Please proceed to Reception for registration.`
+        : `. Please proceed to ${department}${counterText}${hospitalText}`;
+      message = `Service token ${token}${serviceContext}`;
     }
     
     this.speak(message, 'high');

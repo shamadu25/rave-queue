@@ -357,9 +357,14 @@ export const EnhancedPrintTicket: React.FC<EnhancedPrintTicketProps> = ({
             </div>
           )}
           
-          {/* Department Name - Centered */}
+          {/* Department Name - Centered with Service Information */}
           <div className="department-name">
-            {entry.department}
+            FIRST REPORT TO: RECEPTION
+          </div>
+          
+          {/* Service Information */}
+          <div className="counter-info">
+            Service: {(entry as any)?.intended_department || entry.department}
           </div>
           
           {/* Counter Number (if assigned) */}

@@ -35,14 +35,19 @@ export const useAnnouncementQueue = () => {
   };
 
   const processAnnouncementTemplate = (
-    template: string, 
-    tokenNumber: string, 
+    template: string,
+    tokenNumber: string,
     departmentName: string, 
     hospitalName: string,
     room?: string
   ) => {
+    // Extract prefix from token number
+    const prefix = tokenNumber.match(/^[A-Z]+/)?.[0] || '';
+    const numberOnly = tokenNumber.replace(/^[A-Z]+/, '');
+    
     return template
       .replace(/{number}/g, tokenNumber)
+      .replace(/{prefix}/g, prefix)
       .replace(/{department}/g, departmentName)
       .replace(/{hospitalName}/g, hospitalName)
       .replace(/{room}/g, room || '');

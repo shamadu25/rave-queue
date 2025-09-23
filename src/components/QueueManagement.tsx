@@ -143,9 +143,13 @@ const QueueManagement: React.FC = () => {
 
   const announceToken = (token: string, department: string) => {
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(
-        `Token ${token.split('').join(' ')} for ${department}. Please proceed to ${department}.`
-      );
+      // Extract service prefix for proper announcement
+      const prefix = token.match(/^[A-Z]+/)?.[0] || '';
+      const serviceContext = department === 'Reception' 
+        ? `Service token ${token}. Please proceed to Reception for registration.`
+        : `Service token ${token}. Please proceed to ${department}.`;
+        
+      const utterance = new SpeechSynthesisUtterance(serviceContext);
       utterance.lang = 'en-US';
       utterance.rate = 0.8;
       window.speechSynthesis.speak(utterance);
@@ -202,7 +206,17 @@ const QueueManagement: React.FC = () => {
                          entry.token.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDepartment = selectedDepartment === 'all' || entry.department === selectedDepartment;
     const matchesStatus = selectedStatus === 'all' || entry.status === selectedStatus;
-    const hasPermission = allowedDepartments.includes(entry.department);
+    
+    // For Reception-first workflow: Show all tokens in Reception queue to Reception staff
+    // Show tokens transferred to department for department staff
+    let hasPermission = false;
+    if (profile?.role === 'admin') {
+      hasPermission = true;
+    } else if (allowedDepartments.includes('Reception') && entry.department === 'Reception') {
+      hasPermission = true;
+    } else if (allowedDepartments.includes(entry.department) && entry.department !== 'Reception') {
+      hasPermission = true;
+    }
     
     return matchesSearch && matchesDepartment && matchesStatus && hasPermission;
   });

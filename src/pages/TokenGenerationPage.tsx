@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QueueEntry, Department } from '@/types/queue';
 import { useQueueEntries } from '@/hooks/useQueueEntries';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, Printer, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import MarqueeHeader from '@/components/MarqueeHeader';
 
 interface DepartmentData {
   id: string;
@@ -20,16 +19,7 @@ interface DepartmentData {
   is_active: boolean;
 }
 
-const departmentPrefixes: Record<string, string> = {
-  Consultation: 'C',
-  Lab: 'L',
-  Pharmacy: 'P',
-  'X-ray': 'X',
-  Scan: 'S',
-  Billing: 'B'
-};
-
-const TokenGeneration = () => {
+const TokenGenerationPage = () => {
   const { addEntry } = useQueueEntries();
   const { settings, loading: settingsLoading } = useSystemSettings();
   const { printTicket, printTicketManual } = usePrintTicket();
@@ -106,8 +96,8 @@ const TokenGeneration = () => {
         setShowConfirmation(true);
         setPatientName('');
         setSelectedDepartment(null);
-        printTicket({ ...newEntry, intended_department: department.name }, '#6B7280'); // Reception color
-        toast.success(`Token ${token} generated for ${department.name} - First report to Reception!`);
+        printTicket({ ...newEntry, intended_department: department.name }, department.color_code);
+        toast.success(`Service token ${token} generated for ${department.name} - First report to Reception!`);
         
         // Auto-redirect after 20 seconds
         setTimeout(() => {
@@ -123,7 +113,7 @@ const TokenGeneration = () => {
   const handlePrintToken = () => {
     if (generatedToken) {
       // Find the department color for the generated token
-      const dept = departments.find(d => d.name === generatedToken.department);
+      const dept = departments.find(d => d.name === (generatedToken as any)?.intended_department);
       printTicketManual(generatedToken, dept?.color_code);
     }
   };
@@ -135,7 +125,7 @@ const TokenGeneration = () => {
     setSelectedDepartment(null);
   };
 
-  const hospitalName = settings.clinic_name?.replace(/"/g, '') || 'Hospital Clinic';
+  const hospitalName = settings?.clinic_name?.replace(/"/g, '') || 'Hospital Clinic';
 
   if (settingsLoading || loadingDepartments) {
     return (
@@ -149,11 +139,15 @@ const TokenGeneration = () => {
   }
 
   return (
-    <>
-      <MarqueeHeader />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 pt-20">
-        <div className="max-w-2xl mx-auto">
-          {/* Main Content */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-2xl mx-auto">
+        {/* Hospital Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-slate-800 mb-2">{hospitalName}</h1>
+          <p className="text-xl text-slate-600">Queue Token Generation</p>
+        </div>
+
+        {/* Main Content */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
           {showConfirmation && generatedToken ? (
             // Confirmation Card
@@ -166,7 +160,7 @@ const TokenGeneration = () => {
                   
                   <div>
                     <h3 className="text-2xl font-bold text-slate-800 mb-2">
-                      Token Generated Successfully!
+                      Service Token Generated Successfully!
                     </h3>
                     <p className="text-slate-600">
                       Please keep your token number for reference
@@ -175,7 +169,7 @@ const TokenGeneration = () => {
 
                   <div className="bg-slate-50 rounded-xl p-6 space-y-3">
                     <div className="text-center">
-                      <p className="text-sm text-slate-600 mb-1">Your Token Number</p>
+                      <p className="text-sm text-slate-600 mb-1">Your Service Token</p>
                       <p className="text-4xl font-bold text-primary">
                         {generatedToken.token}
                       </p>
@@ -224,7 +218,7 @@ const TokenGeneration = () => {
               <CardContent className="p-8">
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-slate-800 mb-2">
-                    Get Your Queue Token
+                    Get Your Service Token
                   </h3>
                    <p className="text-slate-600">
                      Enter your name and select your service. You will first be called to Reception for registration.
@@ -267,13 +261,16 @@ const TokenGeneration = () => {
                           borderColor: department.color_code,
                         }}
                       >
-                        {selectedDepartment === department.id ? 'Generating...' : department.name}
+                        <div className="text-center">
+                          <div className="text-sm opacity-90">{department.prefix}</div>
+                          <div>{selectedDepartment === department.id ? 'Generating...' : department.name}</div>
+                        </div>
                       </Button>
                     ))}
                   </div>
                   {departments.length === 0 && (
                     <div className="text-center py-8 text-slate-500">
-                      No departments available
+                      No services available
                     </div>
                   )}
                 </div>
@@ -283,8 +280,7 @@ const TokenGeneration = () => {
         </div>
       </div>
     </div>
-    </>
   );
 };
 
-export default TokenGeneration;
+export default TokenGenerationPage;
