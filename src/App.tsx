@@ -21,6 +21,7 @@ import AdminDashboardPage from "./pages/AdminDashboard";
 import QueueManagementPage from "./pages/QueueManagementPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from './components/ProtectedRoute';
+import ReceptionDisplay from './components/ReceptionDisplay';
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const AppContent = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/display" element={<QueueDisplayPage />} />
           <Route path="/display/universal" element={<QueueDisplayPage />} />
+          <Route path="/display/reception" element={<ReceptionDisplay />} />
           <Route path="/display/department/:departmentName" element={<QueueDisplayPage />} />
           <Route path="/print/:tokenId" element={<PrintTicketPage />} />
           <Route 
