@@ -23,6 +23,7 @@ export type Database = {
           icon_name: string | null
           id: string
           is_active: boolean
+          is_internal: boolean | null
           max_tokens_per_day: number
           name: string
           prefix: string
@@ -37,6 +38,7 @@ export type Database = {
           icon_name?: string | null
           id?: string
           is_active?: boolean
+          is_internal?: boolean | null
           max_tokens_per_day?: number
           name: string
           prefix: string
@@ -51,6 +53,7 @@ export type Database = {
           icon_name?: string | null
           id?: string
           is_active?: boolean
+          is_internal?: boolean | null
           max_tokens_per_day?: number
           name?: string
           prefix?: string

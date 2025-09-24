@@ -18,6 +18,7 @@ interface Department {
   start_time: string;
   end_time: string;
   is_active: boolean;
+  is_internal: boolean;
   icon_name: string;
   color_code: string;
   created_at: string;
@@ -201,6 +202,7 @@ export const DepartmentManagement = () => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Prefix</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Operating Hours</TableHead>
                 <TableHead>Daily Token Limit</TableHead>
                 <TableHead>Status</TableHead>
@@ -209,8 +211,8 @@ export const DepartmentManagement = () => {
             </TableHeader>
             <TableBody>
               {paginatedDepartments.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     No departments found
                   </TableCell>
                 </TableRow>
@@ -230,6 +232,11 @@ export const DepartmentManagement = () => {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{department.prefix}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={department.is_internal ? "secondary" : "outline"}>
+                        {department.is_internal ? "Internal" : "Public"}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       {formatTime(department.start_time)} - {formatTime(department.end_time)}

@@ -16,6 +16,7 @@ interface Department {
   start_time: string;
   end_time: string;
   is_active: boolean;
+  is_internal: boolean;
   icon_name: string;
   color_code: string;
   created_at: string;
@@ -35,6 +36,7 @@ interface FormData {
   start_time: string;
   end_time: string;
   is_active: boolean;
+  is_internal: boolean;
   icon_name: string;
   color_code: string;
 }
@@ -62,6 +64,7 @@ export const DepartmentForm: React.FC<DepartmentFormProps> = ({
     start_time: '08:00',
     end_time: '17:00',
     is_active: true,
+    is_internal: false,
     icon_name: 'activity',
     color_code: '#3b82f6'
   });
@@ -80,6 +83,7 @@ export const DepartmentForm: React.FC<DepartmentFormProps> = ({
         start_time: department.start_time,
         end_time: department.end_time,
         is_active: department.is_active,
+        is_internal: department.is_internal || false,
         icon_name: department.icon_name,
         color_code: department.color_code
       });
@@ -267,6 +271,21 @@ export const DepartmentForm: React.FC<DepartmentFormProps> = ({
               id="is_active"
               checked={formData.is_active}
               onCheckedChange={(checked) => handleInputChange('is_active', checked)}
+            />
+          </div>
+
+          {/* Internal Department Toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="is_internal">Internal Department</Label>
+              <p className="text-xs text-muted-foreground mt-1">
+                Internal departments are for staff routing only (not visible to patients)
+              </p>
+            </div>
+            <Switch
+              id="is_internal"
+              checked={formData.is_internal}
+              onCheckedChange={(checked) => handleInputChange('is_internal', checked)}
             />
           </div>
 

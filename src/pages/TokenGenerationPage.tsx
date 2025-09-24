@@ -17,6 +17,7 @@ interface DepartmentData {
   color_code: string;
   prefix: string;
   is_active: boolean;
+  is_internal: boolean;
 }
 
 const TokenGenerationPage = () => {
@@ -38,8 +39,9 @@ const TokenGenerationPage = () => {
     try {
       const { data, error } = await supabase
         .from('departments')
-        .select('id, name, color_code, prefix, is_active')
+        .select('id, name, color_code, prefix, is_active, is_internal')
         .eq('is_active', true)
+        .eq('is_internal', false) // Only show public departments to patients
         .order('name');
 
       if (error) throw error;

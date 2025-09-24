@@ -184,15 +184,22 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
       return;
     }
 
-    // Group entries by department - Reception is always shown first
+    // Group entries by department - Only show Reception and Public departments
     const queues: {[key: string]: {currentServing: any; waiting: any[]; totalWaiting: number}} = {};
     
-    // Add Reception as the first department
+    // Add Reception as the first department (always public)
     const receptionConfig = { 
       'Reception': { color: '#6B7280', icon: '🏥', counter: 'Reception Desk' }
     };
     
-    const allDeptConfig = { ...receptionConfig, ...departmentConfig };
+    // Only include public departments (not internal ones like Lab, Pharmacy, etc.)
+    const publicDepartmentConfig = Object.fromEntries(
+      Object.entries(departmentConfig).filter(([dept]) => 
+        !['Lab', 'Pharmacy', 'Billing', 'X-ray', 'Scan'].includes(dept)
+      )
+    );
+    
+    const allDeptConfig = { ...receptionConfig, ...publicDepartmentConfig };
     
     Object.keys(allDeptConfig).forEach(dept => {
       const deptEntries = currentEntries.filter(entry => entry.department === dept);

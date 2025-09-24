@@ -24,6 +24,7 @@ interface DepartmentData {
   color_code: string;
   prefix: string;
   is_active: boolean;
+  is_internal: boolean;
 }
 
 const ReceptionTransferModal: React.FC<ReceptionTransferModalProps> = ({
@@ -45,13 +46,13 @@ const ReceptionTransferModal: React.FC<ReceptionTransferModalProps> = ({
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load available departments (exclude Reception)
+        // Load available departments (exclude Reception, include both public and internal for staff)
         const { data: deptData, error: deptError } = await supabase
           .from('departments')
           .select('*')
           .eq('is_active', true)
           .neq('name', 'Reception')
-          .order('name');
+          .order('is_internal, name'); // Show public departments first, then internal
 
         if (deptError) throw deptError;
         setDepartments(deptData || []);
@@ -171,6 +172,9 @@ const ReceptionTransferModal: React.FC<ReceptionTransferModalProps> = ({
                       />
                       <span>{getDeptIcon(dept.name)}</span>
                       <span>{dept.name}</span>
+                      {dept.is_internal && (
+                        <Badge variant="secondary" className="text-xs ml-1">Internal</Badge>
+                      )}
                       {dept.name === intendedDepartment && (
                         <CheckCircle className="h-4 w-4 text-green-500 ml-1" />
                       )}
