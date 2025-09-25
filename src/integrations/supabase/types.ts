@@ -240,6 +240,36 @@ export type Database = {
           },
         ]
       }
+      service_flows: {
+        Row: {
+          created_at: string
+          description: string | null
+          flow_departments: Json
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          flow_departments: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          flow_departments?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       system_settings: {
         Row: {
           category: string

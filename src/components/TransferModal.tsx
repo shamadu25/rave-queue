@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
 import { Department } from '@/types/queue';
 import { ArrowRightLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface TransferModalProps {
   isOpen: boolean;
@@ -16,15 +19,12 @@ interface TransferModalProps {
   token: string;
 }
 
-const departments = [
-  { value: 'Reception', label: 'Reception' },
-  { value: 'Consultation', label: 'Consultation' },
-  { value: 'Lab', label: 'Laboratory' },
-  { value: 'Pharmacy', label: 'Pharmacy' },
-  { value: 'X-ray', label: 'X-ray' },
-  { value: 'Scan', label: 'Scan' },
-  { value: 'Billing', label: 'Billing' }
-];
+interface DepartmentData {
+  id: string;
+  name: string;
+  is_internal: boolean;
+  is_active: boolean;
+}
 
 export const TransferModal = ({ 
   isOpen, 
@@ -34,9 +34,32 @@ export const TransferModal = ({
   patientName, 
   token 
 }: TransferModalProps) => {
+  const [departments, setDepartments] = useState<DepartmentData[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<Department | ''>('');
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchDepartments();
+    }
+  }, [isOpen]);
+
+  const fetchDepartments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('departments')
+        .select('id, name, is_internal, is_active')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
+      setDepartments(data || []);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+      toast.error('Failed to load departments');
+    }
+  };
 
   const handleTransfer = async () => {
     if (!selectedDepartment) return;
@@ -55,7 +78,7 @@ export const TransferModal = ({
   };
 
   const availableDepartments = departments.filter(
-    dept => dept.value !== currentDepartment
+    dept => dept.name !== currentDepartment
   );
 
   return (
@@ -90,8 +113,11 @@ export const TransferModal = ({
               </SelectTrigger>
               <SelectContent>
                 {availableDepartments.map((dept) => (
-                  <SelectItem key={dept.value} value={dept.value}>
-                    {dept.label}
+                  <SelectItem key={dept.id} value={dept.name}>
+                    <div className="flex items-center gap-2">
+                      {dept.name}
+                      {dept.is_internal && <Badge variant="secondary" className="text-xs">Internal</Badge>}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

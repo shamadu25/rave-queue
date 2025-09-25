@@ -4,6 +4,7 @@ import { GeneralSettings } from '@/components/GeneralSettings';
 import { DepartmentManagement } from '@/components/DepartmentManagement';
 import UserManagement from '@/components/UserManagement';
 import { EnterpriseAdminSettings } from '@/components/EnterpriseAdminSettings';
+import { ServiceFlowManagement } from '@/components/ServiceFlowManagement';
 import { useAuth } from '@/hooks/useAuth';
 
 const Settings = () => {
@@ -14,13 +15,14 @@ const Settings = () => {
   if (isAdmin) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
-        <Tabs defaultValue="enterprise" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="enterprise">Enterprise Settings</TabsTrigger>
-            <TabsTrigger value="general">General Settings</TabsTrigger>
-            <TabsTrigger value="departments">Department Management</TabsTrigger>
-            <TabsTrigger value="users">User Management</TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="enterprise" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="enterprise">Enterprise Settings</TabsTrigger>
+              <TabsTrigger value="general">General Settings</TabsTrigger>
+              <TabsTrigger value="departments">Department Management</TabsTrigger>
+              <TabsTrigger value="flows">Service Flows</TabsTrigger>
+              <TabsTrigger value="users">User Management</TabsTrigger>
+            </TabsList>
           
           <TabsContent value="enterprise">
             <EnterpriseAdminSettings />
@@ -30,13 +32,17 @@ const Settings = () => {
             <GeneralSettings />
           </TabsContent>
           
-          <TabsContent value="departments">
-            <DepartmentManagement />
-          </TabsContent>
-          
-          <TabsContent value="users">
-            <UserManagement />
-          </TabsContent>
+            <TabsContent value="departments">
+              <DepartmentManagement />
+            </TabsContent>
+
+            <TabsContent value="flows">
+              <ServiceFlowManagement />
+            </TabsContent>
+
+            <TabsContent value="users">
+              <UserManagement />
+            </TabsContent>
         </Tabs>
       </div>
     );

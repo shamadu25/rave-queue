@@ -5,12 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Megaphone, Clock, Users, Search, Filter, AlertCircle } from 'lucide-react';
+import { Megaphone, Clock, Users, Search, Filter, AlertCircle, ArrowRightLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { QueueEntry, Status } from '@/types/queue';
+import { EnhancedTransferModal } from '@/components/EnhancedTransferModal';
 
 interface Department {
   id: string;
@@ -29,6 +30,10 @@ const QueueManagement: React.FC = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [currentToken, setCurrentToken] = useState<string>('');
+  const [transferModal, setTransferModal] = useState<{
+    isOpen: boolean;
+    entry?: QueueEntry;
+  }>({ isOpen: false });
 
   useEffect(() => {
     fetchQueueEntries();
@@ -180,6 +185,48 @@ const QueueManagement: React.FC = () => {
     } catch (error) {
       console.error('Error updating token status:', error);
       toast.error('Failed to update token status');
+    }
+  };
+
+  const handleTransfer = async (toDepartment: string, reason?: string, flowId?: string) => {
+    if (!transferModal.entry) return;
+
+    try {
+      const { error: updateError } = await supabase
+        .from('queue_entries')
+        .update({
+          department: toDepartment,
+          status: 'Waiting',
+          transferred_from: transferModal.entry.department,
+          called_at: null,
+          served_at: null,
+          completed_at: null,
+          skipped_at: null,
+          served_by: null
+        })
+        .eq('id', transferModal.entry.id);
+
+      if (updateError) throw updateError;
+
+      // Log the transfer
+      const { error: transferError } = await supabase
+        .from('queue_transfers')
+        .insert({
+          queue_entry_id: transferModal.entry.id,
+          from_department: transferModal.entry.department,
+          to_department: toDepartment,
+          transferred_by: user?.id,
+          reason: reason || (flowId ? `Service Flow Transfer` : undefined)
+        });
+
+      if (transferError) throw transferError;
+
+      toast.success(`Token ${transferModal.entry.token} transferred to ${toDepartment}`);
+      setTransferModal({ isOpen: false });
+      fetchQueueEntries();
+    } catch (error) {
+      console.error('Error transferring entry:', error);
+      toast.error('Failed to transfer token');
     }
   };
 
@@ -418,13 +465,23 @@ const QueueManagement: React.FC = () => {
                           </Button>
                         )}
                         {(entry.status === 'Waiting' || entry.status === 'Called') && (
-                          <Button 
-                            size="sm" 
-                            variant="destructive"
-                            onClick={() => updateTokenStatus(entry.id, 'Skipped')}
-                          >
-                            Skip
-                          </Button>
+                          <>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => setTransferModal({ isOpen: true, entry })}
+                            >
+                              <ArrowRightLeft className="h-3 w-3 mr-1" />
+                              Transfer
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              onClick={() => updateTokenStatus(entry.id, 'Skipped')}
+                            >
+                              Skip
+                            </Button>
+                          </>
                         )}
                       </div>
                     </TableCell>
@@ -435,6 +492,18 @@ const QueueManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Transfer Modal */}
+      {transferModal.entry && (
+        <EnhancedTransferModal
+          isOpen={transferModal.isOpen}
+          onClose={() => setTransferModal({ isOpen: false })}
+          onTransfer={handleTransfer}
+          currentDepartment={transferModal.entry.department}
+          patientName={transferModal.entry.fullName}
+          token={transferModal.entry.token}
+        />
+      )}
     </div>
   );
 };
