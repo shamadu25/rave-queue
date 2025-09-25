@@ -37,9 +37,11 @@ const UserManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [userToEdit, setUserToEdit] = useState<User | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     email: '',
@@ -47,6 +49,13 @@ const UserManagement: React.FC = () => {
     full_name: '',
     username: '',
     role: 'doctor',
+    department: ''
+  });
+
+  const [editFormData, setEditFormData] = useState({
+    full_name: '',
+    username: '',
+    role: '',
     department: ''
   });
 
@@ -148,15 +157,47 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const handleEditUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userToEdit) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: editFormData.full_name,
+          username: editFormData.username,
+          role: editFormData.role,
+          department: editFormData.department
+        })
+        .eq('id', userToEdit.id);
+
+      if (error) throw error;
+
+      toast.success('User updated successfully');
+      setIsEditModalOpen(false);
+      setUserToEdit(null);
+      fetchUsers();
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast.error('Failed to update user');
+    }
+  };
+
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
 
     try {
-      const { error } = await supabase.auth.admin.deleteUser(userToDelete.id);
+      // Instead of deleting from auth.users (which requires service role),
+      // we'll just delete the profile which will effectively disable the user
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userToDelete.id);
 
       if (error) throw error;
 
-      toast.success('User deleted successfully');
+      toast.success('User profile deleted successfully');
       setIsDeleteModalOpen(false);
       setUserToDelete(null);
       fetchUsers();
@@ -164,6 +205,17 @@ const UserManagement: React.FC = () => {
       console.error('Error deleting user:', error);
       toast.error('Failed to delete user');
     }
+  };
+
+  const openEditModal = (user: User) => {
+    setUserToEdit(user);
+    setEditFormData({
+      full_name: user.full_name,
+      username: user.username || '',
+      role: user.role,
+      department: user.department
+    });
+    setIsEditModalOpen(true);
   };
 
   const handleAssignDepartment = async (departmentId: string) => {
@@ -299,6 +351,68 @@ const UserManagement: React.FC = () => {
         </Dialog>
       </div>
 
+      {/* Edit User Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User - {userToEdit?.full_name}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditUser} className="space-y-4">
+            <div>
+              <Label htmlFor="full_name">Full Name</Label>
+              <Input
+                id="full_name"
+                value={editFormData.full_name}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={editFormData.username}
+                onChange={(e) => setEditFormData(prev => ({ ...prev, username: e.target.value }))}
+                placeholder="Unique username for login"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="role">Role</Label>
+              <Select value={editFormData.role} onValueChange={(value) => setEditFormData(prev => ({ ...prev, role: value }))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">Admin (Full Access)</SelectItem>
+                  <SelectItem value="receptionist">Receptionist (Token Generation)</SelectItem>
+                  <SelectItem value="doctor">Doctor (Department Access)</SelectItem>
+                  <SelectItem value="nurse">Nurse (Department Access)</SelectItem>
+                  <SelectItem value="staff">Staff (Basic Access)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="department">Primary Department</Label>
+              <Select value={editFormData.department} onValueChange={(value) => setEditFormData(prev => ({ ...prev, department: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select department" />
+                </SelectTrigger>
+                <SelectContent>
+                  {departments.map(dept => (
+                    <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2">
+              <Button type="submit" className="flex-1">Update User</Button>
+              <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -349,6 +463,13 @@ const UserManagement: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => openEditModal(user)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                       <Dialog open={isDepartmentModalOpen && selectedUser?.id === user.id} 
                              onOpenChange={(open) => {
                                setIsDepartmentModalOpen(open);
@@ -451,7 +572,7 @@ const UserManagement: React.FC = () => {
         }}
         onConfirm={handleDeleteUser}
         title="Delete User"
-        message={`Are you sure you want to delete ${userToDelete?.full_name}? This action cannot be undone.`}
+        message={`Are you sure you want to delete ${userToDelete?.full_name}? This action cannot be undone and will remove their profile from the system.`}
       />
     </div>
   );
