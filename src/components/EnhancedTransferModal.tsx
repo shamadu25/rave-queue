@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowRightLeft, Workflow, ArrowRight, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 
 interface Department {
   id: string;
@@ -42,6 +43,7 @@ export const EnhancedTransferModal = ({
   patientName, 
   token 
 }: EnhancedTransferModalProps) => {
+  const { canTransferToAnyDepartment } = useRoleAccess();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [flows, setFlows] = useState<ServiceFlow[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<string>('');
@@ -167,7 +169,7 @@ export const EnhancedTransferModal = ({
   };
 
   const availableDepartments = departments.filter(
-    dept => dept.name !== currentDepartment
+    dept => dept.name !== currentDepartment && (canTransferToAnyDepartment() || dept.is_active)
   );
 
   const availableFlows = flows.filter(flow => {

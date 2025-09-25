@@ -143,6 +143,16 @@ export const useRoleAccess = () => {
            permissions.allowedDepartments.includes(departmentName);
   };
 
+  const canTransferToAnyDepartment = () => {
+    // Admin and Reception can transfer to any department
+    if (profile?.role === 'admin' || profile?.role === 'receptionist') return true;
+    
+    // Department staff can transfer tokens to any department (but can only view/call in their own)
+    if (['doctor', 'nurse', 'staff'].includes(profile?.role || '')) return true;
+    
+    return false;
+  };
+
   const canCallTokensFromAnyDepartment = () => {
     // Admin always can
     if (profile?.role === 'admin') return true;
@@ -161,6 +171,7 @@ export const useRoleAccess = () => {
     hasPermission,
     canAccessDepartment,
     canCallTokensFromAnyDepartment,
+    canTransferToAnyDepartment,
     isAdmin,
     isReceptionist,
     isDepartmentStaff,

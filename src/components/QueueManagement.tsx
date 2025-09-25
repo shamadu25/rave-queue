@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
+import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { QueueEntry, Status } from '@/types/queue';
 import { EnhancedTransferModal } from '@/components/EnhancedTransferModal';
 
@@ -23,6 +24,7 @@ interface Department {
 const QueueManagement: React.FC = () => {
   const { user, profile } = useAuth();
   const { userDepartments } = useUserDepartments(user?.id);
+  const { canTransferToAnyDepartment } = useRoleAccess();
   const [queueEntries, setQueueEntries] = useState<QueueEntry[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
@@ -466,14 +468,16 @@ const QueueManagement: React.FC = () => {
                         )}
                         {(entry.status === 'Waiting' || entry.status === 'Called') && (
                           <>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => setTransferModal({ isOpen: true, entry })}
-                            >
-                              <ArrowRightLeft className="h-3 w-3 mr-1" />
-                              Transfer
-                            </Button>
+                            {(canTransferToAnyDepartment() || allowedDepartments.includes(entry.department)) && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => setTransferModal({ isOpen: true, entry })}
+                              >
+                                <ArrowRightLeft className="h-3 w-3 mr-1" />
+                                Transfer
+                              </Button>
+                            )}
                             <Button 
                               size="sm" 
                               variant="destructive"
