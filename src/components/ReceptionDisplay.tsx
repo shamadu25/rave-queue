@@ -39,7 +39,7 @@ interface CachedData {
 const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
   const { entries, loading, error } = useQueueMonitor();
   const { settings, loading: settingsLoading } = useSystemSettings();
-  const { announceWithChime, isEnabled } = useTextToSpeech();
+  const { announceWithChime, isEnabled, playChime } = useTextToSpeech();
   
   const [currentServing, setCurrentServing] = useState<any>(null);
   const [nextInLine, setNextInLine] = useState<any[]>([]);
@@ -54,6 +54,7 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
   const [cachedData, setCachedData] = useState<CachedData | null>(null);
   const [offlineMode, setOfflineMode] = useState(false);
   const [headerAnimation, setHeaderAnimation] = useState(true);
+  const [audioInitialized, setAudioInitialized] = useState(false);
   
   const maxReconnectAttempts = 10;
 
@@ -70,7 +71,7 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
     }
   }, [settings?.clinic_name, settings?.clinic_logo]);
 
-  // Auto-fullscreen functionality
+  // Auto-fullscreen functionality with immediate activation
   useEffect(() => {
     const autoFullscreen = settings?.enable_display_screen !== false;
     if (autoFullscreen && !isFullscreen && document.documentElement.requestFullscreen) {
@@ -78,15 +79,43 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         try {
           await document.documentElement.requestFullscreen();
           setIsFullscreen(true);
-          toast.success('Reception Display - Fullscreen Mode');
+          toast.success('Reception Display - Fullscreen Mode Activated');
         } catch (error) {
           console.log('Fullscreen not supported:', error);
         }
       };
-      const timer = setTimeout(enterFullscreen, 1500);
+      // Reduced delay for faster activation
+      const timer = setTimeout(enterFullscreen, 800);
       return () => clearTimeout(timer);
     }
   }, [settings?.enable_display_screen, isFullscreen]);
+
+  // Initialize audio context immediately for faster response
+  useEffect(() => {
+    if (enableAudio && !audioInitialized) {
+      const initAudio = () => {
+        setAudioInitialized(true);
+        setUserInteracted(true);
+        // Pre-warm the audio system
+        if (settings?.enable_announcement_chime) {
+          playChime(0.1).catch(() => {}); // Very quiet test chime
+        }
+      };
+      
+      // Listen for any user interaction to enable audio
+      const events = ['click', 'touchstart', 'keydown'];
+      const handler = () => {
+        initAudio();
+        events.forEach(event => document.removeEventListener(event, handler));
+      };
+      
+      events.forEach(event => document.addEventListener(event, handler, { once: true }));
+      
+      return () => {
+        events.forEach(event => document.removeEventListener(event, handler));
+      };
+    }
+  }, [enableAudio, audioInitialized, settings?.enable_announcement_chime, playChime]);
 
   // Cache management
   const saveToCache = useCallback((entries: any[], settings: any) => {
@@ -196,27 +225,32 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
     if (nowServing) {
       setCurrentServing(nowServing);
       
-      // Trigger announcement for new tokens (only when online)
+      // Trigger immediate announcement for new tokens
       if (!offlineMode &&
           audioEnabled && 
           settings?.enable_voice_announcements &&
           nowServing.token !== lastAnnouncedToken &&
           nowServing.status === 'Called' &&
-          userInteracted) {
+          (userInteracted || audioInitialized)) {
         
         const template = settings?.reception_announcement_template || 
-          'Token {number}, please proceed to Reception.';
+          settings?.announcement_template ||
+          'Token {number}, please proceed to Reception Desk.';
         
-        announceWithChime(
-          nowServing.token,
-          'Reception',
-          'Reception Desk',
-          template
-        );
+        // Immediate announcement without delay
+        Promise.resolve().then(() => {
+          announceWithChime(
+            nowServing.token,
+            'Reception',
+            'Reception Desk',
+            template
+          );
+        });
         
         setLastAnnouncedToken(nowServing.token);
-        toast.success(`Now calling: ${nowServing.token}`, {
-          duration: 3000,
+        toast.success(`🔊 Now calling: ${nowServing.token}`, {
+          duration: 4000,
+          className: 'text-lg font-bold',
         });
       }
     } else {
@@ -264,16 +298,19 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
 
   const currentSettings = offlineMode && cachedData ? cachedData.settings : settings;
   const hospitalName = currentSettings?.clinic_name || 'Hospital Reception';
-  const hospitalLogo = currentSettings?.clinic_logo;
-  const headerText = currentSettings?.display_header_text || `Welcome to ${hospitalName}`;
-  const subText = currentSettings?.reception_subtext || 'Please proceed to Reception for registration and verification';
-  const tickerText = currentSettings?.ticker_text || 'For emergency assistance, please dial 911 or inform reception staff immediately.';
+  const hospitalLogo = currentSettings?.clinic_logo || currentSettings?.clinic_logo_url;
+  const headerText = currentSettings?.display_header_text || currentSettings?.header_text || `Welcome to ${hospitalName}`;
+  const subText = currentSettings?.reception_subtext || currentSettings?.subtext || 'Please proceed to Reception for registration and verification';
+  const tickerText = currentSettings?.ticker_text || currentSettings?.announcement_text || 'For emergency assistance, please dial 911 or inform reception staff immediately.';
+  const footerNote = currentSettings?.footer_note || 'Thank you for visiting our hospital';
 
   return (
     <div 
-      className="min-h-screen flex flex-col relative overflow-hidden fullscreen-container"
+      className="min-h-screen w-full flex flex-col relative overflow-hidden fullscreen-container bg-gradient-to-br from-primary/20 via-background to-secondary/30"
       style={{
-        background: `linear-gradient(135deg, ${currentSettings?.display_background_start || '#6B7280'}, ${currentSettings?.display_background_end || '#374151'})`
+        background: currentSettings?.display_background_start && currentSettings?.display_background_end 
+          ? `linear-gradient(135deg, ${currentSettings.display_background_start}, ${currentSettings.display_background_end})`
+          : undefined
       }}
     >
       {/* Animated Particle Background */}
@@ -355,9 +392,10 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
               </div>
               <div>
                 <h1 
-                  className="font-black text-white text-shadow-lg animate-fade-in-up"
+                  className="font-black text-white text-shadow-lg animate-fade-in-up text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
                   style={{ 
-                    fontSize: `${currentSettings?.display_header_font_size || 48}px`,
+                    fontSize: currentSettings?.display_header_font_size ? `${currentSettings.display_header_font_size}px` : undefined,
+                    color: currentSettings?.display_header_color || '#FFFFFF',
                     textShadow: '0 0 30px rgba(255,255,255,0.4), 0 4px 8px rgba(0,0,0,0.3)',
                     filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.2))'
                   }}
@@ -369,10 +407,10 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
                     🏥
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold text-yellow-300 animate-slide-in">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-300 animate-slide-in">
                       Reception Queue
                     </h2>
-                    <p className="text-white/90 text-lg font-medium">Registration & Patient Check-In</p>
+                    <p className="text-white/90 text-sm sm:text-base md:text-lg lg:text-xl font-medium">Registration & Patient Check-In</p>
                   </div>
                 </div>
               </div>
@@ -381,8 +419,8 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
             {/* Status and Controls */}
             <div className="flex items-center gap-6">
               <div className="text-right text-white">
-                <div className="text-4xl font-bold mb-1 animate-fade-in-up">{formatTime(currentTime)}</div>
-                <div className="text-xl opacity-90">{formatDate(currentTime)}</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 animate-fade-in-up">{formatTime(currentTime)}</div>
+                <div className="text-sm sm:text-base md:text-lg lg:text-xl opacity-90">{formatDate(currentTime)}</div>
               </div>
               
               <div className="flex items-center gap-3">
@@ -414,13 +452,13 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         </div>
       </div>
 
-      {/* Split-Screen Main Content */}
-      <div className="flex-1 flex flex-col relative z-10">
-        
-        {/* NOW SERVING Section - Top Half */}
-        <div className="flex-1 flex items-center justify-center p-8">
-          <Card className="w-full max-w-5xl bg-white/95 backdrop-blur-sm shadow-2xl border-0 overflow-hidden animate-slide-in">
-            <CardContent className="p-12">
+        {/* Split-Screen Main Content */}
+        <div className="flex-1 flex flex-col lg:flex-row relative z-10 gap-4 p-2 sm:p-4 md:p-6 lg:p-8">
+          
+          {/* NOW SERVING Section */}
+          <div className="flex-1 flex items-center justify-center">
+            <Card className="w-full h-full bg-white/95 backdrop-blur-sm shadow-2xl border-0 overflow-hidden animate-slide-in">
+              <CardContent className="p-4 sm:p-6 md:p-8 lg:p-12 h-full flex flex-col justify-center">
               {currentServing ? (
                 <div className="text-center space-y-8">
                   <div className="flex items-center justify-center gap-6 mb-8">
@@ -428,16 +466,16 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
                       className="w-20 h-20 text-green-500 animate-pulse" 
                       strokeWidth={2}
                     />
-                    <h2 className="text-7xl font-black bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-glow-pulse">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-glow-pulse">
                       NOW SERVING
                     </h2>
                   </div>
                   
                   <div 
-                    className="font-black tracking-wider animate-token-glow"
+                    className="font-black tracking-wider animate-token-glow text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
                     style={{ 
-                      fontSize: `${currentSettings?.display_token_font_size || 120}px`,
-                      color: '#6B7280',
+                      fontSize: currentSettings?.display_token_font_size ? `${currentSettings.display_token_font_size}px` : undefined,
+                      color: currentSettings?.display_token_color || '#6B7280',
                       textShadow: currentSettings?.display_token_glow ? '0 0 40px #6B728040' : 'none',
                       filter: 'drop-shadow(0 4px 20px rgba(107, 114, 128, 0.3))'
                     }}
@@ -445,41 +483,44 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
                     {currentServing.token}
                   </div>
                   
-                  <div className="flex items-center justify-center gap-8 text-3xl">
-                    <span className="font-medium text-muted-foreground">Please proceed to</span>
-                    <ArrowRight className="h-12 w-12 text-gray-600 animate-pulse" />
-                    <div className="bg-gray-600 text-white px-8 py-4 rounded-lg font-bold text-3xl shadow-lg">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-lg sm:text-2xl md:text-3xl">
+                    <span className="font-medium text-muted-foreground text-center">Please proceed to</span>
+                    <ArrowRight className="h-8 w-8 sm:h-12 sm:w-12 text-gray-600 animate-pulse" />
+                    <div className="bg-gray-600 text-white px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl shadow-lg">
                       Reception Desk
                     </div>
                   </div>
                   
                   <p 
-                    className="text-2xl text-muted-foreground mt-6 font-medium"
-                    style={{ color: currentSettings?.subtext_color || '#6B7280' }}
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mt-6 font-medium text-center"
+                    style={{ 
+                      color: currentSettings?.subtext_color || '#6B7280',
+                      fontSize: currentSettings?.display_department_font_size ? `${currentSettings.display_department_font_size}px` : undefined
+                    }}
                   >
                     {subText}
                   </p>
                   
-                  <div className="flex items-center justify-center gap-8 mt-8">
+                  <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 mt-8">
                     <StatusBadge 
                       status={currentServing.status} 
                       priority={currentServing.priority}
-                      className="text-2xl px-8 py-4"
+                      className="text-lg sm:text-xl md:text-2xl px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4"
                     />
                     {currentServing.intended_department && (
-                      <Badge variant="outline" className="text-xl px-6 py-3">
+                      <Badge variant="outline" className="text-base sm:text-lg md:text-xl px-3 py-2 sm:px-4 sm:py-2 md:px-6 md:py-3">
                         Service: {currentServing.intended_department}
                       </Badge>
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-20 space-y-8">
-                  <Clock className="h-24 w-24 text-muted-foreground mx-auto animate-pulse" />
-                  <h2 className="text-6xl font-bold text-muted-foreground">
+                <div className="text-center py-10 sm:py-16 md:py-20 space-y-4 sm:space-y-6 md:space-y-8">
+                  <Clock className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 text-muted-foreground mx-auto animate-pulse" />
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-muted-foreground">
                     No Current Queue
                   </h2>
-                  <p className="text-3xl text-muted-foreground">
+                  <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground">
                     Waiting for next patient...
                   </p>
                 </div>
@@ -488,34 +529,34 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
           </Card>
         </div>
 
-        {/* NEXT IN LINE Section - Bottom Half */}
-        <div className="flex-1 flex items-center justify-center p-8">
-          <Card className="w-full max-w-5xl bg-white/90 backdrop-blur-sm shadow-xl border-0 overflow-hidden">
-            <CardContent className="p-8">
+        {/* NEXT IN LINE Section */}
+        <div className="flex-1 flex items-center justify-center">
+          <Card className="w-full h-full bg-white/90 backdrop-blur-sm shadow-xl border-0 overflow-hidden">
+            <CardContent className="p-4 sm:p-6 md:p-8 h-full flex flex-col justify-center">
               <div className="text-center space-y-6">
-                <div className="flex items-center justify-center gap-4 mb-6">
-                  <Users className="w-16 h-16 text-blue-600" />
-                  <h3 className="text-5xl font-bold text-blue-600">NEXT IN LINE</h3>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+                  <Users className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-blue-600" />
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-blue-600 text-center">NEXT IN LINE</h3>
                 </div>
                 
                 {nextInLine.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                     {nextInLine.map((entry, index) => (
                       <div 
                         key={entry.id}
-                        className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg shadow-lg animate-fade-in-up border-2 border-blue-200"
+                        className="bg-gradient-to-br from-blue-50 to-blue-100 p-3 sm:p-4 md:p-6 rounded-lg shadow-lg animate-fade-in-up border-2 border-blue-200"
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
-                        <div className="text-center space-y-3">
-                          <div className="text-3xl font-black text-blue-600">
+                        <div className="text-center space-y-2 sm:space-y-3">
+                          <div className="text-xl sm:text-2xl md:text-3xl font-black text-blue-600">
                             {entry.token}
                           </div>
                           {entry.intended_department && (
-                            <Badge variant="secondary" className="text-sm">
+                            <Badge variant="secondary" className="text-xs sm:text-sm">
                               {entry.intended_department}
                             </Badge>
                           )}
-                          <div className="text-sm text-blue-500 font-medium">
+                          <div className="text-xs sm:text-sm text-blue-500 font-medium">
                             Position {index + 1}
                           </div>
                         </div>
@@ -523,9 +564,9 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-12">
-                    <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4 animate-pulse" />
-                    <p className="text-3xl text-muted-foreground">No patients waiting</p>
+                  <div className="py-8 sm:py-12">
+                    <Users className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 text-muted-foreground mx-auto mb-4 animate-pulse" />
+                    <p className="text-xl sm:text-2xl md:text-3xl text-muted-foreground text-center">No patients waiting</p>
                   </div>
                 )}
               </div>
@@ -535,40 +576,47 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
       </div>
 
       {/* Footer Ticker */}
-      <div className="relative bg-black/80 backdrop-blur-sm py-4 overflow-hidden">
+      <div className="relative bg-black/80 backdrop-blur-sm py-2 sm:py-3 md:py-4 overflow-hidden">
         <div 
           className="animate-marquee whitespace-nowrap"
           style={{ animationDuration: `${currentSettings?.ticker_speed || 30}s` }}
         >
           <span 
-            className="text-2xl font-bold px-8"
+            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold px-4 sm:px-6 md:px-8"
             style={{ 
               color: currentSettings?.ticker_color || '#FFFFFF',
-              fontSize: `${currentSettings?.ticker_font_size || 24}px`
+              fontSize: currentSettings?.ticker_font_size ? `${currentSettings.ticker_font_size}px` : undefined
             }}
           >
             {tickerText}
           </span>
           <span 
-            className="text-2xl font-bold px-8"
+            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold px-4 sm:px-6 md:px-8"
             style={{ 
               color: currentSettings?.ticker_color || '#FFFFFF',
-              fontSize: `${currentSettings?.ticker_font_size || 24}px`
+              fontSize: currentSettings?.ticker_font_size ? `${currentSettings.ticker_font_size}px` : undefined
             }}
           >
             {tickerText}
           </span>
           <span 
-            className="text-2xl font-bold px-8"
+            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold px-4 sm:px-6 md:px-8"
             style={{ 
               color: currentSettings?.ticker_color || '#FFFFFF',
-              fontSize: `${currentSettings?.ticker_font_size || 24}px`
+              fontSize: currentSettings?.ticker_font_size ? `${currentSettings.ticker_font_size}px` : undefined
             }}
           >
             {tickerText}
           </span>
         </div>
       </div>
+
+      {/* Footer with hospital info */}
+      {footerNote && (
+        <div className="bg-black/60 backdrop-blur-sm py-2 text-center">
+          <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">{footerNote}</p>
+        </div>
+      )}
     </div>
   );
 };
