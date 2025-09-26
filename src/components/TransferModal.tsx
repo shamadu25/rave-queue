@@ -47,11 +47,24 @@ export const TransferModal = ({
 
   const fetchDepartments = async () => {
     try {
-      const { data, error } = await supabase
+      // Get current user role to determine filtering
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+      let query = supabase
         .from('departments')
         .select('id, name, is_internal, is_active')
-        .eq('is_active', true)
-        .order('name');
+        .eq('is_active', true);
+
+      // Filter by internal departments only for non-admin roles
+      if (profile?.role !== 'admin') {
+        query = query.eq('is_internal', true);
+      }
+
+      const { data, error } = await query.order('name');
 
       if (error) throw error;
       setDepartments(data || []);

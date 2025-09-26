@@ -184,25 +184,25 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
       return;
     }
 
-    // Group entries by department - Only show Reception and Public departments
+    // Group entries by department - Only show Reception and Public departments (not Internal)
     const queues: {[key: string]: {currentServing: any; waiting: any[]; totalWaiting: number}} = {};
     
-    // Add Reception as the first department (always public)
-    const receptionConfig = { 
-      'Reception': { color: '#6B7280', icon: '🏥', counter: 'Reception Desk' }
-    };
+    // Get list of public departments from database
+    const publicDepartments = ['Reception']; // Reception is always public
     
-    // Only include public departments (not internal ones like Lab, Pharmacy, etc.)
-    const publicDepartmentConfig = Object.fromEntries(
-      Object.entries(departmentConfig).filter(([dept]) => 
-        !['Lab', 'Pharmacy', 'Billing', 'X-ray', 'Scan'].includes(dept)
-      )
+    // Filter to only public departments (is_internal = false) plus Reception
+    const publicEntries = currentEntries.filter(entry => 
+      entry.department === 'Reception' || 
+      (entry.department_info && !entry.department_info.is_internal) ||
+      // Fallback to previous logic for compatibility
+      ['Consultation', 'Enquiry', 'Globe Health Service', 'Others', 'Result Pickup'].includes(entry.department)
     );
     
-    const allDeptConfig = { ...receptionConfig, ...publicDepartmentConfig };
+    // Get unique public departments from entries
+    const uniquePublicDepts = [...new Set(publicEntries.map(entry => entry.department))];
     
-    Object.keys(allDeptConfig).forEach(dept => {
-      const deptEntries = currentEntries.filter(entry => entry.department === dept);
+    uniquePublicDepts.forEach(dept => {
+      const deptEntries = publicEntries.filter(entry => entry.department === dept);
       
       // Find currently serving tokens
       const serving = deptEntries.filter(entry => 
@@ -236,10 +236,13 @@ const UniversalQueueDisplay = ({ enableAudio = true }: UniversalQueueDisplayProp
           ? (settings?.reception_announcement_template || 'Token {number}, please proceed to Reception.')
           : (settings?.department_announcement_template || 'Token {number}, please proceed to {department}.');
         
+        // Use default department config or fetch from database
+        const deptConfig = departmentConfig[dept] || { color: '#3B82F6', icon: '🏥', counter: dept };
+        
         announceWithChime(
           currentServing.token,
           currentServing.department,
-          allDeptConfig[dept].counter,
+          deptConfig.counter,
           template
         );
         

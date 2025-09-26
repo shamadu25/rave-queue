@@ -46,13 +46,14 @@ const ReceptionTransferModal: React.FC<ReceptionTransferModalProps> = ({
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load available departments (exclude Reception, include both public and internal for staff)
+        // Load available departments - Reception can only transfer to Internal departments
         const { data: deptData, error: deptError } = await supabase
           .from('departments')
           .select('*')
           .eq('is_active', true)
+          .eq('is_internal', true) // Only internal departments for reception transfers
           .neq('name', 'Reception')
-          .order('is_internal, name'); // Show public departments first, then internal
+          .order('name');
 
         if (deptError) throw deptError;
         setDepartments(deptData || []);
