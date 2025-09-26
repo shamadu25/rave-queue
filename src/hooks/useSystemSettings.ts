@@ -79,17 +79,21 @@ export const useSystemSettings = () => {
         .from('system_settings')
         .select('*');
 
-      if (error) throw error;
+      if (error) {
+        console.error('System settings query error:', error);
+        // Don't throw error, just log it and use defaults
+      }
 
       const settingsMap = (settingsData || []).reduce((acc, setting) => {
         acc[setting.setting_key] = setting.setting_value;
         return acc;
       }, {} as SystemSettings);
 
-      setSettings(settingsMap);
+      // Merge with defaults to ensure all required settings exist
+      setSettings(prev => ({ ...prev, ...settingsMap }));
     } catch (error) {
       console.error('Failed to load system settings:', error);
-      toast.error('Failed to load system settings');
+      // Don't show toast error on load failure - use defaults silently
     } finally {
       setLoading(false);
     }

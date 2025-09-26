@@ -39,7 +39,7 @@ export const useAuth = () => {
                 .from('profiles')
                 .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
               if (mounted && !error) {
                 setProfile(profileData);
               }
@@ -73,11 +73,11 @@ export const useAuth = () => {
         if (session?.user) {
           (async () => {
             try {
-              const { data: profileData, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
+            const { data: profileData, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .maybeSingle();
               if (mounted && !error) {
                 setProfile(profileData);
               }
