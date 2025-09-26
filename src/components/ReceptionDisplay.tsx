@@ -300,10 +300,15 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
 
   const currentSettings = offlineMode && cachedData ? cachedData.settings : settings;
   const hospitalName = currentSettings?.clinic_name || 'Hospital Reception';
-  const hospitalLogo = currentSettings?.clinic_logo || currentSettings?.clinic_logo_url;
-  const headerText = currentSettings?.display_header_text || currentSettings?.header_text || `Welcome to ${hospitalName}`;
-  const subText = currentSettings?.reception_subtext || currentSettings?.subtext || 'Please proceed to Reception for registration and verification';
-  const tickerText = currentSettings?.ticker_text || currentSettings?.announcement_text || 'For emergency assistance, please dial 911 or inform reception staff immediately.';
+  const hospitalLogo = currentSettings?.clinic_logo_url || currentSettings?.clinic_logo;
+  const headerText = currentSettings?.display_header_text || `Welcome to ${hospitalName}`;
+  const headerColor = currentSettings?.display_header_color || '#1E293B';
+  const headerFontSize = currentSettings?.display_header_font_size || 24;
+  const backgroundColor = currentSettings?.display_background_start && currentSettings?.display_background_end 
+    ? `linear-gradient(135deg, ${currentSettings.display_background_start}, ${currentSettings.display_background_end})`
+    : 'linear-gradient(135deg, hsl(var(--primary) / 0.2), hsl(var(--secondary) / 0.3))';
+  const subText = currentSettings?.reception_subtext || 'Please proceed to Reception for registration and verification';
+  const tickerText = currentSettings?.ticker_text || 'For emergency assistance, please dial 911 or inform reception staff immediately.';
   const footerNote = currentSettings?.footer_note || 'Thank you for visiting our hospital';
 
   const handleKioskActivation = async () => {
@@ -379,11 +384,9 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         </div>
       )}
     <div 
-      className="h-screen w-full flex flex-col relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-secondary/30"
+      className="h-screen w-full flex flex-col relative overflow-hidden"
       style={{
-        background: currentSettings?.display_background_start && currentSettings?.display_background_end 
-          ? `linear-gradient(135deg, ${currentSettings.display_background_start}, ${currentSettings.display_background_end})`
-          : undefined,
+        background: backgroundColor,
         height: '100vh'
       }}
     >
@@ -443,10 +446,22 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
                 </div>
               )}
               <div>
-                <h1 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black text-slate-800 tracking-tight">
+                <h1 
+                  className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black tracking-tight"
+                  style={{ 
+                    color: headerColor,
+                    fontSize: `${Math.max(headerFontSize * 0.75, 14)}px`
+                  }}
+                >
                   {hospitalName}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                <p 
+                  className="text-xs sm:text-sm font-medium opacity-80"
+                  style={{ 
+                    color: headerColor,
+                    fontSize: `${Math.max(headerFontSize * 0.5, 12)}px`
+                  }}
+                >
                   Reception Queue Display
                 </p>
               </div>
@@ -454,10 +469,16 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
 
             {/* Time & Date */}
             <div className="text-right">
-              <div className="text-lg sm:text-xl md:text-2xl font-black text-slate-800">
+              <div 
+                className="text-lg sm:text-xl md:text-2xl font-black"
+                style={{ color: headerColor }}
+              >
                 {formatTime(currentTime)}
               </div>
-              <div className="text-xs sm:text-sm text-slate-600 font-medium">
+              <div 
+                className="text-xs sm:text-sm font-medium opacity-80"
+                style={{ color: headerColor }}
+              >
                 {formatDate(currentTime)}
               </div>
             </div>
