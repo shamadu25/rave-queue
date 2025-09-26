@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TopBar } from '@/components/TopBar';
 import { GeneralSettings } from '@/components/GeneralSettings';
@@ -6,12 +7,29 @@ import { DepartmentManagement } from '@/components/DepartmentManagement';
 import UserManagement from '@/components/UserManagement';
 import { EnterpriseAdminSettings } from '@/components/EnterpriseAdminSettings';
 import { ServiceFlowManagement } from '@/components/ServiceFlowManagement';
+import { QueueDisplaySettings } from '@/components/QueueDisplaySettings';
+import { EnhancedAnnouncementSettings } from '@/components/EnhancedAnnouncementSettings';
+import { EnhancedTicketTemplateSettings } from '@/components/EnhancedTicketTemplateSettings';
+import { EnhancedPrintSettings } from '@/components/EnhancedPrintSettings';
+import { ReportsAnalytics } from '@/components/ReportsAnalytics';
 import { useAuth } from '@/hooks/useAuth';
+import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { Settings } from 'lucide-react';
 
 const SettingsPage = () => {
   const { profile } = useAuth();
   const isAdmin = profile?.role === 'admin';
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState('general');
+  const { entries } = useQueueMonitor();
+
+  // Handle URL tab parameter
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
   
   // Show enterprise settings for admins, limited for others
   if (isAdmin) {
@@ -51,43 +69,84 @@ const SettingsPage = () => {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 space-y-8">
           <div className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8">
-            <Tabs defaultValue="enterprise" className="space-y-8">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+              {/* Main Tabs Row */}
               <TabsList className="grid w-full grid-cols-5 bg-white/10 backdrop-blur-sm border-white/20 rounded-2xl p-2 h-14">
-                <TabsTrigger value="enterprise" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
-                  Enterprise Settings
-                </TabsTrigger>
                 <TabsTrigger value="general" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
-                  General Settings
+                  General
+                </TabsTrigger>
+                <TabsTrigger value="enterprise" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
+                  Enterprise
                 </TabsTrigger>
                 <TabsTrigger value="departments" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
-                  Department Management
-                </TabsTrigger>
-                <TabsTrigger value="flows" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
-                  Service Flows
+                  Departments
                 </TabsTrigger>
                 <TabsTrigger value="users" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
-                  User Management
+                  Users
+                </TabsTrigger>
+                <TabsTrigger value="flows" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
+                  Workflows
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Secondary Tabs Row */}
+              <TabsList className="grid w-full grid-cols-5 bg-white/10 backdrop-blur-sm border-white/20 rounded-2xl p-2 h-14">
+                <TabsTrigger value="display" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
+                  Display
+                </TabsTrigger>
+                <TabsTrigger value="announcements" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
+                  Announcements
+                </TabsTrigger>
+                <TabsTrigger value="tickets" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
+                  Tickets
+                </TabsTrigger>
+                <TabsTrigger value="print" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
+                  Printing
+                </TabsTrigger>
+                <TabsTrigger value="reports" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
+                  Reports
                 </TabsTrigger>
               </TabsList>
             
-              <TabsContent value="enterprise" className="bg-white/5 rounded-xl border border-white/20 p-6">
-                <EnterpriseAdminSettings />
-              </TabsContent>
-              
+              {/* Tab Content */}
               <TabsContent value="general" className="bg-white/5 rounded-xl border border-white/20 p-6">
                 <GeneralSettings />
+              </TabsContent>
+
+              <TabsContent value="enterprise" className="bg-white/5 rounded-xl border border-white/20 p-6">
+                <EnterpriseAdminSettings />
               </TabsContent>
               
               <TabsContent value="departments" className="bg-white/5 rounded-xl border border-white/20 p-6">
                 <DepartmentManagement />
               </TabsContent>
 
+              <TabsContent value="users" className="bg-white/5 rounded-xl border border-white/20 p-6">
+                <UserManagement />
+              </TabsContent>
+
               <TabsContent value="flows" className="bg-white/5 rounded-xl border border-white/20 p-6">
                 <ServiceFlowManagement />
               </TabsContent>
 
-              <TabsContent value="users" className="bg-white/5 rounded-xl border border-white/20 p-6">
-                <UserManagement />
+              <TabsContent value="display" className="bg-white/5 rounded-xl border border-white/20 p-6">
+                <QueueDisplaySettings />
+              </TabsContent>
+
+              <TabsContent value="announcements" className="bg-white/5 rounded-xl border border-white/20 p-6">
+                <EnhancedAnnouncementSettings />
+              </TabsContent>
+
+              <TabsContent value="tickets" className="bg-white/5 rounded-xl border border-white/20 p-6">
+                <EnhancedTicketTemplateSettings />
+              </TabsContent>
+
+              <TabsContent value="print" className="bg-white/5 rounded-xl border border-white/20 p-6">
+                <EnhancedPrintSettings />
+              </TabsContent>
+
+              <TabsContent value="reports" className="bg-white/5 rounded-xl border border-white/20 p-6">
+                <ReportsAnalytics entries={entries || []} />
               </TabsContent>
             </Tabs>
           </div>
@@ -114,13 +173,13 @@ const SettingsPage = () => {
                 <Settings className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-black text-white mb-1 tracking-tight">Settings</h1>
-                <p className="text-lg text-blue-100 font-medium">Basic system settings</p>
+                <h1 className="text-3xl font-black text-white mb-1 tracking-tight">Access Restricted</h1>
+                <p className="text-lg text-blue-100 font-medium">Admin privileges required for system settings</p>
               </div>
             </div>
             <div className="text-right text-white/90">
-              <div className="text-sm font-medium mb-1">LIMITED ACCESS</div>
-              <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+              <div className="text-sm font-medium mb-1">ACCESS DENIED</div>
+              <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -128,29 +187,16 @@ const SettingsPage = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 space-y-8">
         <div className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8">
-          <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-bold text-yellow-100 mb-2">Limited Access</h2>
-            <p className="text-yellow-200">You have restricted access to settings. Contact your administrator for full system configuration.</p>
+          <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-8 text-center">
+            <Settings className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-red-100 mb-4">Admin Access Required</h2>
+            <p className="text-red-200 text-lg mb-6">You need administrator privileges to access system settings and configuration options.</p>
+            <div className="bg-red-400/20 rounded-lg p-4 mb-6">
+              <p className="text-red-100 font-medium">Current Role: {profile?.role || 'Unknown'}</p>
+              <p className="text-red-200 text-sm mt-1">Required Role: admin</p>
+            </div>
+            <p className="text-red-300">Please contact your system administrator to request access or upgrade your account permissions.</p>
           </div>
-        
-          <Tabs defaultValue="general" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm border-white/20 rounded-2xl p-2 h-14">
-              <TabsTrigger value="general" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
-                Basic Settings
-              </TabsTrigger>
-              <TabsTrigger value="departments" className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl">
-                Department Info
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="general" className="bg-white/5 rounded-xl border border-white/20 p-6">
-              <GeneralSettings />
-            </TabsContent>
-            
-            <TabsContent value="departments" className="bg-white/5 rounded-xl border border-white/20 p-6">
-              <DepartmentManagement />
-            </TabsContent>
-          </Tabs>
         </div>
       </div>
     </div>

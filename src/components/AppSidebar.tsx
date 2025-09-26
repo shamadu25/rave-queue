@@ -12,7 +12,16 @@ import {
   Receipt,
   Home,
   Monitor,
-  PlusCircle
+  PlusCircle,
+  ChevronDown,
+  Building2,
+  UserCog,
+  Workflow,
+  Eye,
+  Volume2,
+  FileText,
+  Printer,
+  Database
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,10 +35,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarHeader,
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home, permission: null },
@@ -48,14 +61,29 @@ const departmentItems = [
   { title: "Billing", icon: Receipt, department: "Billing" },
 ];
 
+const adminSettingsItems = [
+  { title: "General Settings", url: "/settings?tab=general", icon: Settings },
+  { title: "Enterprise Settings", url: "/settings?tab=enterprise", icon: Building2 },
+  { title: "Department Management", url: "/settings?tab=departments", icon: Building2 },
+  { title: "User Management", url: "/settings?tab=users", icon: UserCog },
+  { title: "Service Flows", url: "/settings?tab=flows", icon: Workflow },
+  { title: "Queue Display Settings", url: "/settings?tab=display", icon: Eye },
+  { title: "Voice & Announcements", url: "/settings?tab=announcements", icon: Volume2 },
+  { title: "Ticket Templates", url: "/settings?tab=tickets", icon: FileText },
+  { title: "Print Settings", url: "/settings?tab=print", icon: Printer },
+  { title: "Reports & Analytics", url: "/settings?tab=reports", icon: Database },
+];
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const { profile } = useAuth();
   const { hasPermission, isAdmin } = useRoleAccess();
   const location = useLocation();
   const currentPath = location.pathname;
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const isActive = (path: string) => currentPath === path;
+  const isSettingsActive = () => currentPath.startsWith('/settings');
   const collapsed = state === "collapsed";
 
   const getRoleBasedTitle = () => {
@@ -181,18 +209,39 @@ export function AppSidebar() {
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton 
-                    asChild
-                    isActive={isActive("/settings")}
-                    className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary"
-                  >
-                    <NavLink to="/settings" className="flex items-center gap-3">
-                      <Settings className="h-4 w-4" />
-                      {!collapsed && <span>Settings</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                
+                {/* Comprehensive Settings Menu */}
+                <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen}>
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton 
+                        isActive={isSettingsActive()}
+                        className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary"
+                      >
+                        <Settings className="h-4 w-4" />
+                        {!collapsed && <span>System Settings</span>}
+                        {!collapsed && <ChevronDown className="ml-auto h-4 w-4 transition-transform data-[state=open]:rotate-180" />}
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        {adminSettingsItems.map((item) => (
+                          <SidebarMenuSubItem key={item.title}>
+                            <SidebarMenuSubButton 
+                              asChild
+                              isActive={isActive(item.url) || (item.url.includes('tab=') && currentPath === '/settings' && location.search.includes(item.url.split('tab=')[1]))}
+                            >
+                              <NavLink to={item.url} className="flex items-center gap-3">
+                                <item.icon className="h-4 w-4" />
+                                <span>{item.title}</span>
+                              </NavLink>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarMenuItem>
+                </Collapsible>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
