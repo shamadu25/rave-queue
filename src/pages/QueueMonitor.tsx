@@ -18,20 +18,8 @@ const getUserDepartmentFilter = (role?: string, department?: string): string | u
     case 'admin':
     case 'receptionist':
       return undefined; // See all departments
-    case 'doctor':
-      return 'Consultation';
-    case 'lab_technician':
-      return 'Lab';
-    case 'pharmacist':
-      return 'Pharmacy';
-    case 'xray_technician':
-      return 'X-ray';
-    case 'imaging_technician':
-      return 'Scan';
-    case 'billing_staff':
-      return 'Billing';
     default:
-      return department; // Fallback to user's department
+      return department; // Use user's actual assigned department
   }
 };
 
@@ -130,52 +118,10 @@ export default function QueueMonitor() {
           canFilter: true,
           canPerformActions: false
         };
-      case 'doctor':
-        return {
-          title: 'Consultation Queue',
-          description: 'Manage patients in the consultation department',
-          canFilter: false,
-          canPerformActions: true
-        };
-      case 'lab_technician':
-        return {
-          title: 'Laboratory Queue',
-          description: 'Process laboratory requests and sample collections',
-          canFilter: false,
-          canPerformActions: true
-        };
-      case 'pharmacist':
-        return {
-          title: 'Pharmacy Queue',
-          description: 'Dispense medications and handle pharmacy requests',
-          canFilter: false,
-          canPerformActions: true
-        };
-      case 'xray_technician':
-        return {
-          title: 'X-ray Department Queue',
-          description: 'Handle X-ray imaging requests and appointments',
-          canFilter: false,
-          canPerformActions: true
-        };
-      case 'imaging_technician':
-        return {
-          title: 'Scan/Imaging Queue',
-          description: 'Manage CT, MRI, and other advanced imaging requests',
-          canFilter: false,
-          canPerformActions: true
-        };
-      case 'billing_staff':
-        return {
-          title: 'Billing Department Queue',
-          description: 'Process billing and payment-related requests',
-          canFilter: false,
-          canPerformActions: true
-        };
       default:
         return {
           title: `${department} Queue`,
-          description: `Manage your department's queue`,
+          description: `Manage patients in the ${department} department`,
           canFilter: false,
           canPerformActions: true
         };

@@ -56,6 +56,19 @@ const QueueManagement: React.FC = () => {
     };
   }, []);
 
+  // Set default department filter for non-admin users
+  useEffect(() => {
+    if (profile && userDepartments.length > 0 && profile.role !== 'admin') {
+      // Set to user's first assigned department if they don't have access to all
+      if (selectedDepartment === 'all') {
+        const firstDepartment = userDepartments[0]?.department?.name;
+        if (firstDepartment) {
+          setSelectedDepartment(firstDepartment);
+        }
+      }
+    }
+  }, [profile, userDepartments, selectedDepartment]);
+
   const fetchQueueEntries = async () => {
     try {
       const { data, error } = await supabase
