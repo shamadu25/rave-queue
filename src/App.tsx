@@ -58,18 +58,26 @@ const AppContent = () => {
           <Route path="/display/reception" element={<ReceptionDisplay />} />
           <Route path="/display/department/:departmentName" element={<QueueDisplayPage />} />
           <Route path="/print/:tokenId" element={<PrintTicketPage />} />
-          <Route 
-            path="/settings" 
-            element={user ? <Settings /> : <Navigate to="/auth" replace />} 
-          />
            <Route 
-             path="/monitor" 
-             element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
+             path="/settings" 
+             element={
+               <ProtectedRoute allowedRoles={['admin']} fallbackPath="/">
+                 <Settings />
+               </ProtectedRoute>
+             } 
            />
-          <Route 
-            path="/admin" 
-            element={user ? <AdminDashboardPage /> : <Navigate to="/auth" replace />} 
-          />
+            <Route 
+              path="/monitor" 
+              element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} 
+            />
+           <Route 
+             path="/admin" 
+             element={
+               <ProtectedRoute allowedRoles={['admin']} fallbackPath="/">
+                 <AdminDashboardPage />
+               </ProtectedRoute>
+             } 
+           />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
@@ -94,14 +102,22 @@ const AppContent = () => {
                <Route path="/monitor" element={user ? <QueueMonitor /> : <Navigate to="/auth" replace />} />
                <Route path="/queue-management" element={user ? <QueueManagementPage /> : <Navigate to="/auth" replace />} />
               <Route path="/print/:tokenId" element={<PrintTicketPage />} />
-              <Route 
-                path="/settings" 
-                element={user ? <Settings /> : <Navigate to="/auth" replace />} 
-              />
-              <Route 
-                path="/admin-dashboard" 
-                element={user ? <AdminDashboardPage /> : <Navigate to="/auth" replace />} 
-              />
+               <Route 
+                 path="/settings" 
+                 element={
+                   <ProtectedRoute allowedRoles={['admin']} fallbackPath="/">
+                     <Settings />
+                   </ProtectedRoute>
+                 } 
+               />
+               <Route 
+                 path="/admin-dashboard" 
+                 element={
+                   <ProtectedRoute allowedRoles={['admin']} fallbackPath="/">
+                     <AdminDashboardPage />
+                   </ProtectedRoute>
+                 } 
+               />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
