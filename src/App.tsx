@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -67,7 +67,16 @@ const AppContent = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         {user && <AppSidebar />}
-        <main className="flex-1 overflow-auto">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {user && (
+            <header className="h-12 flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <SidebarTrigger className="ml-4" />
+              <div className="flex-1 px-4">
+                <h1 className="text-sm font-medium text-foreground">Queue Management System</h1>
+              </div>
+            </header>
+          )}
+          <main className="flex-1 overflow-auto">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -113,7 +122,8 @@ const AppContent = () => {
             />
             <Route path="*" element={user ? <NotFound /> : <Navigate to="/auth" replace />} />
           </Routes>
-        </main>
+          </main>
+        </div>
       </div>
     </SidebarProvider>
   );
