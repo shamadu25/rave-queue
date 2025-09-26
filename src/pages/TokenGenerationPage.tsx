@@ -99,7 +99,7 @@ const TokenGenerationPage = () => {
         setPatientName('');
         setSelectedDepartment(null);
         printTicket({ ...newEntry, intended_department: department.name }, department.color_code);
-        toast.success(`Service token ${token} generated for ${department.name} - Report to IOM Reception first!`);
+        toast.success(`Service token ${token} generated for ${department.name} - Report to Globe Health Reception first!`);
         
         // Auto-redirect after 20 seconds
         setTimeout(() => {
@@ -137,7 +137,7 @@ const TokenGenerationPage = () => {
             <Globe className="w-8 h-8 text-white animate-pulse" />
           </div>
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-xl text-white font-medium">Loading IOM Services Kiosk...</p>
+          <p className="text-xl text-white font-medium">Loading Globe Health Assessment Kiosk...</p>
           <p className="text-blue-200">Please wait while we prepare your session</p>
         </div>
       </div>
@@ -153,7 +153,7 @@ const TokenGenerationPage = () => {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KPGcgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ij4KPHBhdGggZD0iTTM2IDM0di00aC0ydjRoLTR2Mmg0djRoMnYtNGg0di0yaC00em0wLTMwVjBoLTJ2NGgtNHYyaDR2NGgyVjZoNFY0aC00ek02IDM0di00SDR2NEgwdjJoNHY0aDJ2LTRoNHYtMkg2ek02IDRWMEg0djRIMHYyaDR2NGgyVjZoNFY0SDZ6Ii8+CjwvZz4KPC9nPgo8L3N2Zz4=')] opacity-30"></div>
       </div>
 
-      {/* IOM Services Header */}
+      {/* Globe Health Assessment Clinic Header */}
       <div className="relative z-10 bg-gradient-to-r from-blue-600/95 via-indigo-600/95 to-blue-700/95 backdrop-blur-lg border-b border-white/20 shadow-2xl">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
@@ -163,13 +163,13 @@ const TokenGenerationPage = () => {
               </div>
               <div>
                 <h1 className="text-4xl font-black text-white mb-2 tracking-tight">
-                  IOM Services
+                  Globe Health Assessment Clinic
                 </h1>
                 <p className="text-xl text-blue-100 font-medium">
-                  International Organization for Migration
+                  Professional Health Assessment Services
                 </p>
                 <p className="text-blue-200 font-medium">
-                  Professional Immigration & Medical Solutions
+                  Excellence in Health & Medical Solutions
                 </p>
               </div>
             </div>
@@ -218,7 +218,7 @@ const TokenGenerationPage = () => {
                       <div className="text-center bg-gradient-to-r from-yellow-500/20 to-amber-500/20 rounded-xl p-4 border border-yellow-400/30">
                         <div className="flex items-center justify-center gap-3 mb-2">
                           <Building2 className="w-6 h-6 text-yellow-300" />
-                          <p className="text-yellow-100 font-bold text-xl">First Report To: IOM Reception</p>
+                          <p className="text-yellow-100 font-bold text-xl">First Report To: Globe Health Reception</p>
                         </div>
                         <p className="text-yellow-200">Requested Service: <span className="font-bold">{(generatedToken as any)?.intended_department || 'N/A'}</span></p>
                       </div>
@@ -269,7 +269,7 @@ const TokenGenerationPage = () => {
                         Service Request Kiosk
                       </h3>
                       <p className="text-xl text-blue-100">
-                        Professional Immigration & Medical Services
+                        Professional Health Assessment Services
                       </p>
                     </div>
                   </div>

@@ -393,7 +393,7 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
                   <span className="font-bold text-slate-700 text-center tracking-wide">Please proceed to</span>
                   <ArrowRight className="h-12 w-12 lg:h-16 lg:w-16 text-primary animate-pulse drop-shadow-lg" />
                   <div className="bg-gradient-to-r from-primary via-blue-600 to-primary text-white px-6 py-4 lg:px-10 lg:py-6 rounded-2xl font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl shadow-2xl ring-4 ring-white/30 backdrop-blur-sm">
-                    IOM Reception Desk
+                    GLOBE HEALTH Reception Desk
                   </div>
                 </div>
                 
@@ -491,13 +491,13 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         style={{ animationDuration: '20s' }}
       >
         <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
-          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing IOM SERVICES • Excellence in Immigration & Medical Care
+          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
         </span>
         <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
-          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing IOM SERVICES • Excellence in Immigration & Medical Care
+          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
         </span>
         <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
-          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing IOM SERVICES • Excellence in Immigration & Medical Care
+          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
         </span>
       </div>
     </div>
@@ -505,7 +505,7 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
     {/* Secondary Footer with hospital info */}
     <div className="bg-black/60 backdrop-blur-sm py-2 text-center z-10">
       <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">
-        {footerNote || "IOM SERVICES - Excellence in Immigration & Medical Solutions"}
+        {footerNote || "GLOBE HEALTH ASSESSMENT CLINIC - Excellence in Health & Medical Solutions"}
       </p>
     </div>
   </div>

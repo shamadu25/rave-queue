@@ -105,7 +105,7 @@ const ReceptionTransferModal: React.FC<ReceptionTransferModalProps> = ({
     const icons: {[key: string]: string} = {
       'CONSULTATION': '👨‍⚕️',
       'ENQUIRY': '❓',
-      'IOM SERVICE': '🩺',
+      'GLOBE HEALTH SERVICE': '🩺',
       'OTHERS': '📋',
       'RESULT PICKUP': '📄'
     };
