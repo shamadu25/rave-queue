@@ -145,7 +145,7 @@ const TokenGenerationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden flex flex-col">
       {/* Premium Background Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.3),transparent_50%)]"></div>
@@ -153,207 +153,206 @@ const TokenGenerationPage = () => {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KPGcgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ij4KPHBhdGggZD0iTTM2IDM0di00aC0ydjRoLTR2Mmg0djRoMnYtNGg0di0yaC00em0wLTMwVjBoLTJ2NGgtNHYyaDR2NGgyVjZoNFY0aC00ek02IDM0di00SDR2NEgwdjJoNHY0aDJ2LTRoNHYtMkg2ek02IDRWMEg0djRIMHYyaDR2NGgyVjZoNFY0SDZ6Ii8+CjwvZz4KPC9nPgo8L3N2Zz4=')] opacity-30"></div>
       </div>
 
-      {/* Globe Health Assessment Clinic Header */}
-      <div className="relative z-10 bg-gradient-to-r from-blue-600/95 via-indigo-600/95 to-blue-700/95 backdrop-blur-lg border-b border-white/20 shadow-2xl">
-        <div className="max-w-6xl mx-auto px-6 py-8">
+      {/* Compact Globe Health Assessment Clinic Header */}
+      <div className="relative z-10 bg-gradient-to-r from-blue-600/95 via-indigo-600/95 to-blue-700/95 backdrop-blur-lg border-b border-white/20 shadow-2xl flex-shrink-0">
+        <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl">
-                <Globe className="w-10 h-10 text-white" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl">
+                <Globe className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-black text-white mb-2 tracking-tight">
+                <h1 className="text-2xl lg:text-3xl font-black text-white mb-1 tracking-tight">
                   Globe Health Assessment Clinic
                 </h1>
-                <p className="text-xl text-blue-100 font-medium">
+                <p className="text-sm lg:text-base text-blue-100 font-medium">
                   Professional Health Assessment Services
-                </p>
-                <p className="text-blue-200 font-medium">
-                  Excellence in Health & Medical Solutions
                 </p>
               </div>
             </div>
             <div className="text-right text-white/90">
-              <div className="text-sm font-medium mb-1">KIOSK TERMINAL</div>
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="text-xs font-medium mb-1">KIOSK TERMINAL</div>
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse mx-auto"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+      <div className="relative z-10 flex-1 flex items-center justify-center px-4 py-4 overflow-y-auto">
+        <div className="w-full max-w-4xl">
 
-        {/* Main Content */}
-        <div className="animate-fade-in">
-          {showConfirmation && generatedToken ? (
-            // Premium Success Card
-            <Card className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20">
-              <CardContent className="p-12">
-                <div className="text-center space-y-8">
-                  <div className="relative mx-auto w-24 h-24">
-                    <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping"></div>
-                    <div className="relative w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-2xl">
-                      <CheckCircle className="w-12 h-12 text-white" strokeWidth={2.5} />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-3xl font-black text-white mb-4">
-                      Service Request Confirmed
-                    </h3>
-                    <p className="text-xl text-blue-100 leading-relaxed max-w-md mx-auto">
-                      Your service token has been generated. Please keep this number for reference.
-                    </p>
-                  </div>
-
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 space-y-6 border border-white/20">
-                    <div className="text-center">
-                      <p className="text-lg text-blue-200 mb-3 font-medium">Your Service Token</p>
-                      <p className="text-6xl font-black text-white animate-token-glow tracking-wider">
-                        {generatedToken.token}
-                      </p>
+          {/* Main Content */}
+          <div className="animate-fade-in h-full flex items-center">
+            {showConfirmation && generatedToken ? (
+              // Compact Success Card
+              <Card className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 w-full">
+                <CardContent className="p-6 lg:p-8">
+                  <div className="text-center space-y-4">
+                    <div className="relative mx-auto w-16 h-16">
+                      <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping"></div>
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-2xl">
+                        <CheckCircle className="w-8 h-8 text-white" strokeWidth={2.5} />
+                      </div>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div className="text-center bg-gradient-to-r from-yellow-500/20 to-amber-500/20 rounded-xl p-4 border border-yellow-400/30">
-                        <div className="flex items-center justify-center gap-3 mb-2">
-                          <Building2 className="w-6 h-6 text-yellow-300" />
-                          <p className="text-yellow-100 font-bold text-xl">First Report To: Globe Health Reception</p>
-                        </div>
-                        <p className="text-yellow-200">Requested Service: <span className="font-bold">{(generatedToken as any)?.intended_department || 'N/A'}</span></p>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4 text-center">
-                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                          <p className="text-blue-200 mb-1 font-medium">Queue Status</p>
-                          <p className="font-bold text-white text-lg">{generatedToken.department}</p>
-                        </div>
-                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                          <p className="text-blue-200 mb-1 font-medium">Current Status</p>
-                          <p className="font-bold text-green-300 text-lg">Waiting</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <Button 
-                      onClick={handlePrintToken}
-                      variant="outline" 
-                      className="flex-1 h-14 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white/40 backdrop-blur-sm"
-                    >
-                      <Printer className="w-5 h-5 mr-2" />
-                      Print Token
-                    </Button>
-                    <Button 
-                      onClick={handleNewToken}
-                      className="flex-1 h-14 text-lg font-bold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
-                    >
-                      Generate New Token
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            // Premium Token Generation Form
-            <Card className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20">
-              <CardContent className="p-12">
-                <div className="text-center mb-10">
-                  <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
-                      <FileText className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <h3 className="text-3xl font-black text-white mb-2">
-                        Service Request Kiosk
+                    <div>
+                      <h3 className="text-xl lg:text-2xl font-black text-white mb-2">
+                        Service Request Confirmed
                       </h3>
-                      <p className="text-xl text-blue-100">
-                        Professional Health Assessment Services
+                      <p className="text-sm lg:text-base text-blue-100 leading-relaxed max-w-md mx-auto">
+                        Your service token has been generated. Please keep this number for reference.
                       </p>
                     </div>
-                  </div>
-                   <p className="text-lg text-blue-200 leading-relaxed max-w-2xl mx-auto">
-                     Please enter your information and select your required service. You will first be directed to our reception for verification and processing.
-                   </p>
-                </div>
-                
-                {/* Patient Information */}
-                <div className="mb-10">
-                  <Label htmlFor="patientName" className="text-xl font-bold text-white flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center">
-                      <User className="h-5 w-5 text-white" />
-                    </div>
-                    Full Name (Required)
-                  </Label>
-                  <Input
-                    id="patientName"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    placeholder="Enter your full name as it appears on your documents"
-                    className="h-16 text-xl bg-white/15 border-white/30 text-white placeholder:text-blue-200 focus:border-blue-400 focus:bg-white/20 backdrop-blur-sm rounded-xl"
-                  />
-                </div>
 
-                {/* Service Selection */}
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <h4 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-3">
-                      <Shield className="w-8 h-8 text-blue-300" />
-                      Select Required Service
-                    </h4>
-                    <p className="text-blue-200 text-lg">Choose the service you need assistance with today</p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {departments.map((department) => (
-                      <Button
-                        key={department.id}
-                        onClick={() => handleDepartmentClick(department)}
-                        disabled={selectedDepartment === department.id}
-                        className={`
-                          group relative h-24 p-6 text-white font-bold text-xl transition-all duration-300
-                          bg-gradient-to-br hover:scale-105 hover:shadow-2xl active:scale-95 rounded-2xl
-                          border-2 border-white/20 hover:border-white/40
-                          ${selectedDepartment === department.id ? 'opacity-60 cursor-not-allowed scale-95' : 'hover:shadow-2xl'}
-                        `}
-                        style={{
-                          background: selectedDepartment === department.id 
-                            ? `linear-gradient(135deg, ${department.color_code}80, ${department.color_code}60)`
-                            : `linear-gradient(135deg, ${department.color_code}E6, ${department.color_code})`,
-                        }}
-                      >
-                        <div className="absolute inset-0 bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <div className="relative z-10 text-center space-y-2">
-                          <div className="text-lg font-black tracking-wider opacity-90">
-                            {department.prefix}
+                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 lg:p-6 space-y-4 border border-white/20">
+                      <div className="text-center">
+                        <p className="text-sm lg:text-base text-blue-200 mb-2 font-medium">Your Service Token</p>
+                        <p className="text-4xl lg:text-5xl font-black text-white animate-token-glow tracking-wider">
+                          {generatedToken.token}
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="text-center bg-gradient-to-r from-yellow-500/20 to-amber-500/20 rounded-xl p-3 border border-yellow-400/30">
+                          <div className="flex items-center justify-center gap-2 mb-1">
+                            <Building2 className="w-5 h-5 text-yellow-300" />
+                            <p className="text-yellow-100 font-bold text-sm lg:text-base">First Report To: Globe Health Reception</p>
                           </div>
-                          <div className="text-xl font-bold">
-                            {selectedDepartment === department.id ? 'Processing...' : department.name}
+                          <p className="text-yellow-200 text-sm">Requested Service: <span className="font-bold">{(generatedToken as any)?.intended_department || 'N/A'}</span></p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3 text-center">
+                          <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+                            <p className="text-blue-200 mb-1 font-medium text-xs lg:text-sm">Queue Status</p>
+                            <p className="font-bold text-white text-sm lg:text-base">{generatedToken.department}</p>
+                          </div>
+                          <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+                            <p className="text-blue-200 mb-1 font-medium text-xs lg:text-sm">Current Status</p>
+                            <p className="font-bold text-green-300 text-sm lg:text-base">Waiting</p>
                           </div>
                         </div>
-                        {selectedDepartment === department.id && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          </div>
-                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={handlePrintToken}
+                        variant="outline" 
+                        className="flex-1 h-12 text-sm lg:text-base font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white/40 backdrop-blur-sm"
+                      >
+                        <Printer className="w-4 h-4 mr-2" />
+                        Print Token
                       </Button>
-                    ))}
+                      <Button 
+                        onClick={handleNewToken}
+                        className="flex-1 h-12 text-sm lg:text-base font-bold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
+                      >
+                        Generate New Token
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              // Compact Token Generation Form
+              <Card className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 w-full">
+                <CardContent className="p-6 lg:p-8">
+                  <div className="text-center mb-6">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-xl lg:text-2xl font-black text-white mb-1">
+                          Service Request Kiosk
+                        </h3>
+                        <p className="text-sm lg:text-base text-blue-100">
+                          Professional Health Assessment Services
+                        </p>
+                      </div>
+                    </div>
+                     <p className="text-sm lg:text-base text-blue-200 leading-relaxed max-w-2xl mx-auto">
+                       Please enter your information and select your required service. You will first be directed to our reception.
+                     </p>
                   </div>
                   
-                  {departments.length === 0 && (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Stethoscope className="w-8 h-8 text-blue-300" />
+                  {/* Patient Information */}
+                  <div className="mb-6">
+                    <Label htmlFor="patientName" className="text-base lg:text-lg font-bold text-white flex items-center gap-2 mb-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center">
+                        <User className="h-4 w-4 text-white" />
                       </div>
-                      <p className="text-xl text-blue-200">No services currently available</p>
-                      <p className="text-blue-300">Please contact reception for assistance</p>
+                      Full Name (Required)
+                    </Label>
+                    <Input
+                      id="patientName"
+                      value={patientName}
+                      onChange={(e) => setPatientName(e.target.value)}
+                      placeholder="Enter your full name as it appears on your documents"
+                      className="h-12 lg:h-14 text-base lg:text-lg bg-white/15 border-white/30 text-white placeholder:text-blue-200 focus:border-blue-400 focus:bg-white/20 backdrop-blur-sm rounded-xl"
+                    />
+                  </div>
+
+                  {/* Service Selection */}
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <h4 className="text-lg lg:text-xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+                        <Shield className="w-6 h-6 text-blue-300" />
+                        Select Required Service
+                      </h4>
+                      <p className="text-blue-200 text-sm lg:text-base">Choose the service you need assistance with today</p>
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {departments.map((department) => (
+                        <Button
+                          key={department.id}
+                          onClick={() => handleDepartmentClick(department)}
+                          disabled={selectedDepartment === department.id}
+                          className={`
+                            group relative h-16 lg:h-20 p-4 text-white font-bold text-base lg:text-lg transition-all duration-300
+                            bg-gradient-to-br hover:scale-105 hover:shadow-2xl active:scale-95 rounded-2xl
+                            border-2 border-white/20 hover:border-white/40
+                            ${selectedDepartment === department.id ? 'opacity-60 cursor-not-allowed scale-95' : 'hover:shadow-2xl'}
+                          `}
+                          style={{
+                            background: selectedDepartment === department.id 
+                              ? `linear-gradient(135deg, ${department.color_code}80, ${department.color_code}60)`
+                              : `linear-gradient(135deg, ${department.color_code}E6, ${department.color_code})`,
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <div className="relative z-10 text-center space-y-1">
+                            <div className="text-sm lg:text-base font-black tracking-wider opacity-90">
+                              {department.prefix}
+                            </div>
+                            <div className="text-base lg:text-lg font-bold">
+                              {selectedDepartment === department.id ? 'Processing...' : department.name}
+                            </div>
+                          </div>
+                          {selectedDepartment === department.id && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                          )}
+                        </Button>
+                      ))}
+                    </div>
+                    
+                    {departments.length === 0 && (
+                      <div className="text-center py-8">
+                        <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Stethoscope className="w-6 h-6 text-blue-300" />
+                        </div>
+                        <p className="text-lg text-blue-200">No services currently available</p>
+                        <p className="text-blue-300 text-sm">Please contact reception for assistance</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
     </div>
