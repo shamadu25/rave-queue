@@ -17,7 +17,7 @@ export default function Auth() {
   const [isSignIn, setIsSignIn] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { user, signIn, signUp } = useAuth();
+  const { user, signIn, signUp, loading: authLoading } = useAuth();
   const { settings } = useSystemSettings();
   
   // Form states
@@ -98,6 +98,18 @@ export default function Auth() {
       }
     }
   }, [hospitalName, hasLogo, settings?.clinic_logo]);
+
+  // Show loading while authentication is being checked
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+          <p className="mt-2 text-white/80">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Redirect if already authenticated
   if (user) {
