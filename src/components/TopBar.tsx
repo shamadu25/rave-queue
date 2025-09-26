@@ -66,7 +66,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
               <NavLink to="/">Dashboard</NavLink>
             </Button>
             <Button variant="ghost" asChild>
-              <NavLink to="/queue-monitor">Queue Monitor</NavLink>
+              <NavLink to="/monitor">Queue Monitor</NavLink>
             </Button>
             <Button variant="ghost" asChild>
               <NavLink to="/token">Generate Token</NavLink>

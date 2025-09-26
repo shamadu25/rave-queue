@@ -87,7 +87,7 @@ const Index = () => {
              
             </div>
             <div className="flex items-center gap-3">
-              <Link to="/queue-display">
+              <Link to="/display">
                 <Button variant="outline" className="glow-on-hover">
                   <Monitor className="h-4 w-4 mr-2" />
                   Public Display
@@ -148,7 +148,7 @@ const Index = () => {
                         Queue Monitor
                       </Button>
                     </Link>
-                    <Link to="/public-display">
+                    <Link to="/display">
                       <Button variant="outline" className="w-full justify-start glow-on-hover">
                         <Monitor className="h-4 w-4 mr-2" />
                         Public Display
@@ -182,7 +182,7 @@ const Index = () => {
                         Monitor Queue
                       </Button>
                     </Link>
-                    <Link to="/public-display">
+                    <Link to="/display">
                       <Button variant="outline" className="w-full justify-start glow-on-hover">
                         <Monitor className="h-4 w-4 mr-2" />
                         Public Display

@@ -38,11 +38,6 @@ export const useRoleAccess = () => {
 
     const role = profile.role;
 
-    // ALL logged-in users can now perform queue management actions
-    const canDoQueueActions = true;
-    const canViewAllTokens = true;
-    const canAccessAllDepartments = true;
-
     switch (role) {
       case 'admin':
         return {
@@ -50,11 +45,11 @@ export const useRoleAccess = () => {
           canManageDepartments: true,
           canManageSettings: true,
           canGenerateTokens: true,
-          canCallTokens: canDoQueueActions,
-          canViewAllTokens: canViewAllTokens,
+          canCallTokens: true,
+          canViewAllTokens: true,
           canViewReports: true,
-          canTransferTokens: canDoQueueActions,
-          canDeleteTokens: true, // Only admins can delete
+          canTransferTokens: true,
+          canDeleteTokens: true,
           canManageRoles: true,
           allowedDepartments: ['all']
         };
@@ -65,10 +60,10 @@ export const useRoleAccess = () => {
           canManageDepartments: false,
           canManageSettings: false,
           canGenerateTokens: true,
-          canCallTokens: canDoQueueActions,
-          canViewAllTokens: canViewAllTokens,
-          canViewReports: false,
-          canTransferTokens: canDoQueueActions,
+          canCallTokens: true,
+          canViewAllTokens: true,
+          canViewReports: true,
+          canTransferTokens: true,
           canDeleteTokens: false,
           canManageRoles: false,
           allowedDepartments: ['all']
@@ -82,13 +77,13 @@ export const useRoleAccess = () => {
           canManageDepartments: false,
           canManageSettings: false,
           canGenerateTokens: false,
-          canCallTokens: canDoQueueActions,
-          canViewAllTokens: canViewAllTokens,
+          canCallTokens: true,
+          canViewAllTokens: true,
           canViewReports: false,
-          canTransferTokens: canDoQueueActions,
+          canTransferTokens: true,
           canDeleteTokens: false,
           canManageRoles: false,
-          allowedDepartments: canAccessAllDepartments ? ['all'] : [profile.department]
+          allowedDepartments: [profile.department]
         };
 
       case 'viewer':
@@ -97,10 +92,10 @@ export const useRoleAccess = () => {
           canManageDepartments: false,
           canManageSettings: false,
           canGenerateTokens: false,
-          canCallTokens: canDoQueueActions,
-          canViewAllTokens: canViewAllTokens,
+          canCallTokens: false,
+          canViewAllTokens: true,
           canViewReports: true,
-          canTransferTokens: canDoQueueActions,
+          canTransferTokens: false,
           canDeleteTokens: false,
           canManageRoles: false,
           allowedDepartments: ['all']
@@ -135,6 +130,9 @@ export const useRoleAccess = () => {
     // Admin can access all departments
     if (profile?.role === 'admin') return true;
     
+    // Reception can access all departments
+    if (profile?.role === 'receptionist') return true;
+    
     // Check if allow all users setting is enabled
     const allowAllUsers = settings.allow_all_users_call_tokens === 'true' || settings.allow_all_users_call_tokens === true;
     if (allowAllUsers) return true;
@@ -144,16 +142,22 @@ export const useRoleAccess = () => {
   };
 
   const canTransferToAnyDepartment = () => {
-    // Only admin can transfer to any department (including public departments)
+    // Admin can transfer to any department (including public departments)
     if (profile?.role === 'admin') return true;
     
-    // Reception and Department staff can only transfer to internal departments
+    // Reception can transfer to all internal departments
+    if (profile?.role === 'receptionist') return true;
+    
+    // Department staff can only transfer to internal departments
     return false;
   };
 
   const canCallTokensFromAnyDepartment = () => {
     // Admin always can
     if (profile?.role === 'admin') return true;
+    
+    // Reception can call from any department
+    if (profile?.role === 'receptionist') return true;
     
     // Check if allow all users setting is enabled
     const allowAllUsers = settings.allow_all_users_call_tokens === 'true' || settings.allow_all_users_call_tokens === true;

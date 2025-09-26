@@ -47,9 +47,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home, permission: null },
   { title: "Generate Token", url: "/token", icon: PlusCircle, permission: "canGenerateTokens" },
-  { title: "Queue Display", url: "/queue-display", icon: Monitor, permission: null },
-   { title: "Queue Monitor", url: "/queue-monitor", icon: Activity, permission: null },
-   { title: "Queue Management", url: "/queue-management", icon: Users, permission: null },
+  { title: "Queue Monitor", url: "/monitor", icon: Activity, permission: null },
+  { title: "Queue Management", url: "/queue-management", icon: Users, permission: null },
+  { title: "Public Display", url: "/display", icon: Monitor, permission: null },
 ];
 
 const departmentItems = [
