@@ -174,6 +174,8 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'marquee': 'marquee 20s linear infinite',
+				'marquee-slow': 'marquee 25s linear infinite',
+				'marquee-fast': 'marquee 20s linear infinite',
 				'float': 'float 3s ease-in-out infinite',
 				'gradient-shift': 'gradient-shift 8s ease infinite',
 				'slide-in': 'slide-in 0.5s ease-out',

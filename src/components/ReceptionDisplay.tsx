@@ -353,24 +353,24 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         </div>
       )}
 
-      {/* Premium Sliding Header */}
-      <div className="relative bg-white/15 backdrop-blur-md border-b border-white/20 shadow-2xl overflow-hidden">
-        <div className="absolute inset-0">
+      {/* Custom Sliding Header */}
+      <div className="relative bg-gradient-to-r from-blue-600/80 via-green-500/80 to-blue-600/80 backdrop-blur-md border-b border-white/20 shadow-2xl overflow-hidden py-6">
+        <div className="absolute inset-0 overflow-hidden">
           <div 
-            className={`animate-marquee whitespace-nowrap ${headerAnimation ? '' : 'animation-paused'}`}
+            className="animate-marquee whitespace-nowrap flex items-center"
             style={{ 
-              animationDuration: `${currentSettings?.ticker_speed || 20}s`,
+              animationDuration: '25s',
               background: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%)'
             }}
           >
-            <span className="text-white/30 text-4xl font-bold px-8 text-shadow-lg">
-              {headerText} – Reception Queue
+            <span className="text-white/90 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black px-12 text-shadow-lg tracking-wider">
+              WELCOME TO GLOBE HEALTH ASSESSMENT CLINIC
             </span>
-            <span className="text-white/30 text-4xl font-bold px-8 text-shadow-lg">
-              {headerText} – Reception Queue
+            <span className="text-white/90 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black px-12 text-shadow-lg tracking-wider">
+              WELCOME TO GLOBE HEALTH ASSESSMENT CLINIC
             </span>
-            <span className="text-white/30 text-4xl font-bold px-8 text-shadow-lg">
-              {headerText} – Reception Queue
+            <span className="text-white/90 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black px-12 text-shadow-lg tracking-wider">
+              WELCOME TO GLOBE HEALTH ASSESSMENT CLINIC
             </span>
           </div>
         </div>
@@ -575,48 +575,30 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         </div>
       </div>
 
-      {/* Footer Ticker */}
-      <div className="relative bg-black/80 backdrop-blur-sm py-2 sm:py-3 md:py-4 overflow-hidden">
+      {/* Custom Sliding Footer */}
+      <div className="relative bg-gradient-to-r from-green-600/90 via-blue-500/90 to-green-600/90 backdrop-blur-sm py-3 sm:py-4 md:py-5 overflow-hidden border-t border-white/20">
         <div 
-          className="animate-marquee whitespace-nowrap"
-          style={{ animationDuration: `${currentSettings?.ticker_speed || 30}s` }}
+          className="animate-marquee whitespace-nowrap flex items-center"
+          style={{ animationDuration: '20s' }}
         >
-          <span 
-            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold px-4 sm:px-6 md:px-8"
-            style={{ 
-              color: currentSettings?.ticker_color || '#FFFFFF',
-              fontSize: currentSettings?.ticker_font_size ? `${currentSettings.ticker_font_size}px` : undefined
-            }}
-          >
-            {tickerText}
+          <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
+            🏥 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH • Your health is our priority
           </span>
-          <span 
-            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold px-4 sm:px-6 md:px-8"
-            style={{ 
-              color: currentSettings?.ticker_color || '#FFFFFF',
-              fontSize: currentSettings?.ticker_font_size ? `${currentSettings.ticker_font_size}px` : undefined
-            }}
-          >
-            {tickerText}
+          <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
+            🏥 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH • Your health is our priority
           </span>
-          <span 
-            className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold px-4 sm:px-6 md:px-8"
-            style={{ 
-              color: currentSettings?.ticker_color || '#FFFFFF',
-              fontSize: currentSettings?.ticker_font_size ? `${currentSettings.ticker_font_size}px` : undefined
-            }}
-          >
-            {tickerText}
+          <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
+            🏥 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH • Your health is our priority
           </span>
         </div>
       </div>
 
-      {/* Footer with hospital info */}
-      {footerNote && (
-        <div className="bg-black/60 backdrop-blur-sm py-2 text-center">
-          <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">{footerNote}</p>
-        </div>
-      )}
+      {/* Secondary Footer with hospital info */}
+      <div className="bg-black/60 backdrop-blur-sm py-2 text-center">
+        <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">
+          {footerNote || "Globe Health Assessment Clinic - Professional Healthcare Services"}
+        </p>
+      </div>
     </div>
   );
 };

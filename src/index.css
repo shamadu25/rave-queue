@@ -439,6 +439,16 @@
   animation: marquee linear infinite;
 }
 
+/* Slower marquee for headers */
+.animate-marquee-slow {
+  animation: marquee 25s linear infinite;
+}
+
+/* Faster marquee for footers */
+.animate-marquee-fast {
+  animation: marquee 20s linear infinite;
+}
+
 /* Queue Display Specific Animations */
 .animate-token-glow {
   animation: token-glow 2s ease-in-out infinite;
