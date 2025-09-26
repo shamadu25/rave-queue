@@ -132,57 +132,86 @@ export default function QueueMonitor() {
   const queueConfig = getQueueConfig();
 
   return (
-    <>
-      <TopBar title={queueConfig.title} subtitle={queueConfig.description} />
-      <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
+      {/* Premium Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.3),transparent_50%)]"></div>
+        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_80%,rgba(16,185,129,0.2),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KPGcgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjA1Ij4KPHBhdGggZD0iTTM2IDM0di00aC0ydjRoLTR2Mmg0djRoMnYtNGg0di0yaC00em0wLTMwVjBoLTJ2NGgtNHYyaDR2NGgyVjZoNFY0aC00ek02IDM0di00SDR2NEgwdjJoNHY0aDJ2LTRoNHYtMkg2ek02IDRWMEg0djRIMHYyaDR2NGgyVjZoNFY0SDZ6Ii8+CjwvZz4KPC9nPgo8L3N2Zz4=')] opacity-30"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8 space-y-8">
 
       {/* Main Content */}
       {profile?.role === 'admin' ? (
         <Tabs defaultValue="queue" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="queue">Queue Management</TabsTrigger>
-            <TabsTrigger value="reports">Reports & Analytics</TabsTrigger>
-            <TabsTrigger value="settings">General Settings</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-white/10 backdrop-blur-sm border-white/20 rounded-2xl p-2 h-14">
+            <TabsTrigger 
+              value="queue" 
+              className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl transition-all duration-200"
+            >
+              Queue Management
+            </TabsTrigger>
+            <TabsTrigger 
+              value="reports"
+              className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl transition-all duration-200"
+            >
+              Reports & Analytics
+            </TabsTrigger>
+            <TabsTrigger 
+              value="settings"
+              className="text-white font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white rounded-xl transition-all duration-200"
+            >
+              General Settings
+            </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="queue" className="mt-6">
-        <ModernQueueList
-          entries={entries}
-          title={queueConfig.title}
-          description={queueConfig.description}
-          canFilter={queueConfig.canFilter}
-          canPerformActions={queueConfig.canPerformActions}
-          userRole={profile?.role}
-          userDepartment={profile?.department}
-          onUpdateStatus={handleStatusUpdate}
-          onTransfer={handleOpenTransferModal}
-          onDelete={handleDelete}
-          loading={loading}
-        />
+          <TabsContent value="queue" className="mt-8">
+            <div className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+              <ModernQueueList
+                entries={entries}
+                title={queueConfig.title}
+                description={queueConfig.description}
+                canFilter={queueConfig.canFilter}
+                canPerformActions={queueConfig.canPerformActions}
+                userRole={profile?.role}
+                userDepartment={profile?.department}
+                onUpdateStatus={handleStatusUpdate}
+                onTransfer={handleOpenTransferModal}
+                onDelete={handleDelete}
+                loading={loading}
+              />
+            </div>
           </TabsContent>
           
-          <TabsContent value="reports" className="mt-6">
-            <ReportsAnalytics entries={entries} />
+          <TabsContent value="reports" className="mt-8">
+            <div className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+              <ReportsAnalytics entries={entries} />
+            </div>
           </TabsContent>
           
-          <TabsContent value="settings" className="mt-6">
-            <GeneralSettings />
+          <TabsContent value="settings" className="mt-8">
+            <div className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+              <GeneralSettings />
+            </div>
           </TabsContent>
         </Tabs>
       ) : (
-            <ModernQueueList
-              entries={entries}
-              title={queueConfig.title}
-              description={queueConfig.description}
-              canFilter={queueConfig.canFilter}
-              canPerformActions={queueConfig.canPerformActions}
-              userRole={profile?.role}
-              userDepartment={profile?.department}
-              onUpdateStatus={handleStatusUpdate}
-              onTransfer={handleOpenTransferModal}
-              onDelete={handleDelete}
-              loading={loading}
-            />
+        <div className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+          <ModernQueueList
+            entries={entries}
+            title={queueConfig.title}
+            description={queueConfig.description}
+            canFilter={queueConfig.canFilter}
+            canPerformActions={queueConfig.canPerformActions}
+            userRole={profile?.role}
+            userDepartment={profile?.department}
+            onUpdateStatus={handleStatusUpdate}
+            onTransfer={handleOpenTransferModal}
+            onDelete={handleDelete}
+            loading={loading}
+          />
+        </div>
       )}
 
       <TransferModal
@@ -194,6 +223,6 @@ export default function QueueMonitor() {
         token={transferModal.token}
       />
       </div>
-    </>
+    </div>
   );
 }

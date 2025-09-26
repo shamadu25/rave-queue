@@ -135,45 +135,47 @@ export function ModernQueueList({
 
   if (loading) {
     return (
-      <Card className="medical-card">
-        <CardContent className="p-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Loading queue...</p>
+      <div className="p-12">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+            <Building2 className="w-8 h-8 text-white animate-pulse" />
           </div>
-        </CardContent>
-      </Card>
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-xl text-white font-medium">Loading Queue Management...</p>
+          <p className="text-blue-200">Please wait while we prepare your dashboard</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="medical-card">
-      <CardHeader>
+    <div className="p-8">
+      <div className="mb-8">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="heading-secondary flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
+            <h2 className="text-3xl font-black text-white mb-2 flex items-center gap-3">
+              <Building2 className="h-8 w-8 text-blue-300" />
               {title}
-              <Badge variant="outline" className="ml-2">
+              <Badge className="ml-3 bg-white/20 text-white border-white/30 text-lg px-3 py-1 font-bold">
                 {filteredEntries.length}
               </Badge>
-            </CardTitle>
+            </h2>
             {description && (
-              <CardDescription className="mt-1">{description}</CardDescription>
+              <p className="text-lg text-blue-100 font-medium">{description}</p>
             )}
           </div>
         </div>
 
         {/* Filters */}
         {canFilter && (
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+          <div className="flex flex-wrap gap-4 pt-6 border-t border-white/20 mt-6">
+            <div className="flex items-center gap-3">
+              <Filter className="h-5 w-5 text-blue-300" />
               <Select 
                 value={selectedDepartment} 
                 onValueChange={(value: Department | 'all') => setSelectedDepartment(value)}
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-48 h-12 bg-white/10 border-white/30 text-white backdrop-blur-sm rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -192,7 +194,7 @@ export function ModernQueueList({
               value={selectedStatus} 
               onValueChange={(value: Status | 'all') => setSelectedStatus(value)}
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-40 h-12 bg-white/10 border-white/30 text-white backdrop-blur-sm rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -206,13 +208,16 @@ export function ModernQueueList({
             </Select>
           </div>
         )}
-      </CardHeader>
+      </div>
 
-      <CardContent>
+      <div>
         {filteredEntries.length === 0 ? (
-          <div className="text-center py-12">
-            <Building2 className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-            <p className="text-muted-foreground">No patients in queue</p>
+          <div className="text-center py-16">
+            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Building2 className="h-10 w-10 text-blue-300" />
+            </div>
+            <p className="text-xl text-white font-medium">No patients in queue</p>
+            <p className="text-blue-200">All clear! No patients waiting at this time.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -224,9 +229,10 @@ export function ModernQueueList({
                 <div
                   key={entry.id}
                   className={`
-                    border rounded-lg p-4 transition-all duration-200 hover:shadow-sm
-                    ${isCurrentlyServing ? 'ring-2 ring-primary/20 bg-primary/5' : 'bg-card'}
-                    ${entry.priority === 'Emergency' ? 'border-destructive/50' : 'border-border'}
+                    border rounded-2xl p-6 transition-all duration-300 hover:shadow-xl backdrop-blur-sm
+                    ${isCurrentlyServing ? 'ring-2 ring-blue-400/50 bg-blue-500/20 border-blue-400/50' : 'bg-white/10 border-white/20'}
+                    ${entry.priority === 'Emergency' ? 'border-red-400/50 bg-red-500/20 ring-2 ring-red-400/50' : ''}
+                    hover:scale-[1.02] hover:bg-white/15
                   `}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -234,39 +240,39 @@ export function ModernQueueList({
                     <div className="flex items-start gap-4 flex-1">
                       <div className="text-center">
                         <div className={`
-                          text-lg font-bold px-3 py-1 rounded-lg
-                          ${entry.priority === 'Emergency' ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground'}
+                          text-2xl font-black px-4 py-2 rounded-xl shadow-lg
+                          ${entry.priority === 'Emergency' ? 'bg-gradient-to-br from-red-500 to-red-600 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}
                         `}>
                           {entry.token}
                         </div>
                         {index === 0 && entry.status === 'Waiting' && (
-                          <div className="text-xs text-primary font-medium mt-1">Next</div>
+                          <div className="text-sm text-green-300 font-bold mt-2 animate-pulse">Next</div>
                         )}
                       </div>
 
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{entry.fullName}</span>
+                        <div className="flex items-center gap-3 mb-2">
+                          <User className="h-5 w-5 text-blue-300" />
+                          <span className="font-bold text-white text-lg">{entry.fullName}</span>
                           {entry.priority === 'Emergency' && (
-                            <Badge variant="destructive" className="text-xs">
+                            <Badge className="bg-red-500/20 text-red-300 border-red-400/50 text-sm font-bold">
                               Emergency
                             </Badge>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-6 text-blue-200 font-medium">
+                          <div className="flex items-center gap-2">
                             {getDepartmentIcon(entry.department)}
                             <span>{entry.department}</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
                             <span>{formatTime(entry.timestamp)}</span>
                           </div>
                           {entry.phoneNumber && (
-                            <div className="flex items-center gap-1">
-                              <Phone className="h-3 w-3" />
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4" />
                               <span>{entry.phoneNumber}</span>
                             </div>
                           )}
@@ -278,9 +284,9 @@ export function ModernQueueList({
                     <StatusBadge status={entry.status} priority={entry.priority} />
                   </div>
 
-                  {/* Action Buttons */}
+                   {/* Action Buttons */}
                   {canPerformActionOnEntry(entry.department) && (
-                    <div className="flex gap-2 mt-4 pt-3 border-t border-border">
+                    <div className="flex gap-3 mt-6 pt-4 border-t border-white/20">
                       {nextAction && (
                         <Button
                           size="sm"
@@ -369,7 +375,7 @@ export function ModernQueueList({
             })}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

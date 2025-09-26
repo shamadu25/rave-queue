@@ -216,18 +216,18 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Admin Dashboard</h2>
-          <p className="text-muted-foreground">Manage queue entries and view analytics</p>
+          <h2 className="text-3xl font-black text-white mb-2">Admin Dashboard</h2>
+          <p className="text-lg text-blue-100 font-medium">Manage queue entries and view analytics</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={exportData} variant="outline" className="gap-2">
+        <div className="flex gap-3">
+          <Button onClick={exportData} variant="outline" className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm">
             <Download className="h-4 w-4" />
             Export CSV
           </Button>
-          <Button onClick={autoDeleteOldEntries} variant="outline" className="gap-2">
+          <Button onClick={autoDeleteOldEntries} variant="outline" className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm">
             <Trash2 className="h-4 w-4" />
             Clean Old Entries
           </Button>
@@ -235,68 +235,52 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Entries</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{filteredEntries.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Waiting</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
-              {filteredEntries.filter(e => e.status === 'Waiting').length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">In Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
-              {filteredEntries.filter(e => ['Called', 'In Progress', 'Served'].includes(e.status)).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {filteredEntries.filter(e => e.status === 'Completed').length}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="glass-card shadow-xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
+          <div className="text-sm font-medium text-blue-200 mb-2">Total Entries</div>
+          <div className="text-3xl font-black text-white">{filteredEntries.length}</div>
+        </div>
+        <div className="glass-card shadow-xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
+          <div className="text-sm font-medium text-blue-200 mb-2">Waiting</div>
+          <div className="text-3xl font-black text-blue-300">
+            {filteredEntries.filter(e => e.status === 'Waiting').length}
+          </div>
+        </div>
+        <div className="glass-card shadow-xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
+          <div className="text-sm font-medium text-blue-200 mb-2">In Progress</div>
+          <div className="text-3xl font-black text-orange-300">
+            {filteredEntries.filter(e => ['Called', 'In Progress', 'Served'].includes(e.status)).length}
+          </div>
+        </div>
+        <div className="glass-card shadow-xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
+          <div className="text-sm font-medium text-blue-200 mb-2">Completed</div>
+          <div className="text-3xl font-black text-green-300">
+            {filteredEntries.filter(e => e.status === 'Completed').length}
+          </div>
+        </div>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+      {/* Queue Entries Table */}
+      <div className="glass-card shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8">
+        <div className="mb-6">
+          <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+            <FileText className="h-6 w-6 text-blue-300" />
             Queue Entries
-          </CardTitle>
+          </h3>
           <div className="flex gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-3">
+              <Search className="h-5 w-5 text-blue-300" />
               <Input
                 placeholder="Search by name or token..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm"
+                className="max-w-sm bg-white/10 border-white/30 text-white placeholder:text-blue-200 focus:border-blue-400 focus:bg-white/20 backdrop-blur-sm"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-3">
+              <Calendar className="h-5 w-5 text-blue-300" />
               <Select value={dateFilter} onValueChange={setDateFilter}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-48 bg-white/10 border-white/30 text-white backdrop-blur-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -306,10 +290,10 @@ const AdminDashboard: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-3">
+              <Filter className="h-5 w-5 text-blue-300" />
               <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-48 bg-white/10 border-white/30 text-white backdrop-blur-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -321,7 +305,7 @@ const AdminDashboard: React.FC = () => {
               </Select>
             </div>
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-40 bg-white/10 border-white/30 text-white backdrop-blur-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -335,69 +319,75 @@ const AdminDashboard: React.FC = () => {
               </SelectContent>
             </Select>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="mt-8">
           {filteredEntries.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No queue entries found for the selected filters</p>
+            <div className="text-center py-16">
+              <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FileText className="h-10 w-10 text-blue-300" />
+              </div>
+              <p className="text-xl text-white font-medium">No queue entries found</p>
+              <p className="text-blue-200">Adjust your filters or check back later</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Token</TableHead>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEntries.map((entry) => (
-                  <TableRow key={entry.id}>
-                    <TableCell className="font-bold text-lg">{entry.token}</TableCell>
-                    <TableCell className="font-medium">{entry.fullName}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full"
-                          style={{ 
-                            backgroundColor: departments.find(d => d.name === entry.department)?.color_code 
-                          }}
-                        />
-                        {entry.department}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(entry.status)}>
-                        {entry.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {entry.timestamp.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {entry.phoneNumber || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <Button 
-                        size="sm" 
-                        variant="destructive"
-                        onClick={() => handleDeleteEntry(entry)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+            <div className="bg-white/5 rounded-xl overflow-hidden border border-white/20">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-white/20 hover:bg-white/5">
+                    <TableHead className="text-blue-200 font-semibold">Token</TableHead>
+                    <TableHead className="text-blue-200 font-semibold">Patient Name</TableHead>
+                    <TableHead className="text-blue-200 font-semibold">Department</TableHead>
+                    <TableHead className="text-blue-200 font-semibold">Status</TableHead>
+                    <TableHead className="text-blue-200 font-semibold">Created</TableHead>
+                    <TableHead className="text-blue-200 font-semibold">Phone</TableHead>
+                    <TableHead className="text-blue-200 font-semibold">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredEntries.map((entry) => (
+                    <TableRow key={entry.id} className="border-white/10 hover:bg-white/5">
+                      <TableCell className="font-bold text-lg text-white">{entry.token}</TableCell>
+                      <TableCell className="font-medium text-white">{entry.fullName}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full"
+                            style={{ 
+                              backgroundColor: departments.find(d => d.name === entry.department)?.color_code 
+                            }}
+                          />
+                          <span className="text-white">{entry.department}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`${getStatusColor(entry.status)} border-0 font-semibold`}>
+                          {entry.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-blue-200">
+                        {entry.timestamp.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-blue-200">
+                        {entry.phoneNumber || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          size="sm" 
+                          variant="destructive"
+                          onClick={() => handleDeleteEntry(entry)}
+                          className="bg-red-500/20 text-red-300 border-red-400/50 hover:bg-red-500/30"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <DeleteConfirmDialog
         open={deleteDialog.open}
