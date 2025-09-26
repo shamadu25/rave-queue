@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TopBar } from '@/components/TopBar';
 import { GeneralSettings } from '@/components/GeneralSettings';
 import { DepartmentManagement } from '@/components/DepartmentManagement';
 import UserManagement from '@/components/UserManagement';
@@ -14,7 +15,9 @@ const Settings = () => {
   // Show enterprise settings for admins, limited for others
   if (isAdmin) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <>
+        <TopBar title="System Settings" subtitle="Manage hospital system configuration" />
+        <div className="p-6 max-w-7xl mx-auto">
           <Tabs defaultValue="enterprise" className="space-y-6">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="enterprise">Enterprise Settings</TabsTrigger>
@@ -44,13 +47,16 @@ const Settings = () => {
               <UserManagement />
             </TabsContent>
         </Tabs>
-      </div>
+        </div>
+      </>
     );
   }
 
   // Limited access for non-admin users
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <>
+      <TopBar title="Settings" subtitle="Basic system settings" />
+      <div className="p-6 max-w-7xl mx-auto">
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
         <h2 className="text-lg font-semibold text-yellow-800 mb-2">Limited Access</h2>
         <p className="text-yellow-700">
@@ -72,7 +78,8 @@ const Settings = () => {
           <DepartmentManagement />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </>
   );
 };
 

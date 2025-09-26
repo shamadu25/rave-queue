@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { TokenGenerator } from '@/components/TokenGenerator';
 import { ModernQueueList } from '@/components/ModernQueueList';
 import { DashboardStats } from '@/components/DashboardStats';
+import { TopBar } from '@/components/TopBar';
 import { QueueEntry, Status } from '@/types/queue';
 import { useQueueEntries } from '@/hooks/useQueueEntries';
 import { Activity, Shield, PlusCircle, Monitor } from 'lucide-react';
@@ -76,6 +77,7 @@ const Index = () => {
 
   return (
     <AnimatedBackground variant="dashboard">
+      {profile && <TopBar title={getPageTitle()} />}
       <div className="p-6 space-y-6 relative z-10">
         {/* Enhanced Page Header with Dynamic Branding */}
         <div className="glass-card p-6 border-white/20">

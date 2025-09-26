@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TopBar } from '@/components/TopBar';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { TransferModal } from '@/components/TransferModal';
@@ -131,14 +132,9 @@ export default function QueueMonitor() {
   const queueConfig = getQueueConfig();
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">{queueConfig.title}</h1>
-          <p className="text-muted-foreground">{queueConfig.description}</p>
-        </div>
-      </div>
+    <>
+      <TopBar title={queueConfig.title} subtitle={queueConfig.description} />
+      <div className="p-6 space-y-6">
 
       {/* Main Content */}
       {profile?.role === 'admin' ? (
@@ -197,6 +193,7 @@ export default function QueueMonitor() {
         patientName={transferModal.patientName}
         token={transferModal.token}
       />
-    </div>
+      </div>
+    </>
   );
 }
