@@ -15,7 +15,7 @@ export const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({
   requiredRole = [],
   fallback
 }) => {
-  const { profile, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   if (loading) {
     return (
@@ -25,11 +25,20 @@ export const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({
     );
   }
 
-  if (!profile) {
+  if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
-  const hasAccess = requiredRole.length === 0 || requiredRole.includes(profile.role);
+  // Wait for profile role when role restriction is applied
+  if (requiredRole.length > 0 && !profile?.role) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  const hasAccess = requiredRole.length === 0 || (profile?.role ? requiredRole.includes(profile.role) : false);
 
   if (!hasAccess) {
     if (fallback) {
