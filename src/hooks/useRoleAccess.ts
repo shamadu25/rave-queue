@@ -21,19 +21,19 @@ export const useRoleAccess = () => {
 
   const getPermissions = (): Permission => {
     if (!profile) {
-        return {
-          canManageUsers: false,
-          canManageDepartments: false,
-          canManageSettings: false,
-          canGenerateTokens: false,
-          canCallTokens: false,
-          canViewAllTokens: false,
-          canViewReports: false,
-          canTransferTokens: false,
-          canDeleteTokens: false,
-          canManageRoles: false,
-          allowedDepartments: []
-        };
+      return {
+        canManageUsers: false,
+        canManageDepartments: false,
+        canManageSettings: false,
+        canGenerateTokens: false,
+        canCallTokens: false,
+        canViewAllTokens: false,
+        canViewReports: false,
+        canTransferTokens: false,
+        canDeleteTokens: false,
+        canManageRoles: false,
+        allowedDepartments: []
+      };
     }
 
     const role = profile.role;
