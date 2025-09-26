@@ -144,58 +144,84 @@ const PremiumReceptionDisplay = ({ enableAudio = true }: PremiumReceptionDisplay
       </div>
 
       {/* Premium Header */}
-      <div className="relative z-10 bg-gradient-to-r from-card/80 via-card/90 to-card/80 backdrop-blur-xl border-b border-border/50 shadow-2xl">
-        <div className="container mx-auto px-8 py-6">
-          <div className="flex items-center justify-between">
-            {/* Hospital Branding */}
+      <div className="relative z-10 glass border-b border-border/30 shadow-2xl">
+        {/* Gradient overlay for premium look */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/10 to-primary/5"></div>
+        
+        <div className="relative container mx-auto px-6 py-8">
+          <div className="grid grid-cols-3 items-center gap-8">
+            
+            {/* Hospital Branding - Left */}
             <div className="flex items-center space-x-6">
               {settings?.clinic_logo ? (
-                <div className="relative">
-                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
-                  <img 
-                    src={settings.clinic_logo} 
-                    alt="Hospital Logo" 
-                    className="relative w-16 h-16 object-cover rounded-full border-2 border-primary/30 shadow-lg"
-                  />
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative w-20 h-20 rounded-full p-1 bg-gradient-to-r from-primary/20 to-accent/20">
+                    <img 
+                      src={settings.clinic_logo} 
+                      alt="Hospital Logo" 
+                      className="w-full h-full object-cover rounded-full border-2 border-white/20 shadow-xl"
+                    />
+                  </div>
                 </div>
               ) : (
-                <div className="relative">
-                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
-                  <div className="relative w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg">
-                    <Hospital className="w-8 h-8 text-primary-foreground" />
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 rounded-full blur-xl opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-primary via-primary/90 to-accent rounded-full flex items-center justify-center shadow-xl border-2 border-white/20">
+                    <Hospital className="w-10 h-10 text-primary-foreground" />
                   </div>
                 </div>
               )}
               
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+              <div className="space-y-2">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent tracking-tight">
                   {settings?.clinic_name || 'Reception Queue'}
                 </h1>
-                <p className="text-muted-foreground font-medium">Waiting Area Display</p>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                  <p className="text-muted-foreground font-medium tracking-wide">Live Waiting Area Display</p>
+                </div>
               </div>
             </div>
 
-            {/* Date, Time & Controls */}
-            <div className="flex items-center space-x-8">
-              <div className="text-right">
-                <div className="text-2xl font-bold text-foreground">
+            {/* Center - Premium Decorative Element */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="w-32 h-1 bg-gradient-to-r from-transparent via-border to-transparent rounded-full"></div>
+                <div className="absolute inset-0 w-32 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent rounded-full animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Date, Time & Controls - Right */}
+            <div className="flex items-center justify-end space-x-6">
+              <div className="text-right space-y-1">
+                <div className="text-3xl font-bold text-foreground font-inter tracking-tight">
                   {formatTime(currentTime)}
                 </div>
-                <div className="text-sm text-muted-foreground font-medium">
+                <div className="text-sm text-muted-foreground font-medium tracking-wider uppercase">
                   {formatDate(currentTime)}
                 </div>
               </div>
               
-              <button
-                onClick={toggleAudio}
-                className="p-3 rounded-full bg-card/80 hover:bg-card border border-border/50 transition-all duration-300 hover:scale-105 shadow-lg"
-              >
-                {audioEnabled ? (
-                  <Volume2 className="w-5 h-5 text-primary" />
-                ) : (
-                  <VolumeX className="w-5 h-5 text-muted-foreground" />
-                )}
-              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={toggleAudio}
+                  className="group relative p-4 rounded-2xl glass hover:bg-card/40 border border-border/30 transition-all duration-300 hover:scale-105 shadow-xl"
+                  title={audioEnabled ? 'Disable Audio' : 'Enable Audio'}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {audioEnabled ? (
+                    <Volume2 className="relative w-6 h-6 text-primary" />
+                  ) : (
+                    <VolumeX className="relative w-6 h-6 text-muted-foreground" />
+                  )}
+                </button>
+                
+                <div className="flex items-center space-x-2 px-4 py-2 rounded-xl glass border border-border/30">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Live</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
