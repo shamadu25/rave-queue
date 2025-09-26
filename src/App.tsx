@@ -2,11 +2,9 @@ import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from '@/hooks/useAuth';
-import { AppSidebar } from '@/components/AppSidebar';
 import { TopBar } from '@/components/TopBar';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -78,14 +76,11 @@ const AppContent = () => {
     );
   }
 
-  // Standard layout with sidebar and topbar for all other pages
+  // Standard layout with topbar only (no sidebar)
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <TopBar />
-          <main className="flex-1 overflow-auto">
+    <div className="min-h-screen w-full bg-background">
+      <TopBar />
+      <main className="flex-1 overflow-auto">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/token" element={
@@ -110,9 +105,7 @@ const AppContent = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    </div>
   );
 };
 

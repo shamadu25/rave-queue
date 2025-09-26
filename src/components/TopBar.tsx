@@ -1,4 +1,4 @@
-import { Bell, LogOut, Settings, User } from "lucide-react";
+import { Bell, LogOut, Settings, User, BarChart3, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu, 
@@ -8,8 +8,9 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { NavLink } from "react-router-dom";
 import { toast } from "sonner";
 
 interface TopBarProps {
@@ -19,6 +20,7 @@ interface TopBarProps {
 
 export function TopBar({ title, subtitle }: TopBarProps) {
   const { profile, signOut } = useAuth();
+  const { isAdmin } = useRoleAccess();
 
   const handleSignOut = async () => {
     try {
@@ -48,16 +50,29 @@ export function TopBar({ title, subtitle }: TopBarProps) {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          <SidebarTrigger className="h-8 w-8" />
-          {title && (
+          <div className="flex items-center gap-3">
+            <Activity className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="heading-primary">{title}</h1>
-              {subtitle && <p className="text-subtle">{subtitle}</p>}
+              <h1 className="text-xl font-bold">IOM Health Queue</h1>
+              <p className="text-sm text-muted-foreground">Management System</p>
             </div>
-          )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Quick Access Navigation */}
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild>
+              <NavLink to="/">Dashboard</NavLink>
+            </Button>
+            <Button variant="ghost" asChild>
+              <NavLink to="/queue-monitor">Queue Monitor</NavLink>
+            </Button>
+            <Button variant="ghost" asChild>
+              <NavLink to="/token">Generate Token</NavLink>
+            </Button>
+          </div>
+
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="h-8 w-8">
             <Bell className="h-4 w-4" />
@@ -95,10 +110,28 @@ export function TopBar({ title, subtitle }: TopBarProps) {
                   <User className="h-4 w-4 mr-2" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </DropdownMenuItem>
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <NavLink to="/admin-dashboard" className="flex items-center w-full">
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Admin Dashboard
+                      </NavLink>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <NavLink to="/settings" className="flex items-center w-full">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Admin Settings
+                      </NavLink>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                {!isAdmin && (
+                  <DropdownMenuItem>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Settings
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                   <LogOut className="h-4 w-4 mr-2" />
