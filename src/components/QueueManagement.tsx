@@ -19,6 +19,7 @@ interface Department {
   name: string;
   color_code: string;
   prefix: string;
+  is_internal?: boolean;
 }
 
 const QueueManagement: React.FC = () => {
@@ -88,7 +89,7 @@ const QueueManagement: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('departments')
-        .select('*')
+        .select('id, name, color_code, prefix, is_active, is_internal')
         .eq('is_active', true)
         .order('name');
 
@@ -96,6 +97,7 @@ const QueueManagement: React.FC = () => {
       setDepartments(data || []);
     } catch (error) {
       console.error('Error fetching departments:', error);
+      toast.error('Failed to load departments');
     }
   };
 
@@ -375,14 +377,19 @@ const QueueManagement: React.FC = () => {
                 <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  {departments
-                    .filter(dept => allowedDepartments.includes(dept.name))
-                    .map(dept => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                    ))}
-                </SelectContent>
+                 <SelectContent>
+                   <SelectItem value="all">All Departments</SelectItem>
+                   {departments
+                     .filter(dept => allowedDepartments.includes(dept.name))
+                     .map(dept => (
+                       <SelectItem key={dept.id} value={dept.name}>
+                         <div className="flex items-center gap-2">
+                           {dept.name}
+                           {dept.is_internal && <span className="text-xs text-muted-foreground">(Internal)</span>}
+                         </div>
+                       </SelectItem>
+                     ))}
+                 </SelectContent>
               </Select>
             </div>
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
