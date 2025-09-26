@@ -195,7 +195,7 @@ export const useQueueMonitor = (userDepartment?: string) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [userDepartment]); // Add userDepartment as dependency to refetch when it changes
 
   // Filter entries by department if specified
   const filteredEntries = userDepartment 
