@@ -27,29 +27,29 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
+        // End loading as soon as we know the auth state; fetch profile in background
+        if (mounted) {
+          setLoading(false);
+        }
+        
         if (session?.user) {
-          // Fetch user profile immediately
-          try {
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-            
-            if (mounted) {
-              setProfile(profileData);
-              setLoading(false);
+          (async () => {
+            try {
+              const { data: profileData, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+              if (mounted && !error) {
+                setProfile(profileData);
+              }
+            } catch (error) {
+              console.error('Error fetching profile:', error);
             }
-          } catch (error) {
-            console.error('Error fetching profile:', error);
-            if (mounted) {
-              setLoading(false);
-            }
-          }
+          })();
         } else {
           if (mounted) {
             setProfile(null);
-            setLoading(false);
           }
         }
       }
@@ -65,24 +65,26 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
-          try {
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-            
-            if (mounted) {
-              setProfile(profileData);
-            }
-          } catch (error) {
-            console.error('Error fetching profile:', error);
-          }
-        }
-        
+        // End loading immediately; fetch profile in background
         if (mounted) {
           setLoading(false);
+        }
+        
+        if (session?.user) {
+          (async () => {
+            try {
+              const { data: profileData, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+              if (mounted && !error) {
+                setProfile(profileData);
+              }
+            } catch (error) {
+              console.error('Error fetching profile:', error);
+            }
+          })();
         }
       } catch (error) {
         console.error('Error checking session:', error);
