@@ -365,11 +365,49 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         </div>
       )}
 
+      {/* Top Header */}
+      <div className="flex-shrink-0 relative z-10 px-2 sm:px-4 py-1 sm:py-2">
+        <div className="bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-lg rounded-xl shadow-lg border border-white/40 overflow-hidden">
+          <div className="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3">
+            {/* Hospital Logo & Name */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              {hospitalLogo && (
+                <div className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full overflow-hidden shadow-lg bg-white/80 flex items-center justify-center">
+                  <img 
+                    src={hospitalLogo} 
+                    alt="Hospital Logo" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              )}
+              <div>
+                <h1 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black text-slate-800 tracking-tight">
+                  {hospitalName}
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                  Reception Queue Display
+                </p>
+              </div>
+            </div>
+
+            {/* Time & Date */}
+            <div className="text-right">
+              <div className="text-lg sm:text-xl md:text-2xl font-black text-slate-800">
+                {formatTime(currentTime)}
+              </div>
+              <div className="text-xs sm:text-sm text-slate-600 font-medium">
+                {formatDate(currentTime)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Premium Vertical Layout - Main Content */}
-      <div className="flex-1 flex flex-col relative z-10 gap-2 p-1 sm:p-2 md:p-3 lg:p-4 overflow-hidden">
+      <div className="flex-1 flex flex-col relative z-10 gap-2 p-1 sm:p-2 md:p-3 lg:p-4 overflow-hidden min-h-0">
         
         {/* NOW SERVING Section - Primary */}
-        <div className="flex-[3] flex items-center justify-center min-h-0">
+        <div className="flex-[4] flex items-center justify-center min-h-0">
           <Card className="w-full h-full bg-gradient-to-br from-white/98 via-white/95 to-slate-50/90 backdrop-blur-lg shadow-2xl border-0 overflow-hidden animate-slide-in ring-2 ring-primary/20">
             <CardContent className="p-2 sm:p-4 md:p-6 lg:p-8 h-full flex flex-col justify-center overflow-hidden">
             {currentServing ? (
@@ -449,7 +487,7 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
       </div>
 
       {/* NEXT IN LINE Section - Secondary */}
-      <div className="flex-[2] flex items-center justify-center min-h-0">
+      <div className="flex-1 flex items-center justify-center min-h-0">
         <Card className="w-full h-full bg-gradient-to-br from-slate-50/95 via-white/90 to-slate-100/85 backdrop-blur-md shadow-xl border-0 overflow-hidden ring-1 ring-slate-200/50">
           <CardContent className="p-2 sm:p-4 md:p-6 h-full flex flex-col justify-center overflow-hidden">
             <div className="text-center space-y-2 sm:space-y-4">
