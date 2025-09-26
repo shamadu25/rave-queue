@@ -6,6 +6,8 @@ export const useKioskMode = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [fullscreenSupported, setFullscreenSupported] = useState(false);
+  const [needsUserInteraction, setNeedsUserInteraction] = useState(false);
+  const [kioskActivated, setKioskActivated] = useState(false);
 
   // Check if fullscreen is supported
   useEffect(() => {
@@ -43,19 +45,12 @@ export const useKioskMode = () => {
     };
   }, []);
 
-  // Auto-fullscreen on load
+  // Detect if kiosk mode is needed and requires user interaction
   useEffect(() => {
-    if (settings?.enableAutoFullscreen && fullscreenSupported && !isFullscreen) {
-      requestFullscreen();
+    if ((settings?.enableAutoFullscreen || settings?.enableAutoSound) && !kioskActivated) {
+      setNeedsUserInteraction(true);
     }
-  }, [settings?.enableAutoFullscreen, fullscreenSupported, isFullscreen]);
-
-  // Audio context unlock
-  useEffect(() => {
-    if (settings?.enableAutoSound && !audioUnlocked) {
-      unlockAudioContext();
-    }
-  }, [settings?.enableAutoSound, audioUnlocked]);
+  }, [settings?.enableAutoFullscreen, settings?.enableAutoSound, kioskActivated]);
 
   const requestFullscreen = useCallback(async () => {
     if (!fullscreenSupported) return false;
@@ -114,6 +109,11 @@ export const useKioskMode = () => {
       if (AudioContext) {
         const audioContext = new AudioContext();
         
+        // Check if audio context is already running
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+        
         // Play a silent sound to unlock audio
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -126,8 +126,6 @@ export const useKioskMode = () => {
         
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.1);
-        
-        await audioContext.resume();
         
         setAudioUnlocked(true);
         
@@ -146,13 +144,40 @@ export const useKioskMode = () => {
     }
   }, []);
 
+  const activateKioskMode = useCallback(async () => {
+    const results = { fullscreen: false, audio: false };
+    
+    try {
+      // Attempt fullscreen if enabled
+      if (settings?.enableAutoFullscreen && fullscreenSupported && !isFullscreen) {
+        results.fullscreen = await requestFullscreen();
+      }
+      
+      // Attempt audio unlock if enabled
+      if (settings?.enableAutoSound && !audioUnlocked) {
+        results.audio = await unlockAudioContext();
+      }
+      
+      setKioskActivated(true);
+      setNeedsUserInteraction(false);
+      
+      return results;
+    } catch (error) {
+      console.error('Failed to activate kiosk mode:', error);
+      return results;
+    }
+  }, [settings?.enableAutoFullscreen, settings?.enableAutoSound, fullscreenSupported, isFullscreen, audioUnlocked, requestFullscreen, unlockAudioContext]);
+
   return {
     isFullscreen,
     fullscreenSupported,
     audioUnlocked,
+    needsUserInteraction,
+    kioskActivated,
     requestFullscreen,
     exitFullscreen,
     toggleFullscreen,
     unlockAudioContext,
+    activateKioskMode,
   };
 };

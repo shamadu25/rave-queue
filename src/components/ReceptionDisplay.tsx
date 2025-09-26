@@ -44,8 +44,11 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
   const { 
     isFullscreen, 
     audioUnlocked, 
+    needsUserInteraction,
+    kioskActivated,
     toggleFullscreen: kioskToggleFullscreen, 
-    unlockAudioContext 
+    unlockAudioContext,
+    activateKioskMode
   } = useKioskMode();
   
   const [currentServing, setCurrentServing] = useState<any>(null);
@@ -84,34 +87,22 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
     }
   }, [isFullscreen, settings?.enableAutoFullscreen]);
 
-  // Enhanced auto-audio with kiosk mode support
+  // Enhanced kiosk mode audio initialization
   useEffect(() => {
-    if (enableAudio && settings?.enableAutoSound && !audioInitialized) {
-      const initAudio = async () => {
-        try {
-          await unlockAudioContext();
-          setAudioInitialized(true);
-          setUserInteracted(true);
-          
-          // Pre-warm the audio system with very quiet test
-          if (settings?.enable_announcement_chime) {
-            setTimeout(() => playChime(0.05).catch(() => {}), 500);
-          }
-          
-          toast.success('🔊 Reception Audio System Ready');
-        } catch (error) {
-          console.warn('Audio auto-unlock failed:', error);
-          // Fallback to manual interaction
-          setupManualAudioUnlock();
-        }
-      };
+    if (enableAudio && kioskActivated && audioUnlocked && !audioInitialized) {
+      setAudioInitialized(true);
+      setUserInteracted(true);
       
-      // Try immediate audio unlock for kiosk mode
-      initAudio();
-    } else if (enableAudio && !audioInitialized) {
+      // Pre-warm the audio system with very quiet test
+      if (settings?.enable_announcement_chime) {
+        setTimeout(() => playChime(0.05).catch(() => {}), 500);
+      }
+      
+      toast.success('🔊 Reception Audio System Ready');
+    } else if (enableAudio && !needsUserInteraction && !audioInitialized) {
       setupManualAudioUnlock();
     }
-  }, [enableAudio, audioInitialized, settings?.enableAutoSound, settings?.enable_announcement_chime, unlockAudioContext, playChime]);
+  }, [enableAudio, audioInitialized, kioskActivated, audioUnlocked, needsUserInteraction, settings?.enable_announcement_chime, playChime]);
 
   const setupManualAudioUnlock = useCallback(() => {
     const initAudio = () => {
@@ -315,7 +306,78 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
   const tickerText = currentSettings?.ticker_text || currentSettings?.announcement_text || 'For emergency assistance, please dial 911 or inform reception staff immediately.';
   const footerNote = currentSettings?.footer_note || 'Thank you for visiting our hospital';
 
+  const handleKioskActivation = async () => {
+    const results = await activateKioskMode();
+    
+    if (results.fullscreen && results.audio) {
+      toast.success('🚀 Kiosk Mode Fully Activated - Fullscreen & Audio Ready!');
+    } else if (results.fullscreen) {
+      toast.success('📺 Fullscreen Activated');
+      if (currentSettings?.enableAutoSound) {
+        toast.warning('⚠️ Audio needs manual activation - Click audio button');
+      }
+    } else if (results.audio) {
+      toast.success('🔊 Audio Unlocked');
+      if (currentSettings?.enableAutoFullscreen) {
+        toast.warning('⚠️ Fullscreen needs manual activation - Press F11 or click fullscreen button');
+      }
+    } else {
+      toast.error('❌ Kiosk activation failed - Browser restrictions');
+    }
+  };
+
   return (
+    <>
+      {/* Kiosk Mode Activation Overlay */}
+      {needsUserInteraction && (
+        <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-lg z-[9999] flex items-center justify-center">
+          <div className="text-center text-white max-w-2xl mx-auto p-8">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl">
+              <Hospital className="w-12 h-12 text-white" />
+            </div>
+            
+            <h2 className="text-4xl font-black mb-4 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              {hospitalName}
+            </h2>
+            
+            <h3 className="text-2xl font-bold mb-6">
+              Kiosk Mode Activation Required
+            </h3>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/20">
+              <p className="text-lg mb-4">
+                To enable automatic features for the reception display:
+              </p>
+              
+              <div className="space-y-3 text-left">
+                {currentSettings?.enableAutoFullscreen && (
+                  <div className="flex items-center gap-3">
+                    <Maximize2 className="w-5 h-5 text-blue-400" />
+                    <span>Auto-Fullscreen Display</span>
+                  </div>
+                )}
+                {currentSettings?.enableAutoSound && (
+                  <div className="flex items-center gap-3">
+                    <Volume2 className="w-5 h-5 text-green-400" />
+                    <span>Auto-Sound Announcements</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <Button
+              onClick={handleKioskActivation}
+              className="h-16 px-12 text-xl font-bold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
+            >
+              🚀 Activate Kiosk Mode
+            </Button>
+            
+            <p className="text-sm text-white/70 mt-6">
+              This action is required due to browser security policies
+            </p>
+          </div>
+        </div>
+      )}
     <div 
       className="h-screen w-full flex flex-col relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-secondary/30"
       style={{
@@ -550,14 +612,15 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
       </div>
     </div>
 
-    {/* Secondary Footer with hospital info */}
-    <div className="bg-black/60 backdrop-blur-sm py-1 text-center z-10 flex-shrink-0">
-      <p className="text-white/80 text-[10px] sm:text-xs md:text-sm font-medium">
-        {footerNote || "GLOBE HEALTH ASSESSMENT CLINIC - Excellence in Health & Medical Solutions"}
-      </p>
-    </div>
-  </div>
-);
+        {/* Secondary Footer with hospital info */}
+        <div className="bg-black/60 backdrop-blur-sm py-1 text-center z-10 flex-shrink-0">
+          <p className="text-white/80 text-[10px] sm:text-xs md:text-sm font-medium">
+            {footerNote || "GLOBE HEALTH ASSESSMENT CLINIC - Excellence in Health & Medical Solutions"}
+          </p>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default ReceptionDisplay;
