@@ -174,12 +174,12 @@ const PremiumReceptionDisplay = ({ enableAudio = true }: PremiumReceptionDisplay
               )}
               
               <div className="space-y-2">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent tracking-tight">
+                <h1 className="text-4xl font-bold text-white tracking-tight">
                   {settings?.clinic_name || 'Reception Queue'}
                 </h1>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                  <p className="text-muted-foreground font-medium tracking-wide">Live Waiting Area Display</p>
+                  <p className="text-white/80 font-medium tracking-wide">Live Waiting Area Display</p>
                 </div>
               </div>
             </div>
@@ -195,10 +195,10 @@ const PremiumReceptionDisplay = ({ enableAudio = true }: PremiumReceptionDisplay
             {/* Date, Time & Controls - Right */}
             <div className="flex items-center justify-end space-x-6">
               <div className="text-right space-y-1">
-                <div className="text-3xl font-bold text-foreground font-inter tracking-tight">
+                <div className="text-3xl font-bold text-white font-inter tracking-tight">
                   {formatTime(currentTime)}
                 </div>
-                <div className="text-sm text-muted-foreground font-medium tracking-wider uppercase">
+                <div className="text-sm text-white/70 font-medium tracking-wider uppercase">
                   {formatDate(currentTime)}
                 </div>
               </div>
@@ -219,7 +219,7 @@ const PremiumReceptionDisplay = ({ enableAudio = true }: PremiumReceptionDisplay
                 
                 <div className="flex items-center space-x-2 px-4 py-2 rounded-xl glass border border-border/30">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Live</span>
+                  <span className="text-xs font-medium text-white/70 uppercase tracking-wider">Live</span>
                 </div>
               </div>
             </div>
