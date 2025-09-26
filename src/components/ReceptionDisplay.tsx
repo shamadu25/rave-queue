@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useQueueMonitor } from '@/hooks/useQueueMonitor';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { useTextToSpeech } from '@/services/textToSpeechService';
+import { useKioskMode } from '@/hooks/useKioskMode';
 import { 
   Volume2, 
   VolumeX, 
@@ -40,6 +41,12 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
   const { entries, loading, error } = useQueueMonitor();
   const { settings, loading: settingsLoading } = useSystemSettings();
   const { announceWithChime, isEnabled, playChime } = useTextToSpeech();
+  const { 
+    isFullscreen, 
+    audioUnlocked, 
+    toggleFullscreen: kioskToggleFullscreen, 
+    unlockAudioContext 
+  } = useKioskMode();
   
   const [currentServing, setCurrentServing] = useState<any>(null);
   const [nextInLine, setNextInLine] = useState<any[]>([]);
@@ -48,7 +55,6 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
   const [userInteracted, setUserInteracted] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [cachedData, setCachedData] = useState<CachedData | null>(null);
@@ -71,51 +77,60 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
     }
   }, [settings?.clinic_name, settings?.clinic_logo]);
 
-  // Auto-fullscreen functionality with immediate activation
+  // Show fullscreen success toast when entering fullscreen
   useEffect(() => {
-    const autoFullscreen = settings?.enable_display_screen !== false;
-    if (autoFullscreen && !isFullscreen && document.documentElement.requestFullscreen) {
-      const enterFullscreen = async () => {
-        try {
-          await document.documentElement.requestFullscreen();
-          setIsFullscreen(true);
-          toast.success('Reception Display - Fullscreen Mode Activated');
-        } catch (error) {
-          console.log('Fullscreen not supported:', error);
-        }
-      };
-      // Reduced delay for faster activation
-      const timer = setTimeout(enterFullscreen, 800);
-      return () => clearTimeout(timer);
+    if (isFullscreen && settings?.enableAutoFullscreen) {
+      toast.success('Reception Display - Kiosk Mode Activated');
     }
-  }, [settings?.enable_display_screen, isFullscreen]);
+  }, [isFullscreen, settings?.enableAutoFullscreen]);
 
-  // Initialize audio context immediately for faster response
+  // Enhanced auto-audio with kiosk mode support
   useEffect(() => {
-    if (enableAudio && !audioInitialized) {
-      const initAudio = () => {
-        setAudioInitialized(true);
-        setUserInteracted(true);
-        // Pre-warm the audio system
-        if (settings?.enable_announcement_chime) {
-          playChime(0.1).catch(() => {}); // Very quiet test chime
+    if (enableAudio && settings?.enableAutoSound && !audioInitialized) {
+      const initAudio = async () => {
+        try {
+          await unlockAudioContext();
+          setAudioInitialized(true);
+          setUserInteracted(true);
+          
+          // Pre-warm the audio system with very quiet test
+          if (settings?.enable_announcement_chime) {
+            setTimeout(() => playChime(0.05).catch(() => {}), 500);
+          }
+          
+          toast.success('🔊 Reception Audio System Ready');
+        } catch (error) {
+          console.warn('Audio auto-unlock failed:', error);
+          // Fallback to manual interaction
+          setupManualAudioUnlock();
         }
       };
       
-      // Listen for any user interaction to enable audio
-      const events = ['click', 'touchstart', 'keydown'];
-      const handler = () => {
-        initAudio();
-        events.forEach(event => document.removeEventListener(event, handler));
-      };
-      
-      events.forEach(event => document.addEventListener(event, handler, { once: true }));
-      
-      return () => {
-        events.forEach(event => document.removeEventListener(event, handler));
-      };
+      // Try immediate audio unlock for kiosk mode
+      initAudio();
+    } else if (enableAudio && !audioInitialized) {
+      setupManualAudioUnlock();
     }
-  }, [enableAudio, audioInitialized, settings?.enable_announcement_chime, playChime]);
+  }, [enableAudio, audioInitialized, settings?.enableAutoSound, settings?.enable_announcement_chime, unlockAudioContext, playChime]);
+
+  const setupManualAudioUnlock = useCallback(() => {
+    const initAudio = () => {
+      setAudioInitialized(true);
+      setUserInteracted(true);
+    };
+    
+    const events = ['click', 'touchstart', 'keydown'];
+    const handler = () => {
+      initAudio();
+      events.forEach(event => document.removeEventListener(event, handler));
+    };
+    
+    events.forEach(event => document.addEventListener(event, handler, { once: true }));
+    
+    return () => {
+      events.forEach(event => document.removeEventListener(event, handler));
+    };
+  }, []);
 
   // Cache management
   const saveToCache = useCallback((entries: any[], settings: any) => {
@@ -262,15 +277,11 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
 
   const toggleFullscreen = async () => {
     try {
-      if (!isFullscreen) {
-        await document.documentElement.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        await document.exitFullscreen();
-        setIsFullscreen(false);
-      }
+      await kioskToggleFullscreen();
+      toast.info(`Fullscreen: ${!isFullscreen ? 'Enabled' : 'Disabled'}`);
     } catch (error) {
       console.error('Fullscreen toggle failed:', error);
+      toast.error('Fullscreen toggle failed');
     }
   };
 

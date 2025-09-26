@@ -117,6 +117,8 @@ export const GeneralSettings = () => {
       'refresh_interval': 'display',
       'max_queue_display_count': 'display',
       'show_department_colors': 'display',
+      'enableAutoFullscreen': 'kiosk',
+      'enableAutoSound': 'kiosk',
       'default_priority': 'defaults',
       'max_emergency_tokens': 'defaults',
       'working_days': 'defaults'
@@ -408,6 +410,55 @@ export const GeneralSettings = () => {
                     onCheckedChange={(checked) => handleInputChange('enable_silent_printing', checked)}
                   />
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Kiosk Mode Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Monitor className="h-5 w-5" />
+                Kiosk Mode Settings
+              </CardTitle>
+              <CardDescription>Configure auto-fullscreen and auto-sound for reception displays</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Auto-Fullscreen Mode</Label>
+                    <p className="text-sm text-muted-foreground">Automatically enter fullscreen on reception display load</p>
+                  </div>
+                  <Switch
+                    checked={formData.enableAutoFullscreen || false}
+                    onCheckedChange={(checked) => handleInputChange('enableAutoFullscreen', checked)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Auto-Sound Announcements</Label>
+                    <p className="text-sm text-muted-foreground">Enable audio without user interaction (kiosk mode)</p>
+                  </div>
+                  <Switch
+                    checked={formData.enableAutoSound || false}
+                    onCheckedChange={(checked) => handleInputChange('enableAutoSound', checked)}
+                  />
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-900 mb-2">Kiosk Deployment Instructions</h4>
+                <p className="text-sm text-blue-700 mb-2">
+                  For TV displays and kiosk setups, use these browser launch flags:
+                </p>
+                <code className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded block">
+                  chrome --kiosk --autoplay-policy=no-user-gesture-required [URL]
+                </code>
+                <p className="text-xs text-blue-600 mt-2">
+                  See README_KIOSK_DEPLOYMENT.md for complete setup guide
+                </p>
               </div>
             </CardContent>
           </Card>
