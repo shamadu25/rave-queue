@@ -383,260 +383,313 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
           </div>
         </div>
       )}
-    <div 
-      className="h-screen w-full flex flex-col relative overflow-hidden"
-      style={{
-        background: backgroundColor,
-        height: '100vh'
-      }}
-    >
-      {/* Animated Particle Background - Contained properly */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[10%] left-[5%] w-64 h-64 bg-white/8 rounded-full animate-pulse opacity-50"></div>
-        <div className="absolute top-[50%] right-[5%] w-48 h-48 bg-white/6 rounded-full animate-pulse opacity-40" style={{ animationDelay: '3s' }}></div>
-        <div className="absolute bottom-[10%] left-[30%] w-56 h-56 bg-white/4 rounded-full animate-pulse opacity-30" style={{ animationDelay: '6s' }}></div>
-        
-        {/* Smaller floating elements - properly contained */}
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/15 rounded-full animate-float opacity-40"
-            style={{
-              left: `${15 + (Math.random() * 70)}%`,
-              top: `${15 + (Math.random() * 70)}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
 
-      {/* Connection Status Banner */}
-      {(offlineMode || isReconnecting) && (
-        <div className="bg-yellow-500/95 backdrop-blur-sm text-white px-6 py-3 text-center font-medium z-50">
-          <div className="flex items-center justify-center gap-2">
-            {isReconnecting ? (
-              <>
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                Reconnecting Reception Display... (Attempt {reconnectAttempts}/{maxReconnectAttempts})
-              </>
-            ) : (
-              <>
-                <AlertTriangle className="h-4 w-4" />
-                Reception Display - Offline Mode
-              </>
-            )}
-          </div>
+      <div 
+        className="h-screen w-full flex flex-col relative overflow-hidden"
+        style={{
+          background: backgroundColor,
+          height: '100vh'
+        }}
+      >
+        {/* Animated Particle Background - Contained properly */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[10%] left-[5%] w-64 h-64 bg-white/8 rounded-full animate-pulse opacity-50"></div>
+          <div className="absolute top-[50%] right-[5%] w-48 h-48 bg-white/6 rounded-full animate-pulse opacity-40" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute bottom-[10%] left-[30%] w-56 h-56 bg-white/4 rounded-full animate-pulse opacity-30" style={{ animationDelay: '6s' }}></div>
+          
+          {/* Smaller floating elements - properly contained */}
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white/15 rounded-full animate-float opacity-40"
+              style={{
+                left: `${15 + (Math.random() * 70)}%`,
+                top: `${15 + (Math.random() * 70)}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            />
+          ))}
         </div>
-      )}
 
-      {/* Top Header */}
-      <div className="flex-shrink-0 relative z-10 px-2 sm:px-4 py-1 sm:py-2">
-        <div className="bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-lg rounded-xl shadow-lg border border-white/40 overflow-hidden">
-          <div className="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3">
-            {/* Hospital Logo & Name */}
-            <div className="flex items-center gap-2 sm:gap-4">
-              {hospitalLogo && (
-                <div className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full overflow-hidden shadow-lg bg-white/80 flex items-center justify-center">
-                  <img 
-                    src={hospitalLogo} 
-                    alt="Hospital Logo" 
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+        {/* Connection Status Banner */}
+        {(offlineMode || isReconnecting) && (
+          <div className="bg-yellow-500/95 backdrop-blur-sm text-white px-6 py-3 text-center font-medium z-50">
+            <div className="flex items-center justify-center gap-2">
+              {isReconnecting ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  Reconnecting Reception Display... (Attempt {reconnectAttempts}/{maxReconnectAttempts})
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="h-4 w-4" />
+                  Reception Display - Offline Mode
+                </>
               )}
-              <div>
-                <h1 
-                  className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black tracking-tight"
-                  style={{ 
-                    color: headerColor,
-                    fontSize: `${Math.max(headerFontSize * 0.75, 14)}px`
-                  }}
-                >
-                  {hospitalName}
-                </h1>
-                <p 
-                  className="text-xs sm:text-sm font-medium opacity-80"
-                  style={{ 
-                    color: headerColor,
-                    fontSize: `${Math.max(headerFontSize * 0.5, 12)}px`
-                  }}
-                >
-                  Reception Queue Display
-                </p>
-              </div>
-            </div>
-
-            {/* Time & Date */}
-            <div className="text-right">
-              <div 
-                className="text-lg sm:text-xl md:text-2xl font-black"
-                style={{ color: headerColor }}
-              >
-                {formatTime(currentTime)}
-              </div>
-              <div 
-                className="text-xs sm:text-sm font-medium opacity-80"
-                style={{ color: headerColor }}
-              >
-                {formatDate(currentTime)}
-              </div>
             </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Premium Vertical Layout - Main Content */}
-      <div className="flex-1 flex flex-col relative z-10 gap-2 p-1 sm:p-2 md:p-3 lg:p-4 overflow-hidden min-h-0">
-        
-        {/* NOW SERVING Section - Primary */}
-        <div className="flex-[4] flex items-center justify-center min-h-0">
-          <Card className="w-full h-full bg-gradient-to-br from-white/98 via-white/95 to-slate-50/90 backdrop-blur-lg shadow-2xl border-0 overflow-hidden animate-slide-in ring-2 ring-primary/20">
-            <CardContent className="p-2 sm:p-4 md:p-6 lg:p-8 h-full flex flex-col justify-center overflow-hidden">
-            {currentServing ? (
-              <div className="text-center space-y-2 sm:space-y-4 md:space-y-6 lg:space-y-8">
-                <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 mb-2 sm:mb-4 md:mb-6">
-                  <div className="relative">
-                    <CheckCircle2 
-                      className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 text-emerald-500 animate-pulse drop-shadow-lg" 
-                      strokeWidth={2.5}
-                    />
-                    <div className="absolute inset-0 w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 rounded-full bg-emerald-400/20 animate-ping"></div>
-                  </div>
-                  <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 bg-clip-text text-transparent animate-glow-pulse tracking-tight">
-                    NOW SERVING
-                  </h2>
-                </div>
-                
-                <div 
-                  className="font-black tracking-wider animate-token-glow text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-none drop-shadow-2xl"
-                  style={{ 
-                    fontSize: currentSettings?.display_token_font_size ? `${Math.min(currentSettings.display_token_font_size, 80)}px` : undefined,
-                    color: currentSettings?.display_token_color || '#1e293b',
-                    textShadow: '0 4px 16px rgba(30, 41, 59, 0.3), 0 0 30px rgba(16, 185, 129, 0.2)',
-                    filter: 'drop-shadow(0 4px 16px rgba(30, 41, 59, 0.15))'
-                  }}
-                >
-                  {currentServing.token}
-                </div>
-                
-                <div className="flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-4 md:gap-6 text-sm sm:text-lg md:text-xl lg:text-2xl">
-                  <span className="font-bold text-slate-700 text-center tracking-wide">Please proceed to</span>
-                  <ArrowRight className="h-4 w-4 sm:h-6 sm:w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-primary animate-pulse drop-shadow-lg" />
-                  <div className="bg-gradient-to-r from-primary via-blue-600 to-primary text-white px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-xs sm:text-base md:text-lg lg:text-xl shadow-2xl ring-2 ring-white/30 backdrop-blur-sm">
-                    GLOBE HEALTH Reception Desk
-                  </div>
-                </div>
-                
-                <p 
-                  className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-slate-600 mt-2 sm:mt-4 font-semibold text-center leading-relaxed"
-                  style={{ 
-                    color: currentSettings?.subtext_color || '#475569',
-                    fontSize: currentSettings?.display_department_font_size ? `${Math.min(currentSettings.display_department_font_size * 0.8, 20)}px` : undefined
-                  }}
-                >
-                  {subText || 'Professional Immigration & Medical Services'}
-                </p>
-                
-                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-2 sm:mt-4">
-                  <StatusBadge 
-                    status={currentServing.status} 
-                    priority={currentServing.priority}
-                    className="text-xs sm:text-sm md:text-base px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 shadow-lg"
-                  />
-                  {currentServing.intended_department && (
-                    <Badge variant="outline" className="text-xs sm:text-sm px-2 py-1 sm:px-4 sm:py-2 border-2 border-primary/30 bg-primary/5">
-                      Service: {currentServing.intended_department}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-4 sm:py-8 md:py-12 space-y-2 sm:space-y-4 md:space-y-6">
-                <div className="relative">
-                  <Clock className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 text-slate-400 mx-auto animate-pulse" />
-                  <div className="absolute inset-0 h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 mx-auto rounded-full bg-slate-300/20 animate-ping"></div>
-                </div>
-                <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black text-slate-500 tracking-tight">
-                  No Current Queue
-                </h2>
-                <p className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-slate-400 font-medium">
-                  Waiting for next patient...
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* NEXT IN LINE Section - Secondary */}
-      <div className="flex-1 flex items-center justify-center min-h-0">
-        <Card className="w-full h-full bg-gradient-to-br from-slate-50/95 via-white/90 to-slate-100/85 backdrop-blur-md shadow-xl border-0 overflow-hidden ring-1 ring-slate-200/50">
-          <CardContent className="p-2 sm:p-4 md:p-6 h-full flex flex-col justify-center overflow-hidden">
-            <div className="text-center space-y-2 sm:space-y-4">
-              <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
-                <Users className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-blue-600 drop-shadow-sm" />
-                <h3 className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-black text-blue-600 tracking-tight">NEXT IN LINE</h3>
-              </div>
+        {/* Premium Top Header */}
+        <div className="flex-shrink-0 relative z-10 px-2 sm:px-4 py-2 sm:py-4">
+          <div className="relative group">
+            {/* Premium glass morphism background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/30 to-white/20 backdrop-blur-2xl rounded-2xl border border-white/30 shadow-2xl"></div>
+            
+            {/* Animated border glow */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 blur-sm opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+            
+            {/* Inner premium container */}
+            <div className="relative bg-gradient-to-r from-white/10 via-white/20 to-white/10 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl overflow-hidden">
+              {/* Subtle top accent line */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
               
-              {nextInLine.length > 0 ? (
-                <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 md:gap-3 max-w-6xl mx-auto">
-                  {nextInLine.map((entry, index) => (
-                    <div 
-                      key={entry.id}
-                      className="bg-gradient-to-br from-blue-50/90 via-white/95 to-blue-100/80 p-1 sm:p-2 md:p-3 lg:p-4 rounded-lg shadow-lg animate-fade-in-up border border-blue-200/60 backdrop-blur-sm hover:shadow-xl transition-all duration-300"
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      <div className="text-center space-y-1 min-w-[60px] sm:min-w-[80px]">
-                        <div className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black text-blue-700 tracking-wide drop-shadow-sm">
-                          {entry.token}
-                        </div>
-                        {entry.intended_department && (
-                          <Badge variant="secondary" className="text-[10px] sm:text-xs bg-blue-100 text-blue-700">
-                            {entry.intended_department}
-                          </Badge>
-                        )}
-                        <div className="text-[10px] sm:text-xs md:text-sm text-blue-600 font-semibold">
-                          #{index + 1}
-                        </div>
+              <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6">
+                {/* Hospital Logo & Name */}
+                <div className="flex items-center gap-3 sm:gap-6">
+                  {hospitalLogo && (
+                    <div className="relative group/logo">
+                      {/* Logo glow effect */}
+                      <div className="absolute inset-0 w-10 h-10 sm:w-14 sm:h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-blue-400/30 to-purple-400/30 blur-lg opacity-60 group-hover/logo:opacity-80 transition-opacity duration-300"></div>
+                      
+                      <div className="relative w-10 h-10 sm:w-14 sm:h-14 md:w-20 md:h-20 rounded-full overflow-hidden shadow-2xl bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm border border-white/50 flex items-center justify-center transform hover:scale-105 transition-all duration-300">
+                        <img 
+                          src={hospitalLogo} 
+                          alt="Hospital Logo" 
+                          className="w-full h-full object-contain p-1"
+                        />
                       </div>
                     </div>
-                  ))}
+                  )}
+                  <div className="space-y-1">
+                    <h1 
+                      className="font-black tracking-tight leading-none text-shadow-lg animate-fade-in"
+                      style={{ 
+                        color: headerColor,
+                        fontSize: `${Math.max(headerFontSize * 0.8, 16)}px`,
+                        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      {hospitalName}
+                    </h1>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1 h-4 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+                      <p 
+                        className="font-semibold tracking-wide opacity-90"
+                        style={{ 
+                          color: headerColor,
+                          fontSize: `${Math.max(headerFontSize * 0.45, 11)}px`
+                        }}
+                      >
+                        Reception Queue Display
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Premium Time & Date Display */}
+                <div className="text-right space-y-1">
+                  <div className="relative">
+                    {/* Time glow effect */}
+                    <div 
+                      className="absolute inset-0 blur-sm opacity-30"
+                      style={{ color: headerColor }}
+                    >
+                      {formatTime(currentTime)}
+                    </div>
+                    
+                    <div 
+                      className="relative text-xl sm:text-2xl md:text-3xl font-black tracking-tight leading-none"
+                      style={{ 
+                        color: headerColor,
+                        textShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                      }}
+                    >
+                      {formatTime(currentTime)}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-end gap-2">
+                    <div 
+                      className="text-xs sm:text-sm font-medium tracking-wide opacity-80"
+                      style={{ color: headerColor }}
+                    >
+                      {formatDate(currentTime)}
+                    </div>
+                    <div className="w-1 h-1 rounded-full bg-current opacity-40 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Bottom accent gradient */}
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Premium Vertical Layout - Main Content */}
+        <div className="flex-1 flex flex-col relative z-10 gap-2 p-1 sm:p-2 md:p-3 lg:p-4 overflow-hidden min-h-0">
+          
+          {/* NOW SERVING Section - Primary */}
+          <div className="flex-[4] flex items-center justify-center min-h-0">
+            <Card className="w-full h-full bg-gradient-to-br from-white/98 via-white/95 to-slate-50/90 backdrop-blur-lg shadow-2xl border-0 overflow-hidden animate-slide-in ring-2 ring-primary/20">
+              <CardContent className="p-2 sm:p-4 md:p-6 lg:p-8 h-full flex flex-col justify-center overflow-hidden">
+              {currentServing ? (
+                <div className="text-center space-y-2 sm:space-y-4 md:space-y-6 lg:space-y-8">
+                  <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 mb-2 sm:mb-4 md:mb-6">
+                    <div className="relative">
+                      <CheckCircle2 
+                        className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 text-emerald-500 animate-pulse drop-shadow-lg" 
+                      />
+                      <div className="absolute inset-0 w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 bg-emerald-500/20 rounded-full animate-ping"></div>
+                    </div>
+                    <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black text-emerald-700 drop-shadow-md">
+                      NOW SERVING
+                    </h2>
+                  </div>
+                  
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-3xl blur-xl"></div>
+                    <div className="relative bg-gradient-to-br from-white/90 via-emerald-50/90 to-white/90 rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 border-4 border-emerald-400/30 shadow-2xl transform group-hover:scale-102 transition-all duration-300">
+                      <div className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-emerald-600 drop-shadow-lg tracking-wider">
+                        {currentServing.token}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 sm:gap-4">
+                    <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-emerald-600 animate-bounce" />
+                    <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-emerald-700">
+                      Please proceed to Reception Desk
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="py-4 sm:py-8">
-                  <Users className="h-8 w-8 sm:h-12 sm:w-12 md:h-16 md:w-16 text-slate-400 mx-auto mb-2 sm:mb-4 animate-pulse" />
-                  <p className="text-sm sm:text-lg md:text-xl text-slate-500 text-center font-medium">No patients in queue</p>
+                <div className="text-center space-y-4 sm:space-y-6 md:space-y-8">
+                  <div className="flex items-center justify-center gap-4">
+                    <Clock className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 text-slate-400 animate-pulse" />
+                    <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-600">
+                      NO QUEUE ACTIVE
+                    </h2>
+                  </div>
+                  
+                  <div className="bg-gradient-to-br from-slate-100/90 to-slate-200/90 rounded-3xl p-6 sm:p-8 md:p-12 border-2 border-slate-300/50 shadow-xl">
+                    <div className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-500 mb-4">
+                      ---
+                    </div>
+                    <p className="text-base sm:text-xl md:text-2xl font-semibold text-slate-600">
+                      Please wait for the next token to be called
+                    </p>
+                  </div>
                 </div>
               )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+              </CardContent>
+            </Card>
+          </div>
 
-    {/* Custom Sliding Footer */}
-    <div className="relative bg-gradient-to-r from-green-600/90 via-blue-500/90 to-green-600/90 backdrop-blur-sm py-1 sm:py-2 overflow-hidden border-t border-white/20 z-10 flex-shrink-0">
-      <div 
-        className="animate-marquee whitespace-nowrap flex items-center will-change-transform"
-        style={{ animationDuration: '20s' }}
-      >
-        <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
-          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
-        </span>
-        <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
-          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
-        </span>
-        <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
-          🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
-        </span>
-      </div>
-    </div>
+          {/* NEXT IN LINE Section - Secondary */}
+          <div className="flex-[2] min-h-0 overflow-hidden">
+            <Card className="w-full h-full bg-gradient-to-br from-white/95 via-blue-50/90 to-white/95 backdrop-blur-lg shadow-xl border-0 overflow-hidden ring-1 ring-blue-500/20">
+              <CardContent className="p-2 sm:p-4 md:p-6 h-full">
+                <div className="h-full flex flex-col">
+                  <div className="flex-shrink-0 flex items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
+                    <Users className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-blue-600" />
+                    <h3 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black text-blue-700">
+                      NEXT IN LINE
+                    </h3>
+                  </div>
+                  
+                  <div className="flex-1 overflow-hidden">
+                    {nextInLine.length > 0 ? (
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-1 sm:gap-2 md:gap-3 h-full">
+                        {nextInLine.slice(0, 5).map((entry, index) => (
+                          <div 
+                            key={entry.id} 
+                            className="bg-gradient-to-br from-white/90 to-blue-100/90 rounded-xl p-1 sm:p-2 md:p-3 border border-blue-300/30 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 flex flex-col items-center justify-center min-h-0"
+                          >
+                            <div className="text-xs sm:text-sm md:text-base font-semibold text-blue-600 mb-1">
+                              #{index + 1}
+                            </div>
+                            <div className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black text-blue-800 leading-tight text-center">
+                              {entry.token}
+                            </div>
+                            <StatusBadge 
+                              status={entry.status} 
+                              className="text-[8px] sm:text-xs mt-1 px-1 py-0 rounded"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="h-full flex items-center justify-center">
+                        <div className="text-center space-y-2">
+                          <Clock className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 text-blue-400 mx-auto animate-pulse" />
+                          <p className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-blue-600">
+                            No tokens in queue
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Control Buttons - Compact floating */}
+        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex gap-1 sm:gap-2 z-20">
+          <Button
+            size="sm"
+            variant={audioEnabled ? "default" : "secondary"}
+            onClick={toggleAudio}
+            className="h-8 w-8 sm:h-10 sm:w-10 p-0 bg-white/90 hover:bg-white text-slate-800 shadow-lg border border-white/50 backdrop-blur-sm"
+          >
+            {audioEnabled ? <Volume2 className="h-3 w-3 sm:h-4 sm:w-4" /> : <VolumeX className="h-3 w-3 sm:h-4 sm:w-4" />}
+          </Button>
+          
+          <Button
+            size="sm"
+            variant={isFullscreen ? "default" : "secondary"}
+            onClick={toggleFullscreen}
+            className="h-8 w-8 sm:h-10 sm:w-10 p-0 bg-white/90 hover:bg-white text-slate-800 shadow-lg border border-white/50 backdrop-blur-sm"
+          >
+            {isFullscreen ? <Minimize2 className="h-3 w-3 sm:h-4 sm:w-4" /> : <Maximize2 className="h-3 w-3 sm:h-4 sm:w-4" />}
+          </Button>
+          
+          <Button
+            size="sm"
+            variant={isOnline ? "default" : "destructive"}
+            className="h-8 w-8 sm:h-10 sm:w-10 p-0 bg-white/90 hover:bg-white text-slate-800 shadow-lg border border-white/50 backdrop-blur-sm"
+            disabled
+          >
+            {isOnline ? <Wifi className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" /> : <WifiOff className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />}
+          </Button>
+        </div>
+
+        {/* Custom Sliding Footer */}
+        <div className="relative bg-gradient-to-r from-green-600/90 via-blue-500/90 to-green-600/90 backdrop-blur-sm py-1 sm:py-2 overflow-hidden border-t border-white/20 z-10 flex-shrink-0">
+          <div 
+            className="animate-marquee whitespace-nowrap flex items-center will-change-transform"
+            style={{ animationDuration: '20s' }}
+          >
+            <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
+              🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing {hospitalName} • Excellence in Health & Medical Care
+            </span>
+            <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
+              🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing {hospitalName} • Excellence in Health & Medical Care
+            </span>
+            <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
+              🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing {hospitalName} • Excellence in Health & Medical Care
+            </span>
+          </div>
+        </div>
 
         {/* Secondary Footer with hospital info */}
         <div className="bg-black/60 backdrop-blur-sm py-1 text-center z-10 flex-shrink-0">
           <p className="text-white/80 text-[10px] sm:text-xs md:text-sm font-medium">
-            {footerNote || "GLOBE HEALTH ASSESSMENT CLINIC - Excellence in Health & Medical Solutions"}
+            {footerNote || `${hospitalName} - Excellence in Health & Medical Solutions`}
           </p>
         </div>
       </div>
