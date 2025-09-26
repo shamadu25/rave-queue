@@ -317,13 +317,12 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
 
   return (
     <div 
-      className="min-h-screen w-full flex flex-col relative overflow-x-hidden bg-gradient-to-br from-primary/20 via-background to-secondary/30"
+      className="h-screen w-full flex flex-col relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-secondary/30"
       style={{
         background: currentSettings?.display_background_start && currentSettings?.display_background_end 
           ? `linear-gradient(135deg, ${currentSettings.display_background_start}, ${currentSettings.display_background_end})`
           : undefined,
-        minHeight: '100vh',
-        height: 'auto'
+        height: '100vh'
       }}
     >
       {/* Animated Particle Background - Contained properly */}
@@ -367,80 +366,80 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
       )}
 
       {/* Premium Vertical Layout - Main Content */}
-      <div className="flex-1 flex flex-col relative z-10 gap-4 p-2 sm:p-4 md:p-6 lg:p-8">
+      <div className="flex-1 flex flex-col relative z-10 gap-2 p-1 sm:p-2 md:p-3 lg:p-4 overflow-hidden">
         
-        {/* NOW SERVING Section - Primary & Prominent */}
-        <div className="flex-[2.5] flex items-center justify-center">
+        {/* NOW SERVING Section - Primary */}
+        <div className="flex-[3] flex items-center justify-center min-h-0">
           <Card className="w-full h-full bg-gradient-to-br from-white/98 via-white/95 to-slate-50/90 backdrop-blur-lg shadow-2xl border-0 overflow-hidden animate-slide-in ring-2 ring-primary/20">
-            <CardContent className="p-4 sm:p-6 md:p-8 lg:p-16 h-full flex flex-col justify-center">
+            <CardContent className="p-2 sm:p-4 md:p-6 lg:p-8 h-full flex flex-col justify-center overflow-hidden">
             {currentServing ? (
-              <div className="text-center space-y-8 lg:space-y-12">
-                <div className="flex items-center justify-center gap-6 mb-8">
+              <div className="text-center space-y-2 sm:space-y-4 md:space-y-6 lg:space-y-8">
+                <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 mb-2 sm:mb-4 md:mb-6">
                   <div className="relative">
                     <CheckCircle2 
-                      className="w-24 h-24 lg:w-32 lg:h-32 text-emerald-500 animate-pulse drop-shadow-lg" 
+                      className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 text-emerald-500 animate-pulse drop-shadow-lg" 
                       strokeWidth={2.5}
                     />
-                    <div className="absolute inset-0 w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-emerald-400/20 animate-ping"></div>
+                    <div className="absolute inset-0 w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 rounded-full bg-emerald-400/20 animate-ping"></div>
                   </div>
-                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 bg-clip-text text-transparent animate-glow-pulse tracking-tight">
+                  <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 bg-clip-text text-transparent animate-glow-pulse tracking-tight">
                     NOW SERVING
                   </h2>
                 </div>
                 
                 <div 
-                  className="font-black tracking-wider animate-token-glow text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[12rem] leading-none drop-shadow-2xl"
+                  className="font-black tracking-wider animate-token-glow text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-none drop-shadow-2xl"
                   style={{ 
-                    fontSize: currentSettings?.display_token_font_size ? `${currentSettings.display_token_font_size * 1.5}px` : undefined,
+                    fontSize: currentSettings?.display_token_font_size ? `${Math.min(currentSettings.display_token_font_size, 80)}px` : undefined,
                     color: currentSettings?.display_token_color || '#1e293b',
-                    textShadow: '0 8px 32px rgba(30, 41, 59, 0.3), 0 0 60px rgba(16, 185, 129, 0.2)',
-                    filter: 'drop-shadow(0 8px 32px rgba(30, 41, 59, 0.15))'
+                    textShadow: '0 4px 16px rgba(30, 41, 59, 0.3), 0 0 30px rgba(16, 185, 129, 0.2)',
+                    filter: 'drop-shadow(0 4px 16px rgba(30, 41, 59, 0.15))'
                   }}
                 >
                   {currentServing.token}
                 </div>
                 
-                <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-4 md:gap-6 text-sm sm:text-lg md:text-xl lg:text-2xl">
                   <span className="font-bold text-slate-700 text-center tracking-wide">Please proceed to</span>
-                  <ArrowRight className="h-12 w-12 lg:h-16 lg:w-16 text-primary animate-pulse drop-shadow-lg" />
-                  <div className="bg-gradient-to-r from-primary via-blue-600 to-primary text-white px-6 py-4 lg:px-10 lg:py-6 rounded-2xl font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl shadow-2xl ring-4 ring-white/30 backdrop-blur-sm">
+                  <ArrowRight className="h-4 w-4 sm:h-6 sm:w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-primary animate-pulse drop-shadow-lg" />
+                  <div className="bg-gradient-to-r from-primary via-blue-600 to-primary text-white px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-xl font-black text-xs sm:text-base md:text-lg lg:text-xl shadow-2xl ring-2 ring-white/30 backdrop-blur-sm">
                     GLOBE HEALTH Reception Desk
                   </div>
                 </div>
                 
                 <p 
-                  className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-slate-600 mt-8 font-semibold text-center leading-relaxed"
+                  className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-slate-600 mt-2 sm:mt-4 font-semibold text-center leading-relaxed"
                   style={{ 
                     color: currentSettings?.subtext_color || '#475569',
-                    fontSize: currentSettings?.display_department_font_size ? `${currentSettings.display_department_font_size * 1.2}px` : undefined
+                    fontSize: currentSettings?.display_department_font_size ? `${Math.min(currentSettings.display_department_font_size * 0.8, 20)}px` : undefined
                   }}
                 >
                   {subText || 'Professional Immigration & Medical Services'}
                 </p>
                 
-                <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-8 mt-12">
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-2 sm:mt-4">
                   <StatusBadge 
                     status={currentServing.status} 
                     priority={currentServing.priority}
-                    className="text-xl lg:text-2xl px-8 py-4 lg:px-12 lg:py-6 shadow-lg"
+                    className="text-xs sm:text-sm md:text-base px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 shadow-lg"
                   />
                   {currentServing.intended_department && (
-                    <Badge variant="outline" className="text-lg lg:text-xl px-6 py-3 lg:px-8 lg:py-4 border-2 border-primary/30 bg-primary/5">
+                    <Badge variant="outline" className="text-xs sm:text-sm px-2 py-1 sm:px-4 sm:py-2 border-2 border-primary/30 bg-primary/5">
                       Service: {currentServing.intended_department}
                     </Badge>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="text-center py-16 lg:py-24 space-y-8 lg:space-y-12">
+              <div className="text-center py-4 sm:py-8 md:py-12 space-y-2 sm:space-y-4 md:space-y-6">
                 <div className="relative">
-                  <Clock className="h-32 w-32 lg:h-40 lg:w-40 text-slate-400 mx-auto animate-pulse" />
-                  <div className="absolute inset-0 h-32 w-32 lg:h-40 lg:w-40 mx-auto rounded-full bg-slate-300/20 animate-ping"></div>
+                  <Clock className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 text-slate-400 mx-auto animate-pulse" />
+                  <div className="absolute inset-0 h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 mx-auto rounded-full bg-slate-300/20 animate-ping"></div>
                 </div>
-                <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-500 tracking-tight">
+                <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black text-slate-500 tracking-tight">
                   No Current Queue
                 </h2>
-                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-400 font-medium">
+                <p className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-slate-400 font-medium">
                   Waiting for next patient...
                 </p>
               </div>
@@ -449,34 +448,34 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         </Card>
       </div>
 
-      {/* NEXT IN LINE Section - Secondary & Compact */}
-      <div className="flex-1 flex items-center justify-center">
+      {/* NEXT IN LINE Section - Secondary */}
+      <div className="flex-[2] flex items-center justify-center min-h-0">
         <Card className="w-full h-full bg-gradient-to-br from-slate-50/95 via-white/90 to-slate-100/85 backdrop-blur-md shadow-xl border-0 overflow-hidden ring-1 ring-slate-200/50">
-          <CardContent className="p-4 sm:p-6 md:p-8 h-full flex flex-col justify-center">
-            <div className="text-center space-y-4 lg:space-y-6">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <Users className="w-12 h-12 lg:w-16 lg:h-16 text-blue-600 drop-shadow-sm" />
-                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-blue-600 tracking-tight">NEXT IN LINE</h3>
+          <CardContent className="p-2 sm:p-4 md:p-6 h-full flex flex-col justify-center overflow-hidden">
+            <div className="text-center space-y-2 sm:space-y-4">
+              <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
+                <Users className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-blue-600 drop-shadow-sm" />
+                <h3 className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-black text-blue-600 tracking-tight">NEXT IN LINE</h3>
               </div>
               
               {nextInLine.length > 0 ? (
-                <div className="flex flex-wrap items-center justify-center gap-3 lg:gap-4 max-w-6xl mx-auto">
+                <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 md:gap-3 max-w-6xl mx-auto">
                   {nextInLine.map((entry, index) => (
                     <div 
                       key={entry.id}
-                      className="bg-gradient-to-br from-blue-50/90 via-white/95 to-blue-100/80 p-4 lg:p-6 rounded-xl shadow-lg animate-fade-in-up border border-blue-200/60 backdrop-blur-sm hover:shadow-xl transition-all duration-300"
+                      className="bg-gradient-to-br from-blue-50/90 via-white/95 to-blue-100/80 p-1 sm:p-2 md:p-3 lg:p-4 rounded-lg shadow-lg animate-fade-in-up border border-blue-200/60 backdrop-blur-sm hover:shadow-xl transition-all duration-300"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <div className="text-center space-y-2 lg:space-y-3 min-w-[80px] lg:min-w-[100px]">
-                        <div className="text-2xl lg:text-3xl font-black text-blue-700 tracking-wide drop-shadow-sm">
+                      <div className="text-center space-y-1 min-w-[60px] sm:min-w-[80px]">
+                        <div className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black text-blue-700 tracking-wide drop-shadow-sm">
                           {entry.token}
                         </div>
                         {entry.intended_department && (
-                          <Badge variant="secondary" className="text-xs lg:text-sm bg-blue-100 text-blue-700">
+                          <Badge variant="secondary" className="text-[10px] sm:text-xs bg-blue-100 text-blue-700">
                             {entry.intended_department}
                           </Badge>
                         )}
-                        <div className="text-sm lg:text-base text-blue-600 font-semibold">
+                        <div className="text-[10px] sm:text-xs md:text-sm text-blue-600 font-semibold">
                           #{index + 1}
                         </div>
                       </div>
@@ -484,9 +483,9 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
                   ))}
                 </div>
               ) : (
-                <div className="py-12 lg:py-16">
-                  <Users className="h-16 w-16 lg:h-20 lg:w-20 text-slate-400 mx-auto mb-6 animate-pulse" />
-                  <p className="text-xl lg:text-2xl text-slate-500 text-center font-medium">No patients in queue</p>
+                <div className="py-4 sm:py-8">
+                  <Users className="h-8 w-8 sm:h-12 sm:w-12 md:h-16 md:w-16 text-slate-400 mx-auto mb-2 sm:mb-4 animate-pulse" />
+                  <p className="text-sm sm:text-lg md:text-xl text-slate-500 text-center font-medium">No patients in queue</p>
                 </div>
               )}
             </div>
@@ -496,26 +495,26 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
     </div>
 
     {/* Custom Sliding Footer */}
-    <div className="relative bg-gradient-to-r from-green-600/90 via-blue-500/90 to-green-600/90 backdrop-blur-sm py-3 sm:py-4 md:py-5 overflow-hidden border-t border-white/20 z-10">
+    <div className="relative bg-gradient-to-r from-green-600/90 via-blue-500/90 to-green-600/90 backdrop-blur-sm py-1 sm:py-2 overflow-hidden border-t border-white/20 z-10 flex-shrink-0">
       <div 
         className="animate-marquee whitespace-nowrap flex items-center will-change-transform"
         style={{ animationDuration: '20s' }}
       >
-        <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
+        <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
           🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
         </span>
-        <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
+        <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
           🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
         </span>
-        <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
+        <span className="text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold px-4 sm:px-6 md:px-8 text-shadow-lg tracking-wide">
           🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH ASSESSMENT CLINIC • Excellence in Health & Medical Care
         </span>
       </div>
     </div>
 
     {/* Secondary Footer with hospital info */}
-    <div className="bg-black/60 backdrop-blur-sm py-2 text-center z-10">
-      <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">
+    <div className="bg-black/60 backdrop-blur-sm py-1 text-center z-10 flex-shrink-0">
+      <p className="text-white/80 text-[10px] sm:text-xs md:text-sm font-medium">
         {footerNote || "GLOBE HEALTH ASSESSMENT CLINIC - Excellence in Health & Medical Solutions"}
       </p>
     </div>
