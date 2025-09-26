@@ -364,13 +364,13 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
             }}
           >
             <span className="text-white/90 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black px-12 text-shadow-lg tracking-wider">
-              WELCOME TO GLOBE HEALTH ASSESSMENT CLINIC
+              WELCOME TO IOM SERVICES - PROFESSIONAL IMMIGRATION & MEDICAL SOLUTIONS
             </span>
             <span className="text-white/90 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black px-12 text-shadow-lg tracking-wider">
-              WELCOME TO GLOBE HEALTH ASSESSMENT CLINIC
+              WELCOME TO IOM SERVICES - PROFESSIONAL IMMIGRATION & MEDICAL SOLUTIONS
             </span>
             <span className="text-white/90 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black px-12 text-shadow-lg tracking-wider">
-              WELCOME TO GLOBE HEALTH ASSESSMENT CLINIC
+              WELCOME TO IOM SERVICES - PROFESSIONAL IMMIGRATION & MEDICAL SOLUTIONS
             </span>
           </div>
         </div>
@@ -452,8 +452,133 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
         </div>
       </div>
 
-        {/* Split-Screen Main Content */}
-        <div className="flex-1 flex flex-col lg:flex-row relative z-10 gap-4 p-2 sm:p-4 md:p-6 lg:p-8">
+        {/* Premium Vertical Layout - Main Content */}
+        <div className="flex-1 flex flex-col relative z-10 gap-4 p-2 sm:p-4 md:p-6 lg:p-8">
+          
+          {/* NOW SERVING Section - Primary & Prominent */}
+          <div className="flex-[2.5] flex items-center justify-center">
+            <Card className="w-full h-full bg-gradient-to-br from-white/98 via-white/95 to-slate-50/90 backdrop-blur-lg shadow-2xl border-0 overflow-hidden animate-slide-in ring-2 ring-primary/20">
+              <CardContent className="p-4 sm:p-6 md:p-8 lg:p-16 h-full flex flex-col justify-center">
+              {currentServing ? (
+                <div className="text-center space-y-8 lg:space-y-12">
+                  <div className="flex items-center justify-center gap-6 mb-8">
+                    <div className="relative">
+                      <CheckCircle2 
+                        className="w-24 h-24 lg:w-32 lg:h-32 text-emerald-500 animate-pulse drop-shadow-lg" 
+                        strokeWidth={2.5}
+                      />
+                      <div className="absolute inset-0 w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-emerald-400/20 animate-ping"></div>
+                    </div>
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 bg-clip-text text-transparent animate-glow-pulse tracking-tight">
+                      NOW SERVING
+                    </h2>
+                  </div>
+                  
+                  <div 
+                    className="font-black tracking-wider animate-token-glow text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[12rem] leading-none drop-shadow-2xl"
+                    style={{ 
+                      fontSize: currentSettings?.display_token_font_size ? `${currentSettings.display_token_font_size * 1.5}px` : undefined,
+                      color: currentSettings?.display_token_color || '#1e293b',
+                      textShadow: '0 8px 32px rgba(30, 41, 59, 0.3), 0 0 60px rgba(16, 185, 129, 0.2)',
+                      filter: 'drop-shadow(0 8px 32px rgba(30, 41, 59, 0.15))'
+                    }}
+                  >
+                    {currentServing.token}
+                  </div>
+                  
+                  <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
+                    <span className="font-bold text-slate-700 text-center tracking-wide">Please proceed to</span>
+                    <ArrowRight className="h-12 w-12 lg:h-16 lg:w-16 text-primary animate-pulse drop-shadow-lg" />
+                    <div className="bg-gradient-to-r from-primary via-blue-600 to-primary text-white px-6 py-4 lg:px-10 lg:py-6 rounded-2xl font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl shadow-2xl ring-4 ring-white/30 backdrop-blur-sm">
+                      IOM Reception Desk
+                    </div>
+                  </div>
+                  
+                  <p 
+                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-slate-600 mt-8 font-semibold text-center leading-relaxed"
+                    style={{ 
+                      color: currentSettings?.subtext_color || '#475569',
+                      fontSize: currentSettings?.display_department_font_size ? `${currentSettings.display_department_font_size * 1.2}px` : undefined
+                    }}
+                  >
+                    {subText || 'Professional Immigration & Medical Services'}
+                  </p>
+                  
+                  <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-8 mt-12">
+                    <StatusBadge 
+                      status={currentServing.status} 
+                      priority={currentServing.priority}
+                      className="text-xl lg:text-2xl px-8 py-4 lg:px-12 lg:py-6 shadow-lg"
+                    />
+                    {currentServing.intended_department && (
+                      <Badge variant="outline" className="text-lg lg:text-xl px-6 py-3 lg:px-8 lg:py-4 border-2 border-primary/30 bg-primary/5">
+                        Service: {currentServing.intended_department}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-16 lg:py-24 space-y-8 lg:space-y-12">
+                  <div className="relative">
+                    <Clock className="h-32 w-32 lg:h-40 lg:w-40 text-slate-400 mx-auto animate-pulse" />
+                    <div className="absolute inset-0 h-32 w-32 lg:h-40 lg:w-40 mx-auto rounded-full bg-slate-300/20 animate-ping"></div>
+                  </div>
+                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-500 tracking-tight">
+                    No Current Queue
+                  </h2>
+                  <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-slate-400 font-medium">
+                    Waiting for next patient...
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* NEXT IN LINE Section - Secondary & Compact */}
+        <div className="flex-1 flex items-center justify-center">
+          <Card className="w-full h-full bg-gradient-to-br from-slate-50/95 via-white/90 to-slate-100/85 backdrop-blur-md shadow-xl border-0 overflow-hidden ring-1 ring-slate-200/50">
+            <CardContent className="p-4 sm:p-6 md:p-8 h-full flex flex-col justify-center">
+              <div className="text-center space-y-4 lg:space-y-6">
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <Users className="w-12 h-12 lg:w-16 lg:h-16 text-blue-600 drop-shadow-sm" />
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-blue-600 tracking-tight">NEXT IN LINE</h3>
+                </div>
+                
+                {nextInLine.length > 0 ? (
+                  <div className="flex flex-wrap items-center justify-center gap-3 lg:gap-4 max-w-6xl mx-auto">
+                    {nextInLine.map((entry, index) => (
+                      <div 
+                        key={entry.id}
+                        className="bg-gradient-to-br from-blue-50/90 via-white/95 to-blue-100/80 p-4 lg:p-6 rounded-xl shadow-lg animate-fade-in-up border border-blue-200/60 backdrop-blur-sm hover:shadow-xl transition-all duration-300"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <div className="text-center space-y-2 lg:space-y-3 min-w-[80px] lg:min-w-[100px]">
+                          <div className="text-2xl lg:text-3xl font-black text-blue-700 tracking-wide drop-shadow-sm">
+                            {entry.token}
+                          </div>
+                          {entry.intended_department && (
+                            <Badge variant="secondary" className="text-xs lg:text-sm bg-blue-100 text-blue-700">
+                              {entry.intended_department}
+                            </Badge>
+                          )}
+                          <div className="text-sm lg:text-base text-blue-600 font-semibold">
+                            #{index + 1}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-12 lg:py-16">
+                    <Users className="h-16 w-16 lg:h-20 lg:w-20 text-slate-400 mx-auto mb-6 animate-pulse" />
+                    <p className="text-xl lg:text-2xl text-slate-500 text-center font-medium">No patients in queue</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
           
           {/* NOW SERVING Section */}
           <div className="flex-1 flex items-center justify-center">
@@ -582,13 +707,13 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
           style={{ animationDuration: '20s' }}
         >
           <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
-            🏥 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH • Your health is our priority
+            🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing IOM SERVICES • Excellence in Immigration & Medical Care
           </span>
           <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
-            🏥 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH • Your health is our priority
+            🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing IOM SERVICES • Excellence in Immigration & Medical Care
           </span>
           <span className="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold px-8 sm:px-10 md:px-12 text-shadow-lg tracking-wide">
-            🏥 PLEASE WAIT TO BE CALLED • Thanks for choosing GLOBE HEALTH • Your health is our priority
+            🏢 PLEASE WAIT TO BE CALLED • Thanks for choosing IOM SERVICES • Excellence in Immigration & Medical Care
           </span>
         </div>
       </div>
@@ -596,7 +721,7 @@ const ReceptionDisplay = ({ enableAudio = true }: ReceptionDisplayProps) => {
       {/* Secondary Footer with hospital info */}
       <div className="bg-black/60 backdrop-blur-sm py-2 text-center">
         <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">
-          {footerNote || "Globe Health Assessment Clinic - Professional Healthcare Services"}
+          {footerNote || "IOM SERVICES - Excellence in Immigration & Medical Solutions"}
         </p>
       </div>
     </div>
